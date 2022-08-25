@@ -6,7 +6,7 @@ from typing import Optional, Union
 import requests
 
 from ssrspeed.config import ssrconfig
-from ssrspeed.parsers import ClashParser
+from ssrspeed.parsers import ClashParser, TrojanParser
 from ssrspeed.parsers.base_configs import V2RayBaseConfigs, shadowsocks_get_config
 from ssrspeed.parsers.node_filter import NodeFilter
 from ssrspeed.parsers.ss_parsers import (
@@ -17,7 +17,12 @@ from ssrspeed.parsers.ss_parsers import (
 from ssrspeed.parsers.ssr_parsers import ParserShadowsocksR
 from ssrspeed.parsers.v2ray_parsers import ParserV2RayN, ParserV2RayQuantumult
 from ssrspeed.paths import KEY_PATH
-from ssrspeed.types.nodes import NodeShadowsocks, NodeShadowsocksR, NodeV2Ray
+from ssrspeed.types.nodes import (
+    NodeShadowsocks,
+    NodeShadowsocksR,
+    NodeTrojan,
+    NodeV2Ray,
+)
 from ssrspeed.utils import b64plus
 
 PROXY_SETTINGS = ssrconfig["proxy"]
@@ -144,6 +149,17 @@ class UniversalParser:
                     )
                     node = NodeV2Ray(gen_cfg)
 
+            elif link[:9] == "trojan://":
+                cfg = None
+                logger.info("Try Trojan Parser.")
+                ptrojan = TrojanParser()
+                try:
+                    cfg = ptrojan._parse_link(link)
+                except ValueError:
+                    pass
+                if cfg:
+                    node = NodeTrojan(cfg)
+
             else:
                 logger.warning(f"Unsupported link: {link}")
 
@@ -169,6 +185,8 @@ class UniversalParser:
                         )
                     )
                 )
+            elif cfg["type"] == "trojan":
+                result.append(NodeTrojan(cfg["config"]))
 
         return result
 
@@ -203,6 +221,7 @@ class UniversalParser:
                 url.startswith("ss://")
                 or url.startswith("ssr://")
                 or url.startswith("vmess://")
+                or url.startswith("trojan://")
             ):
                 self.__nodes.extend(self.parse_links([url]))
                 continue

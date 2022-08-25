@@ -26,8 +26,7 @@ class Shadowsocks(BaseClient):
 
         if self._process is None:
 
-            platform = self._check_platform()
-            if platform == "Windows":
+            if self._platform == "Windows":
                 if logger.level == logging.DEBUG:
                     self._process = subprocess.Popen(
                         [
@@ -54,7 +53,7 @@ class Shadowsocks(BaseClient):
                     % (_config["server"], _config["server_port"])
                 )
 
-            elif platform == "Linux" or platform == "MacOS":
+            elif self._platform == "Linux" or self._platform == "MacOS":
                 if logger.level == logging.DEBUG:
                     self._process = subprocess.Popen(
                         ["ss-local", "-u", "-v", "-c", CONFIG_FILE]

@@ -23,6 +23,7 @@
     "youtube": true,
     "abema": true,
     "bahamut": true,
+	"bilibili": true,
     "tvb": true,
     "geoip": true,
     "multiplex": true,

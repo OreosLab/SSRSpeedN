@@ -25,8 +25,7 @@ class V2Ray(BaseClient):
         try:
             if self._process is None:
 
-                platform = self._check_platform()
-                if platform == "Windows":
+                if self._platform == "Windows":
                     if logger.level == logging.DEBUG:
                         self._process = subprocess.Popen(
                             [
@@ -50,7 +49,7 @@ class V2Ray(BaseClient):
                         % (_config["server"], _config["server_port"])
                     )
 
-                elif platform == "Linux" or platform == "MacOS":
+                elif self._platform == "Linux" or self._platform == "MacOS":
                     if logger.level == logging.DEBUG:
                         self._process = subprocess.Popen(
                             [

@@ -52,8 +52,7 @@ class ShadowsocksR(BaseClient):
 
         if self._process is None:
 
-            platform = self._check_platform()
-            if platform == "Windows":
+            if self._platform == "Windows":
                 if self.useSsrCSharp:
                     self.__ssr_csharp_conf(_config)
                     self._process = subprocess.Popen(
@@ -91,7 +90,7 @@ class ShadowsocksR(BaseClient):
                         % (_config["server"], _config["server_port"])
                     )
 
-            elif platform == "Linux" or platform == "MacOS":
+            elif self._platform == "Linux" or self._platform == "MacOS":
                 if logger.level == logging.DEBUG:
                     self._process = subprocess.Popen(
                         [
@@ -226,15 +225,14 @@ class ShadowsocksRR(BaseClient):
     def start_client(self, _config: Dict[str, Any]):
         if self._process is None:
 
-            platform = self._check_platform()
-            if platform == "Windows":
+            if self._platform == "Windows":
                 self.__win_conf()
                 # 	sys.exit(0)
                 self._process = subprocess.Popen(
                     [f"{CLIENTS_DIR}shadowsocksr-libev/ssr-local.exe"]
                 )
 
-            elif platform == "Linux" or platform == "MacOS":
+            elif self._platform == "Linux" or self._platform == "MacOS":
                 self._config = _config
                 self._config["server_port"] = int(self._config["server_port"])
                 with open(CONFIG_FILE, "w+", encoding="utf-8") as f:

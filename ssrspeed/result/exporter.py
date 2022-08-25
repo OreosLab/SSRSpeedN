@@ -39,6 +39,7 @@ class ExportResult(object):
         self.__hide_max_speed: bool = ssrconfig["exportResult"]["hide_max_speed"]
         self.__hide_ntt: bool = not ssrconfig["ntt"]["enabled"]
         self.__hide_netflix: bool = not ssrconfig["netflix"]
+        self.__hide_bilibili = not ssrconfig["bilibili"]
         self.__hide_stream: bool = not ssrconfig["stream"]
         self.__hide_stspeed: bool = not ssrconfig["StSpeed"]
         self.__test_method: bool = not ssrconfig["method"]
@@ -180,6 +181,8 @@ class ExportResult(object):
         hbo_logo.thumbnail((28, 28))
         netflix_logo = Image.open(f"{LOGOS_DIR}Netflix.png")
         netflix_logo.thumbnail((28, 28))
+        bilibili_logo = Image.open(f"{LOGOS_DIR}bilibili.png")
+        bilibili_logo.thumbnail((28, 28))
         tvb_logo = Image.open(f"{LOGOS_DIR}tvb.png")
         tvb_logo.thumbnail((28, 28))
         youtube_logo = Image.open(f"{LOGOS_DIR}YouTube.png")
@@ -221,6 +224,10 @@ class ExportResult(object):
             image_right_position = image_right_position + other_width + 60
         netflix_right_position = image_right_position
 
+        if not self.__hide_bilibili:
+            image_right_position = image_right_position + other_width + 60
+        bilibili_right_position = image_right_position
+
         if not self.__hide_stream:
             image_right_position = image_right_position + other_width + 160
         stream_right_position = image_right_position
@@ -243,7 +250,12 @@ class ExportResult(object):
         )
         draw = ImageDraw.Draw(result_img)
 
-        # 	draw.line((0,newImageHeight - 30 - 1,imageRightPosition,newImageHeight - 30 - 1),fill=(127,127,127),width=1)
+        # draw.line(
+        #     (0, new_image_height - 30 - 1, image_right_position, new_image_height - 30 - 1),
+        #     fill=(127, 127, 127),
+        #     width=1,
+        # )
+
         text = "便宜机场测速 With SSRSpeed N ( v{} )".format(ssrconfig["VERSION"])
         draw.text(
             (self.__get_base_pos(image_right_position, text), 4),
@@ -339,6 +351,18 @@ class ExportResult(object):
                     netflix_right_position,
                     30,
                     netflix_right_position,
+                    image_height + 30 - 1,
+                ),
+                fill=(127, 127, 127),
+                width=1,
+            )
+
+        if not self.__hide_bilibili:
+            draw.line(
+                (
+                    bilibili_right_position,
+                    30,
+                    bilibili_right_position,
                     image_height + 30 - 1,
                 ),
                 fill=(127, 127, 127),
@@ -616,12 +640,26 @@ class ExportResult(object):
                 fill=(0, 0, 0),
             )
 
-        if not self.__hide_stream:
+        if not self.__hide_bilibili:
             draw.text(
                 (
                     netflix_right_position
                     + self.__get_base_pos(
-                        stream_right_position - netflix_right_position, "流媒体解锁"
+                        bilibili_right_position - netflix_right_position, "Netfilx 解锁"
+                    ),
+                    30 + 4,
+                ),
+                "Bilibili 解锁",
+                font=result_font,
+                fill=(0, 0, 0),
+            )
+
+        if not self.__hide_stream:
+            draw.text(
+                (
+                    bilibili_right_position
+                    + self.__get_base_pos(
+                        stream_right_position - bilibili_right_position, "流媒体解锁"
                     ),
                     30 + 4,
                 ),
@@ -831,6 +869,18 @@ class ExportResult(object):
                     fill=(0, 0, 0),
                 )
 
+            if not self.__hide_bilibili:
+                bilibili_type = item["Bltype"]
+                pos = netflix_right_position + self.__get_base_pos(
+                    bilibili_right_position - netflix_right_position, bilibili_type
+                )
+                draw.text(
+                    (pos, 30 * j + 30 + 1),
+                    bilibili_type,
+                    font=result_font,
+                    fill=(0, 0, 0),
+                )
+
             if not self.__hide_stream:
                 netflix_type = item["Ntype"]
                 hbo_type = item["Htype"]
@@ -839,10 +889,14 @@ class ExportResult(object):
                 abema_type = item["Atype"]
                 bahamut_type = item["Btype"]
                 tvb_type = item["Ttype"]
-                if netflix_type == "Full Native" or netflix_type == "Full DNS":
+                if netflix_type[:4] == "Full":
                     n_type = True
                 else:
                     n_type = False
+                if bilibili_type == "N/A":
+                    bl_type = False
+                else:
+                    bl_type = True
                 sums = (
                     n_type
                     + hbo_type
@@ -851,10 +905,11 @@ class ExportResult(object):
                     + abema_type
                     + bahamut_type
                     + tvb_type
+                    + bl_type
                 )
                 pos = (
-                    netflix_right_position
-                    + (stream_right_position - netflix_right_position - sums * 35) / 2
+                    bilibili_right_position
+                    + (stream_right_position - bilibili_right_position - sums * 35) / 2
                 )
                 if n_type:
                     result_img.paste(netflix_logo, (int(pos), 30 * j + 30 + 1))
@@ -873,6 +928,9 @@ class ExportResult(object):
                     pos += 35
                 if bahamut_type:
                     result_img.paste(bahamut_logo, (int(pos), 30 * j + 30 + 1))
+                    pos += 35
+                if bl_type:
+                    result_img.paste(bilibili_logo, (int(pos), 30 * j + 30 + 1))
                     pos += 35
                 if tvb_type:
                     result_img.paste(tvb_logo, (int(pos), 30 * j + 30 + 1))
@@ -970,11 +1028,11 @@ class ExportResult(object):
                 r = requests.get(url, headers=clash_ua, timeout=15)
                 t = r.headers["subscription-userinfo"]
                 dl = int(t[t.find("download") + 9 : t.find("total") - 2])
-                _sum = dl
+                sum_ = dl
             except:
-                _sum = 0
-            avgrate = (_sum - sum0) / total_traffic if total_traffic else 0
-            if (_sum - sum0) > 0:
+                sum_ = 0
+            avgrate = (sum_ - sum0) / total_traffic if total_traffic else 0
+            if (sum_ - sum0) > 0:
                 t3 = ".  AvgRate : {:.2f}".format(avgrate)
             else:
                 t3 = ""
