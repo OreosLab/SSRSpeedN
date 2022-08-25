@@ -1,0 +1,13 @@
+{
+    "local_address": "127.0.0.1",
+    "local_port": 1080,
+    "server": "xxxx",
+    "server_port": 14871,
+    "password": "kate is beauty",
+    "method": "chacha20",
+    "protocol": "auth_chain_a",
+    "protocol_param": "",
+    "obfs": "tls1.2_ticket_auth",
+    "obfs_param": "",
+    "fast_open": true
+}

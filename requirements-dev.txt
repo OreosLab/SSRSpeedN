@@ -1,0 +1,17 @@
+aiohttp-socks
+beautifulsoup4
+Flask-Cors
+Pillow
+pynat
+PyYAML
+requests
+selenium
+webdriver-manager
+
+black
+isort
+mypy
+
+types-PyYAML
+types-requests
+types-simplejson
