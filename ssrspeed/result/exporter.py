@@ -50,9 +50,9 @@ class ExportResult(object):
         self.__hide_geoip: bool = not ssrconfig["geoip"]
         self.__hide_multiplex: bool = not ssrconfig["multiplex"]
         self.__colors: dict = {}
-        self.__colorSpeedList: list = []
+        self.__color_speed_list: list = []
         self.__font: ImageFont.FreeTypeFont = self.set_font(self.__config["font"])
-        self.__timeUsed: str = "N/A"
+        self.__time_used: str = "N/A"
 
     # 	self.set_colors()
 
@@ -61,13 +61,13 @@ class ExportResult(object):
             if color["name"] == name:
                 logger.info("Set colors as {}.".format(name))
                 self.__colors = color["colors"]
-                self.__colorSpeedList.append(0)
+                self.__color_speed_list.append(0)
                 for speed in self.__colors.keys():
                     try:
-                        self.__colorSpeedList.append(float(speed))
+                        self.__color_speed_list.append(float(speed))
                     except:
                         continue
-                self.__colorSpeedList.sort()
+                self.__color_speed_list.sort()
                 return
         logger.warning("Color {} not found in config.".format(name))
 
@@ -83,8 +83,8 @@ class ExportResult(object):
             return ImageFont.truetype(custom_font, size)
 
     def set_time_used(self, time_used):
-        self.__timeUsed = time.strftime("%H:%M:%S", time.gmtime(time_used))
-        logger.info("Time Used : {}".format(self.__timeUsed))
+        self.__time_used = time.strftime("%H:%M:%S", time.gmtime(time_used))
+        logger.info("Time Used : {}".format(self.__time_used))
 
     def export(
         self, result, split: int = 0, export_type: int = 0, sort_method: str = ""
@@ -150,7 +150,7 @@ class ExportResult(object):
         return base_pos
 
     def __export_as_png(self, result: dict):
-        if not self.__colorSpeedList:
+        if not self.__color_speed_list:
             self.set_colors()
         # 	result = self.__deweighting(result)
         result_font = self.__font
@@ -171,18 +171,20 @@ class ExportResult(object):
             out_width = 180
         other_width = 100
 
-        abema_logo = Image.open(f"{LOGOS_DIR}abema.png")
+        abema_logo = Image.open(f"{LOGOS_DIR}Abema.png")
         abema_logo.thumbnail((28, 28))
         bahamut_logo = Image.open(f"{LOGOS_DIR}Bahamut.png")
         bahamut_logo.thumbnail((28, 28))
+        bilibili_logo = Image.open(f"{LOGOS_DIR}Bilibili.png")
+        bilibili_logo.thumbnail((28, 28))
+        dazn_logo = Image.open(f"{LOGOS_DIR}Dazn.png")
+        dazn_logo.thumbnail((28, 28))
         disney_logo = Image.open(f"{LOGOS_DIR}DisneyPlus.png")
         disney_logo.thumbnail((28, 28))
         hbo_logo = Image.open(f"{LOGOS_DIR}HBO.png")
         hbo_logo.thumbnail((28, 28))
         netflix_logo = Image.open(f"{LOGOS_DIR}Netflix.png")
         netflix_logo.thumbnail((28, 28))
-        bilibili_logo = Image.open(f"{LOGOS_DIR}bilibili.png")
-        bilibili_logo.thumbnail((28, 28))
         tvb_logo = Image.open(f"{LOGOS_DIR}tvb.png")
         tvb_logo.thumbnail((28, 28))
         youtube_logo = Image.open(f"{LOGOS_DIR}YouTube.png")
@@ -229,7 +231,7 @@ class ExportResult(object):
         bilibili_right_position = image_right_position
 
         if not self.__hide_stream:
-            image_right_position = image_right_position + other_width + 160
+            image_right_position = image_right_position + other_width + 200
         stream_right_position = image_right_position
 
         if not self.__hide_geoip:
@@ -251,7 +253,12 @@ class ExportResult(object):
         draw = ImageDraw.Draw(result_img)
 
         # draw.line(
-        #     (0, new_image_height - 30 - 1, image_right_position, new_image_height - 30 - 1),
+        #     (
+        #         0,
+        #         new_image_height - 30 - 1,
+        #         image_right_position,
+        #         new_image_height - 30 - 1,
+        #     ),
         #     fill=(127, 127, 127),
         #     width=1,
         # )
@@ -888,7 +895,9 @@ class ExportResult(object):
                 youtube_type = item["Ytype"]
                 abema_type = item["Atype"]
                 bahamut_type = item["Btype"]
+                dazn_type = item["Dztype"]
                 tvb_type = item["Ttype"]
+                bilibili_type = item["Bltype"]
                 if netflix_type[:4] == "Full":
                     n_type = True
                 else:
@@ -904,8 +913,9 @@ class ExportResult(object):
                     + youtube_type
                     + abema_type
                     + bahamut_type
-                    + tvb_type
+                    + dazn_type
                     + bl_type
+                    + tvb_type
                 )
                 pos = (
                     bilibili_right_position
@@ -929,11 +939,14 @@ class ExportResult(object):
                 if bahamut_type:
                     result_img.paste(bahamut_logo, (int(pos), 30 * j + 30 + 1))
                     pos += 35
-                if bl_type:
-                    result_img.paste(bilibili_logo, (int(pos), 30 * j + 30 + 1))
+                if dazn_type:
+                    result_img.paste(dazn_logo, (int(pos), 30 * j + 30 + 1))
                     pos += 35
                 if tvb_type:
                     result_img.paste(tvb_logo, (int(pos), 30 * j + 30 + 1))
+                    pos += 35
+                if bl_type:
+                    result_img.paste(bilibili_logo, (int(pos), 30 * j + 30 + 1))
                     pos += 35
 
             if not self.__hide_geoip:
@@ -1043,7 +1056,7 @@ class ExportResult(object):
             (5, image_height + 30 + 4),
             t1
             + "Time used: {}.".format(
-                self.__timeUsed,
+                self.__time_used,
             )
             + t2
             + t3,
@@ -1052,14 +1065,14 @@ class ExportResult(object):
         )
 
         # draw.line(
-        #    (
-        #        0,
-        #        newImageHeight - 30 * 3 - 1,
-        #        imageRightPosition,
-        #        newImageHeight - 30 * 3 - 1,
-        #    ),
-        #    fill=(127, 127, 127),
-        #    width=1,
+        #     (
+        #         0,
+        #         new_image_height - 30 * 3 - 1,
+        #         image_right_position,
+        #         new_image_height - 30 * 3 - 1,
+        #     ),
+        #     fill=(127, 127, 127),
+        #     width=1,
         # )
 
         draw.text(
@@ -1080,14 +1093,23 @@ class ExportResult(object):
             fill=(127, 127, 127),
             width=1,
         )
+
         """
-        draw.line((0,newImageHeight - 30 - 1,imageRightPosition,newImageHeight - 30 - 1),fill=(127,127,127),width=1)
-        draw.text((5,imageHeight + 30 * 2 + 4),
-            "By SSRSpeed {}.".format(
-                config["VERSION"]
+        draw.line(
+            (
+                0,
+                new_image_height - 30 - 1,
+                image_right_position,
+                new_image_height - 30 - 1,
             ),
-            font=resultFont,
-            fill=(0,0,0)
+            fill=(127, 127, 127),
+            width=1,
+        )
+        draw.text(
+            (5, image_height + 30 * 2 + 4),
+            "By SSRSpeed {}.".format(ssrconfig["VERSION"]),
+            font=result_font,
+            fill=(0, 0, 0),
         )
         """
 
@@ -1128,7 +1150,7 @@ class ExportResult(object):
 
     @staticmethod
     def __new_mix_color(lc: dict, rc: dict, rt: int) -> tuple:
-        # 	print("RGB1 : {}, RGB2 : {}, RT : {}".format(lc,rc,rt))
+        # print("RGB1 : {}, RGB2 : {}, RT : {}".format(lc, rc, rt))
         return (
             int(lc[0] * (1 - rt) + rc[0] * rt),
             int(lc[1] * (1 - rt) + rc[1] * rt),
@@ -1136,9 +1158,9 @@ class ExportResult(object):
         )
 
     def __get_color(self, data: float) -> tuple:
-        if not self.__colorSpeedList:
+        if not self.__color_speed_list:
             return 255, 255, 255
-        cur_speed = self.__colorSpeedList[len(self.__colorSpeedList) - 1]
+        cur_speed = self.__color_speed_list[len(self.__color_speed_list) - 1]
         back_speed = 0
         if data >= cur_speed * 1024 * 1024:
             return (
@@ -1146,17 +1168,17 @@ class ExportResult(object):
                 self.__colors[str(cur_speed)][1],
                 self.__colors[str(cur_speed)][2],
             )
-        for i in range(0, len(self.__colorSpeedList)):
-            cur_speed = self.__colorSpeedList[i] * 1024 * 1024
+        for i in range(0, len(self.__color_speed_list)):
+            cur_speed = self.__color_speed_list[i] * 1024 * 1024
             if i > 0:
-                back_speed = self.__colorSpeedList[i - 1]
+                back_speed = self.__color_speed_list[i - 1]
             back_speed_str = str(back_speed)
-            # 	print("{} {}".format(data/1024/1024, backSpeed))
+            # print("{} {}".format(data / 1024 / 1024, back_speed))
             if data < cur_speed:
                 rgb1 = (
                     self.__colors[back_speed_str] if back_speed > 0 else (255, 255, 255)
                 )
-                rgb2 = self.__colors[str(self.__colorSpeedList[i])]
+                rgb2 = self.__colors[str(self.__color_speed_list[i])]
                 rt = (data - back_speed * 1024 * 1024) / (
                     cur_speed - back_speed * 1024 * 1024
                 )

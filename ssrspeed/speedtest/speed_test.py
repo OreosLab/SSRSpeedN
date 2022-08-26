@@ -28,17 +28,19 @@ NETFLIX_TEXT = ssrconfig["netflix"]
 HBO_TEXT = ssrconfig["hbo"]
 DISNEY_TEXT = ssrconfig["disney"]
 YOUTUBE_TEXT = ssrconfig["youtube"]
-TVB_TEXT = ssrconfig["tvb"]
 ABEMA_TEXT = ssrconfig["abema"]
 BAHAMUT_TEXT = ssrconfig["bahamut"]
+DAZN_TEXT = ssrconfig["dazn"]
+TVB_TEXT = ssrconfig["tvb"]
 BILIBILI_TEXT = ssrconfig["bilibili"]
 ntype = "None"
 htype = False
 dtype = False
 ytype = False
-ttype = False
 atype = False
 btype = False
+dztype = False
+ttype = False
 bltype = "N/A"
 inboundGeoRES = ""
 outboundGeoRES = ""
@@ -82,9 +84,10 @@ class SpeedTest(object):
             "Htype": False,
             "Dtype": False,
             "Ytype": False,
-            "Ttype": False,
             "Atype": False,
             "Btype": False,
+            "Dztype": False,
+            "Ttype": False,
             "Bltype": "N/A",
             "InRes": "N/A",
             "OutRes": "N/A",
@@ -316,6 +319,95 @@ class SpeedTest(object):
             except Exception as e:
                 logger.error("代理服务器连接异常：" + str(e.args))
 
+        if ABEMA_TEXT and outbound_ip != "N/A":
+            logger.info("Performing Abema test LOCAL_PORT: {:d}.".format(LOCAL_PORT))
+            try:
+                headers = {
+                    "User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
+                    "Chrome/64.0.3282.119 Safari/537.36 "
+                }
+                global atype
+                r = requests.get(
+                    "https://api.abema.io/v1/ip/check?device=android",
+                    proxies={
+                        "http": "socks5h://127.0.0.1:%d" % LOCAL_PORT,
+                        "https": "socks5h://127.0.0.1:%d" % LOCAL_PORT,
+                    },
+                    timeout=20,
+                    allow_redirects=False,
+                )
+
+                if r.text.count("Country") > 0:
+                    atype = True
+                else:
+                    atype = False
+
+            except Exception as e:
+                logger.error("代理服务器连接异常：" + str(e.args))
+
+        if BAHAMUT_TEXT and outbound_ip != "N/A":
+            logger.info("Performing Bahamut test LOCAL_PORT: {:d}.".format(LOCAL_PORT))
+            try:
+                headers = {
+                    "User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
+                    "Chrome/64.0.3282.119 Safari/537.36 "
+                }
+                global btype
+                r = requests.get(
+                    "https://ani.gamer.com.tw/ajax/token.php?adID=89422&sn=14667",
+                    proxies={
+                        "http": "socks5h://127.0.0.1:%d" % LOCAL_PORT,
+                        "https": "socks5h://127.0.0.1:%d" % LOCAL_PORT,
+                    },
+                    headers=headers,
+                    timeout=20,
+                    allow_redirects=False,
+                )
+
+                if r.text.count("animeSn") > 0:
+                    btype = True
+                else:
+                    btype = False
+
+            except Exception as e:
+                logger.error("代理服务器连接异常：" + str(e.args))
+
+        if DAZN_TEXT and outbound_ip != "N/A":
+            logger.info("Performing Dazn test LOCAL_PORT: {:d}.".format(LOCAL_PORT))
+            try:
+                payload = {
+                    "LandingPageKey": "generic",
+                    "Languages": "zh-CN,zh,en",
+                    "Platform": "web",
+                    "PlatformAttributes": {},
+                    "Manufacturer": "",
+                    "PromoCode": "",
+                    "Version": "2",
+                }
+                headers = {
+                    "User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
+                    "Chrome/64.0.3282.119 Safari/537.36 "
+                }
+                global dztype
+                r = requests.post(
+                    "https://startup.core.indazn.com/misl/v5/Startup",
+                    proxies={
+                        "http": "socks5h://127.0.0.1:%d" % LOCAL_PORT,
+                        "https": "socks5h://127.0.0.1:%d" % LOCAL_PORT,
+                    },
+                    json=payload,
+                    headers=headers,
+                    timeout=20,
+                    allow_redirects=False,
+                )
+                if r.status_code == 200:
+                    dztype = True
+                else:
+                    dztype = False
+
+            except Exception as e:
+                logger.error("代理服务器连接异常：" + str(e.args))
+
         if BILIBILI_TEXT and outbound_ip != "N/A":
             logger.info("Performing Bilibili test LOCAL_PORT: {:d}.".format(LOCAL_PORT))
             try:
@@ -380,59 +472,6 @@ class SpeedTest(object):
                     ttype = True
                 else:
                     ttype = False
-
-            except Exception as e:
-                logger.error("代理服务器连接异常：" + str(e.args))
-
-        if ABEMA_TEXT and outbound_ip != "N/A":
-            logger.info("Performing Abema test LOCAL_PORT: {:d}.".format(LOCAL_PORT))
-            try:
-                headers = {
-                    "User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
-                    "Chrome/64.0.3282.119 Safari/537.36 "
-                }
-                global atype
-                r = requests.get(
-                    "https://api.abema.io/v1/ip/check?device=android",
-                    proxies={
-                        "http": "socks5h://127.0.0.1:%d" % LOCAL_PORT,
-                        "https": "socks5h://127.0.0.1:%d" % LOCAL_PORT,
-                    },
-                    timeout=20,
-                    allow_redirects=False,
-                )
-
-                if r.text.count("Country") > 0:
-                    atype = True
-                else:
-                    atype = False
-
-            except Exception as e:
-                logger.error("代理服务器连接异常：" + str(e.args))
-
-        if BAHAMUT_TEXT and outbound_ip != "N/A":
-            logger.info("Performing Bahamut test LOCAL_PORT: {:d}.".format(LOCAL_PORT))
-            try:
-                headers = {
-                    "User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
-                    "Chrome/64.0.3282.119 Safari/537.36 "
-                }
-                global btype
-                r = requests.get(
-                    "https://ani.gamer.com.tw/ajax/token.php?adID=89422&sn=14667",
-                    proxies={
-                        "http": "socks5h://127.0.0.1:%d" % LOCAL_PORT,
-                        "https": "socks5h://127.0.0.1:%d" % LOCAL_PORT,
-                    },
-                    headers=headers,
-                    timeout=20,
-                    allow_redirects=False,
-                )
-
-                if r.text.count("animeSn") > 0:
-                    btype = True
-                else:
-                    btype = False
 
             except Exception as e:
                 logger.error("代理服务器连接异常：" + str(e.args))
@@ -655,10 +694,10 @@ class SpeedTest(object):
                         global ntype
                         global htype
                         global dtype
-                        global ytype
-                        global ttype
+                        global dztype
                         global atype
                         global btype
+                        global ttype
                         global bltype
                         global inboundGeoRES
                         global outboundGeoRES
@@ -669,10 +708,11 @@ class SpeedTest(object):
                         _item["Ntype"] = ntype
                         _item["Htype"] = htype
                         _item["Dtype"] = dtype
-                        _item["Ytype"] = ytype
                         _item["Ttype"] = ttype
                         _item["Atype"] = atype
                         _item["Btype"] = btype
+                        _item["Dztype"] = dztype
+                        _item["Ytype"] = ytype
                         _item["Bltype"] = bltype
                         _item["InRes"] = inboundGeoRES
                         _item["OutRes"] = outboundGeoRES
