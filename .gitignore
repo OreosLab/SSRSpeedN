@@ -371,5 +371,6 @@ tags
 # Project
 data/**
 !data/ssrspeed.example.json
+resources/clients/
 resources/static/custom/**
 !resources/static/custom/readme.md

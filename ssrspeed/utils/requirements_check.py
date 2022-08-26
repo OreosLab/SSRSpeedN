@@ -29,16 +29,17 @@ class RequirementsCheck(object):
                 f"{CLIENTS_DIR}shadowsocksr-libev/ssr-local.exe",
             ],
             "ShadowsocksR-C#": [f"{CLIENTS_DIR}shadowsocksr-win/shadowsocksr.exe"],
+            "Trojan": [f"{CLIENTS_DIR}trojan/trojan.exe"],
             "V2Ray-Core": [
-                f"{CLIENTS_DIR}v2ray-core/win64/v2ctl.exe",
-                f"{CLIENTS_DIR}v2ray-core/win64/v2ray.exe",
+                f"{CLIENTS_DIR}v2ray-core/v2ctl.exe",
+                f"{CLIENTS_DIR}v2ray-core/v2ray.exe",
             ],
         }
 
         self.__linux_require: dict = {
             "V2Ray-Core": [
-                f"{CLIENTS_DIR}v2ray-core/linux64/v2ctl",
-                f"{CLIENTS_DIR}v2rayN-core/linux64/v2ray",
+                f"{CLIENTS_DIR}v2ray-core/v2ctl",
+                f"{CLIENTS_DIR}v2rayN-core/v2ray",
             ]
         }
 

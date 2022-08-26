@@ -29,7 +29,7 @@ class V2Ray(BaseClient):
                     if logger.level == logging.DEBUG:
                         self._process = subprocess.Popen(
                             [
-                                f"{CLIENTS_DIR}v2ray-core/win64/v2ray.exe",
+                                f"{CLIENTS_DIR}v2ray-core/v2ray.exe",
                                 "--config",
                                 CONFIG_FILE,
                             ]
@@ -37,7 +37,7 @@ class V2Ray(BaseClient):
                     else:
                         self._process = subprocess.Popen(
                             [
-                                f"{CLIENTS_DIR}v2ray-core/win64/v2ray.exe",
+                                f"{CLIENTS_DIR}v2ray-core/v2ray.exe",
                                 "--config",
                                 CONFIG_FILE,
                             ],
@@ -53,7 +53,7 @@ class V2Ray(BaseClient):
                     if logger.level == logging.DEBUG:
                         self._process = subprocess.Popen(
                             [
-                                f"{CLIENTS_DIR}v2ray-core/linux64/v2ray",
+                                f"{CLIENTS_DIR}v2ray-core/v2ray",
                                 "--config",
                                 CONFIG_FILE,
                             ]
@@ -61,7 +61,7 @@ class V2Ray(BaseClient):
                     else:
                         self._process = subprocess.Popen(
                             [
-                                f"{CLIENTS_DIR}v2ray-core/linux64/v2ray",
+                                f"{CLIENTS_DIR}v2ray-core/v2ray",
                                 "--config",
                                 CONFIG_FILE,
                             ],
