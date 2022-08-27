@@ -3,7 +3,7 @@ import sys
 
 _ = os.sep
 abs_path: list = os.path.abspath(__file__).split(_)
-ROOT_PATH = abs_path[0] + _ + abs_path[1] + _ if len(abs_path) >= 2 else abs_path[0] + _
+ROOT_PATH = _.join(abs_path[0:-3]) + _
 KEY_PATH = {
     "data": f"{ROOT_PATH}data",
     "logs": f"{ROOT_PATH}data{_}logs{_}",

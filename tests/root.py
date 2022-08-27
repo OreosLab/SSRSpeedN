@@ -1,12 +1,9 @@
 import os
 import sys
 
-abs_path: list = os.path.abspath(__file__).split(os.sep)
-root_path: str = (
-    abs_path[0] + os.sep + abs_path[1] + os.sep
-    if len(abs_path) >= 2
-    else abs_path[0] + os.sep
-)
+_ = os.sep
+abs_path: list = os.path.abspath(__file__).split(_)
+root_path: str = _.join(abs_path[0:-2]) + _
 
 
 def root():
