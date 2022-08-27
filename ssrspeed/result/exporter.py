@@ -14,7 +14,10 @@ from ssrspeed.result.sorter import Sorter
 
 logger = logging.getLogger("Sub")
 
-TEST_TXT = KEY_PATH["tmp"] + "test.txt"
+TMP_DIR = KEY_PATH["tmp"]
+if not os.path.exists(TMP_DIR):
+    os.makedirs(TMP_DIR)
+TEST_TXT = TMP_DIR + "test.txt"
 LOGOS_DIR = KEY_PATH["logos"]
 RESULTS_DIR = KEY_PATH["results"]
 
