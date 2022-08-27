@@ -56,11 +56,11 @@ class Shadowsocks(BaseClient):
             elif self._platform == "Linux" or self._platform == "MacOS":
                 if logger.level == logging.DEBUG:
                     self._process = subprocess.Popen(
-                        ["ss-local", "-u", "-v", "-c", CONFIG_FILE]
+                        [f"{CLIENTS_DIR}shadowsocks-libev/ss-local", "-u", "-v", "-c", CONFIG_FILE]
                     )
                 else:
                     self._process = subprocess.Popen(
-                        ["ss-local", "-u", "-c", CONFIG_FILE],
+                        [f"{CLIENTS_DIR}shadowsocks-libev/ss-local", "-u", "-c", CONFIG_FILE],
                         stdout=subprocess.DEVNULL,
                         stderr=subprocess.DEVNULL,
                     )
@@ -156,11 +156,11 @@ class Shadowsockss(BaseClient):
                     f.write(json.dumps(self._config))
                 if logger.level == logging.DEBUG:
                     self._process = subprocess.Popen(
-                        ["ss-local", "-v", "-c", CONFIG_FILE]
+                        [f"{CLIENTS_DIR}shadowsocks-libev/ss-local", "-v", "-c", CONFIG_FILE]
                     )
                 else:
                     self._process = subprocess.Popen(
-                        ["ss-local", "-c", CONFIG_FILE],
+                        [f"{CLIENTS_DIR}shadowsocks-libev/ss-local", "-c", CONFIG_FILE],
                         stdout=subprocess.DEVNULL,
                         stderr=subprocess.DEVNULL,
                     )

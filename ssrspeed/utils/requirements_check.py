@@ -37,10 +37,18 @@ class RequirementsCheck(object):
         }
 
         self.__linux_require: dict = {
+            "Shadowsocks-libev": [
+                f"{CLIENTS_DIR}shadowsocks-libev/simple-obfs",
+                f"{CLIENTS_DIR}shadowsocks-libev/ss-local",
+            ],
+            "ShadowsocksR-Python": [
+                f"{CLIENTS_DIR}shadowsocksr/shadowsocks/local.py",
+            ],
+            "Trojan": [f"{CLIENTS_DIR}trojan/trojan"],
             "V2Ray-Core": [
                 f"{CLIENTS_DIR}v2ray-core/v2ctl",
-                f"{CLIENTS_DIR}v2rayN-core/v2ray",
-            ]
+                f"{CLIENTS_DIR}v2ray-core/v2ray",
+            ],
         }
 
     def check(self):
@@ -49,6 +57,7 @@ class RequirementsCheck(object):
             self.__checks(self.__win_require)
         elif platform == "Linux" or platform == "MacOS":
             self.__linux_check()
+            self.__checks(self.__linux_require)
         else:
             logger.critical("Unsupported platform !")
             sys.exit(1)
@@ -72,7 +81,7 @@ class RequirementsCheck(object):
             logger.critical("Requirement libsodium not found !!!")
             sys.exit(1)
         self.__checks(self.__linux_require)
-        self.__linux_check_shadowsocks()
+        # self.__linux_check_shadowsocks()
 
     @staticmethod
     def __linux_check_libsodium() -> bool:
@@ -120,6 +129,7 @@ class RequirementsCheck(object):
                 logger.exception("")
                 return False
 
+    """
     @staticmethod
     def __linux_check_shadowsocks() -> bool:
         sslibev = False
@@ -151,3 +161,4 @@ class RequirementsCheck(object):
         if not sslibev:
             logger.warning("Shadowsocks-libev not found !!!")
         return True if (simpleobfs and sslibev) else False
+    """

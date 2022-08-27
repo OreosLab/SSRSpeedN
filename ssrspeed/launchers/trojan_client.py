@@ -49,7 +49,7 @@ class Trojan(BaseClient):
                         % (_config["server"], _config["server_port"])
                     )
 
-                elif self._platform == "Linux":
+                elif self._platform == "Linux" or self._platform == "MacOS":
                     if logger.level == logging.DEBUG:
                         self._process = subprocess.Popen(
                             [

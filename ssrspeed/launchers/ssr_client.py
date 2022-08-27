@@ -58,7 +58,7 @@ class ShadowsocksR(BaseClient):
                     self._process = subprocess.Popen(
                         [f"{CLIENTS_DIR}shadowsocksr-win/shadowsocksr.exe"]
                     )
-                    logger.info("shadowsocksr/C# started.")
+                    logger.info("shadowsocksr-C# started.")
                     return
                 if logger.level == logging.DEBUG:
                     self._process = subprocess.Popen(
@@ -71,7 +71,7 @@ class ShadowsocksR(BaseClient):
                         ]
                     )
                     logger.info(
-                        "Starting shadowsocksr/libev with server %s:%d"
+                        "Starting shadowsocksr-libev with server %s:%d"
                         % (_config["server"], _config["server_port"])
                     )
                 else:
@@ -86,7 +86,7 @@ class ShadowsocksR(BaseClient):
                         stderr=subprocess.DEVNULL,
                     )
                     logger.info(
-                        "Starting shadowsocksr/libev with server %s:%d"
+                        "Starting shadowsocksr-libev with server %s:%d"
                         % (_config["server"], _config["server_port"])
                     )
 
@@ -113,7 +113,7 @@ class ShadowsocksR(BaseClient):
                         stderr=subprocess.DEVNULL,
                     )
                 logger.info(
-                    "Starting shadowsocksr/Python with server %s:%d"
+                    "Starting shadowsocksr-Python with server %s:%d"
                     % (_config["server"], _config["server_port"])
                 )
 
@@ -258,7 +258,7 @@ class ShadowsocksRR(BaseClient):
                         stderr=subprocess.DEVNULL,
                     )
                 logger.info(
-                    "Starting shadowsocksr/Python with server %s:%d"
+                    "Starting shadowsocksr-Python with server %s:%d"
                     % (_config["server"], _config["server_port"])
                 )
 
