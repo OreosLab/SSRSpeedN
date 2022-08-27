@@ -185,7 +185,7 @@ class ExportResult(object):
         hbo_logo.thumbnail((28, 28))
         netflix_logo = Image.open(f"{LOGOS_DIR}Netflix.png")
         netflix_logo.thumbnail((28, 28))
-        tvb_logo = Image.open(f"{LOGOS_DIR}tvb.png")
+        tvb_logo = Image.open(f"{LOGOS_DIR}TVB.png")
         tvb_logo.thumbnail((28, 28))
         youtube_logo = Image.open(f"{LOGOS_DIR}YouTube.png")
         youtube_logo.thumbnail((28, 28))
