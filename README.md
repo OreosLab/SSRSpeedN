@@ -15,9 +15,9 @@ Batch speed measuring tool based on Shadowsocks(R) and V2Ray
 * 测速及解锁测试仅供参考，不代表实际使用情况，由于网络情况变化、Netflix 封锁及 ip 更换，测速具有时效性
 
 * 本项目使用 [Python](https://www.python.org/) 编写，使用前请完成环境安装
-* 首次运行前请执行 `./bin/run.bat` 安装 pip 及相关依赖，也可使用 `pip install -r requirements.txt` 命令自行安装
+* 首次运行前请执行 `.\bin\ssrspeed` 安装 pip 及相关依赖，也可使用 `pip install -r requirements.txt` 命令自行安装
 * `data/logs` 文件夹用于记录测速日志，包含节点的详细信息及测速订阅，非必要请勿泄露
-* 执行 `./bin/run.bat` 批处理命令即可测速，测速结果保存在 `data/results` 文件夹下，不过大佬喜欢用命令行测也可以
+* 执行 `.\bin\ssrspeed` 批处理命令即可测速，测速结果保存在 `data/results` 文件夹下，不过大佬喜欢用命令行测也可以
 * 因为需要依赖 Python 环境，且本项目仍在测试阶段，可能存在部分 bug ，可到 [tg 群组](https://t.me/+muGNhnaZglQ0N2Q1) 进行反馈。
 * Netflix 解锁测速结果说明:
 
@@ -36,7 +36,7 @@ None                    未解锁
 * 支持单线程 / 多线程同时测速，可以同时反映视频播放 / 多线程下载等场景的节点速度
 * 支持 fast.com / YOUTUBE 码率等多种测速方式（仅限 Windows）
 * 支持 Netflix 解锁测试，分为 原生全解锁 / DNS 全解锁 / 仅解锁自制剧 / 无解锁 四档
-* 支持 流媒体平台 Abema / Bahamut 动画疯 / Disney+ / HBO max / My tvsuper / YouTube premium 解锁测试
+* 支持 流媒体平台 Abema / Bahamut 动画疯 / Bilibili / Dazn / Disney+ / HBO max / My tvsuper / YouTube premium 解锁测试
 * 提供配置文件测速模块控制端，可以自由选择是否测速 / 测 ping / 检测流媒体解锁
 * 取消原版的大红配色，默认为彩虹配色，并增加了新配色 (poor)
 * 增加节点复用检测功能
@@ -150,7 +150,7 @@ python -m ssrspeed -u "https://home.yoyu.dev/subscriptionlink" --include 香港 
 
   在 `ssrspeed.json` 文件下第 18 行，可以设置采用单/多线程测速方式或均速/最高速测速方式，默认为前者
 
-## 详细使用方法
+## 详细使用
 
 * 参见 [SSRSpeed N 使用说明](https://gta5cloud.rip/index.php/2021/08/25/ssrspeedn-%e4%bd%bf%e7%94%a8%e8%af%b4%e6%98%8e/)
 
@@ -161,14 +161,16 @@ SSRSpeedN
 ├── LICENSE
 ├── README.md
 ├── bin
-│   └── run.bat
+│   └── ssrspeed.bat
 ├── data
 │   ├── logs
-│   │   ├── 2022-08-25-11-04-34.log
-│   │   └── 2022-08-25-12-08-36.log
+│   │   ├── 2022-08-28-00-31-30.log
+│   │   └── 2022-08-28-08-38-41.log
 │   ├── results
-│   │   ├── 2022-08-25-11-40-39.json
-│   │   └── 2022-08-25-11-40-39.png
+│   │   ├── 2022-08-28-00-37-34.json
+│   │   ├── 2022-08-28-00-37-34.png
+│   │   ├── 2022-08-28-08-43-56.json
+│   │   └── 2022-08-28-08-43-56.png
 │   ├── ssrspeed.example.json
 │   ├── ssrspeed.json
 │   └── tmp
@@ -178,12 +180,11 @@ SSRSpeedN
 ├── requirements.txt
 ├── resources
 │   ├── clients
-│   │   ├── __init__.py
 │   │   ├── shadowsocks-libev
 │   │   ├── shadowsocks-win
-│   │   ├── shadowsocksr
 │   │   ├── shadowsocksr-libev
 │   │   ├── shadowsocksr-win
+│   │   ├── trojan
 │   │   └── v2ray-core
 │   ├── static
 │   │   ├── custom
@@ -213,6 +214,7 @@ SSRSpeedN
 │   │   ├── base_client.py
 │   │   ├── ss_cilent.py
 │   │   ├── ssr_client.py
+│   │   ├── trojan_client.py
 │   │   └── v2ray_client.py
 │   ├── parsers
 │   │   ├── __init__.py
