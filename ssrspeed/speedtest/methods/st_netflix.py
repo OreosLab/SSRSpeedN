@@ -1,7 +1,7 @@
 import logging
 import os
 import time
-from typing import Union
+from typing import List, Tuple, Union
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -19,7 +19,7 @@ def set_proxy_port(port: int):
     LOCAL_PORT = port
 
 
-def speed_test_netflix(port: int) -> tuple[float, float, list[float], float]:
+def speed_test_netflix(port: int) -> Tuple[float, float, List[float], float]:
     try:
         chrome_options = Options()
         chrome_options.add_argument("--headless")

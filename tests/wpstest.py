@@ -8,7 +8,7 @@ from tests import root
 
 root()
 
-from ssrspeed.utils import KEY_PATH
+from ssrspeed.paths import KEY_PATH
 
 LOGS_DIR = KEY_PATH["logs"]
 RESULTS_DIR = KEY_PATH["results"]

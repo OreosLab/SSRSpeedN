@@ -1,6 +1,7 @@
 import logging
 import os
 import time
+from typing import List, Tuple
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -20,7 +21,7 @@ def set_proxy_port(port: int):
     LOCAL_PORT = port
 
 
-def speed_test_ytb(port: int) -> tuple[int, int, list[int], int]:
+def speed_test_ytb(port: int) -> Tuple[int, int, List[int], int]:
     try:
         chrome_options = Options()
         chrome_options.add_argument("--headless")

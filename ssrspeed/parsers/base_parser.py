@@ -1,7 +1,7 @@
 import copy
 import json
 import logging
-from typing import Optional
+from typing import Optional, Tuple
 
 import requests
 
@@ -38,7 +38,7 @@ class BaseParser(object):
         return self._parse_link(link)
 
     @staticmethod
-    def _get_local_config() -> tuple[str, int]:
+    def _get_local_config() -> Tuple[str, int]:
         return LOCAL_ADDRESS, LOCAL_PORT
 
     def _get_shadowsocks_base_config(self) -> dict:

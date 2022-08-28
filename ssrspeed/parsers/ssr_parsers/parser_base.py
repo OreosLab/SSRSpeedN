@@ -1,6 +1,6 @@
 import copy
 import logging
-from typing import Optional
+from typing import List, Optional
 
 from ssrspeed.utils import b64plus
 
@@ -58,7 +58,7 @@ class ParserShadowsocksR:
             _config["remarks"] = _config["server"]
         return _config
 
-    def parse_gui_data(self, data: dict) -> list[dict]:
+    def parse_gui_data(self, data: dict) -> List[dict]:
         results = []
         for item in data["configs"]:
             _dict = self.__get_base_config()

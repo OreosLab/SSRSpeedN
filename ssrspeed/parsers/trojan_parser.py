@@ -70,7 +70,7 @@ class TrojanParser(BaseParser):
         link = percent_decode(link)
         if "#" in link:
             link, result["remarks"] = link.split("#")
-        result["remarks"] = re.sub(r"\s|\n", "", result["remarks"])
+        result["remarks"] = re.sub(r"\s", "", result["remarks"])
 
         password = ""
         if "@" in link:
@@ -80,7 +80,9 @@ class TrojanParser(BaseParser):
         if "?" in link:
             host, link = link.split("?")
         result["server"], result["server_port"] = host.split(":")
-        result["server_port"] = int(re.match(r"^\d+", result["server_port"]).group(0))
+        p = re.match(r"^\d+", result["server_port"])
+        assert p is not None
+        result["server_port"] = int(p.group(0))
 
         result["remote_addr"] = result["server"]
         result["remote_port"] = result["server_port"]

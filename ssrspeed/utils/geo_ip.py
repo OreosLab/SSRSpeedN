@@ -1,7 +1,7 @@
 import logging
 import re
 import socket
-from typing import Optional
+from typing import Optional, Tuple
 
 import requests
 
@@ -12,7 +12,7 @@ logger = logging.getLogger("Sub")
 LOCAL_PORT = ssrconfig["localPort"]
 
 
-def parse_location() -> tuple[bool, str, str, str]:
+def parse_location() -> Tuple[bool, str, str, str]:
     try:
         logger.info("Starting parse location.")
         headers = {

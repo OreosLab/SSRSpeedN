@@ -2,7 +2,7 @@ import json
 import logging
 import os
 from copy import deepcopy
-from typing import Optional, Union
+from typing import List, Optional, Union
 
 import requests
 
@@ -48,8 +48,8 @@ class UniversalParser:
 
     @staticmethod
     def web_config_to_node(
-        configs: list[dict],
-    ) -> list[
+        configs: List[dict],
+    ) -> List[
         Union[
             Optional[NodeShadowsocks], Optional[NodeShadowsocksR], Optional[NodeV2Ray]
         ]
@@ -91,9 +91,12 @@ class UniversalParser:
 
     def parse_links(
         self, links: list
-    ) -> list[
+    ) -> List[
         Union[
-            Optional[NodeShadowsocks], Optional[NodeShadowsocksR], Optional[NodeV2Ray]
+            Optional[NodeShadowsocks],
+            Optional[NodeShadowsocksR],
+            Optional[NodeV2Ray],
+            Optional[NodeTrojan],
         ]
     ]:
         # Single link parse
@@ -104,6 +107,7 @@ class UniversalParser:
                 Optional[NodeShadowsocks],
                 Optional[NodeShadowsocksR],
                 Optional[NodeV2Ray],
+                Optional[NodeTrojan],
             ] = None
             if link[:5] == "ss://":
                 # Shadowsocks
