@@ -369,6 +369,9 @@ tags
 *.vsix
 
 # Project
+bin/**
+!bin/ssrspeed.bat
+!bin/ssrspeed.sh
 data/**
 !data/ssrspeed.example.json
 resources/clients/
