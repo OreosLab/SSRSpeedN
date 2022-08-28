@@ -225,6 +225,8 @@ class SpeedTest(object):
                 if r2.status_code == 200:
                     sum_ += 1
                     rg = "(" + r2.url.split("com/")[1].split("/")[0] + ")"
+                if rg == "title":
+                    rg = "us"
                 # 测试连接状态
 
                 if sum_ == 0:
