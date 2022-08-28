@@ -53,7 +53,7 @@ class Trojan(BaseClient):
                     if logger.level == logging.DEBUG:
                         self._process = subprocess.Popen(
                             [
-                                f"{CLIENTS_DIR}trojan/trojan.exe",
+                                f"{CLIENTS_DIR}trojan/trojan",
                                 "--config",
                                 CONFIG_FILE,
                             ]
@@ -61,7 +61,7 @@ class Trojan(BaseClient):
                     else:
                         self._process = subprocess.Popen(
                             [
-                                f"{CLIENTS_DIR}trojan/trojan.exe",
+                                f"{CLIENTS_DIR}trojan/trojan",
                                 "--config",
                                 CONFIG_FILE,
                             ],
