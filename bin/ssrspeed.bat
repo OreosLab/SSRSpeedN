@@ -1,6 +1,7 @@
 @echo off&
 set bin=%~dp0
 for %%a in ("%bin:~0,-1%") do set SSRSpeed=%%~dpa
+set PYTHONPATH=%SSRSpeed%;%PYTHONPATH%
 cd %SSRSpeed%
 echo.
 echo ================== SSRSpeedN ==================
@@ -8,11 +9,11 @@ if exist "%SSRSpeed%\venv\Scripts\activate.bat" ( call "%SSRSpeed%\venv\Scripts\
 if defined VIRTUAL_ENV ( echo 当前环境 %VIRTUAL_ENV% ) else ( echo 当前目录 %SSRSpeed% )
 if exist "%SystemRoot%\SysWOW64" path %path%;%windir%\SysNative;%SystemRoot%\SysWOW64;%SSRSpeed%
 bcdedit >nul
-if '%errorlevel%' NEQ '0' (echo 当前权限 普通用户) else (echo 当前权限 管理员)
+if '%errorlevel%' NEQ '0' ( echo 当前权限 普通用户 ) else ( echo 当前权限 管理员 )
 if exist "%cd%\resources\clients\v2ray-core\v2ray.exe" ( set v1=1 ) else ( set v1=0 )
 if exist "%cd%\resources\clients\v2ray-core\v2ctl.exe" ( set v2=1 ) else ( set v2=0 )
 set /a v3=v1+v2
-if %v3%==2 (echo 已经安装 V2ray-core) else (echo 尚未安装 V2ray-core)
+if %v3%==2 ( echo 已经安装 V2ray-core ) else ( echo 尚未安装 V2ray-core )
 :start
 echo ===============================================
 echo [1] 开始测速（自定义设置）
@@ -23,17 +24,17 @@ echo [5] 为本次运行获取管理员权限
 echo ===============================================
 echo 请选择 [1-5]: 
 choice /c 12345
-if %errorlevel%==5 (goto :uac)
-if %errorlevel%==4 (goto :ver)
-if %errorlevel%==3 (goto :help)
-if %errorlevel%==2 (goto :pip)
-if %errorlevel%==1 (goto :test2)
+if %errorlevel%==5 ( goto :uac )
+if %errorlevel%==4 ( goto :ver )
+if %errorlevel%==3 ( goto :help )
+if %errorlevel%==2 ( goto :pip )
+if %errorlevel%==1 ( goto :test2 )
 
 
 :pip
 if exist "%SystemRoot%\SysWOW64" path %path%;%windir%\SysNative;%SystemRoot%\SysWOW64;%SSRSpeed%
 bcdedit >nul
-if '%errorlevel%' NEQ '0' (echo X 当前无管理员权限，无法安装。 && echo. && echo * 您可以通过命令 5 获取权限，或右键以管理员权限启动。 && pause && goto :start) else (goto :pip2)
+if '%errorlevel%' NEQ '0' ( echo X 当前无管理员权限，无法安装。 && echo. && echo * 您可以通过命令 5 获取权限，或右键以管理员权限启动。 && pause && goto :start ) else ( goto :pip2 )
 :pip2
 python -m pip install --upgrade pip
 pip3 install -r "%SSRSpeed%\requirements.txt"
@@ -59,8 +60,8 @@ echo.
 echo [1] 原文（en）
 echo [2] 翻译（zh）
 choice /c 12
-if %errorlevel%==2 (goto :fy)
-if %errorlevel%==1 (goto :yw)
+if %errorlevel%==2 ( goto :fy )
+if %errorlevel%==1 ( goto :yw )
 
 :yw
 
@@ -241,7 +242,7 @@ goto :start
 echo.
 if exist "%SystemRoot%\SysWOW64" path %path%;%windir%\SysNative;%SystemRoot%\SysWOW64;%SSRSpeed%
 bcdedit >nul
-if '%errorlevel%' NEQ '0' (goto UACPrompt) else (goto UACAdmin)
+if '%errorlevel%' NEQ '0' ( goto UACPrompt ) else ( goto UACAdmin )
 :UACPrompt
 echo 提示：通用依赖安装需要管理员权限（命令 4）
 echo.
