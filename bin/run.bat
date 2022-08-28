@@ -1,13 +1,16 @@
 @echo off&
+set bin=%~dp0
+for %%a in ("%bin:~0,-1%") do set SSRSpeed=%%~dpa
+cd %SSRSpeed%
 echo.
 echo ================== SSRSpeedN ==================
-set pwd=%cd%
-if exist "%pwd%\ssrspeed" (python -m ssrspeed --version>"%pwd%\data\tmp\ver.txt" && for /f "delims=" %%i in (%pwd%\data\tmp\ver.txt) do (set ver=%%i) && echo 当前目录 %pwd%，欢迎使用 && echo 当前版本 %%i && del "%cd%\data\tmp\ver.txt") else (echo 当前目录 %pwd%，请在 SSRSpeedN 目录下运行！)
-if exist "%SystemRoot%\SysWOW64" path %path%;%windir%\SysNative;%SystemRoot%\SysWOW64;%pwd%
+if exist "%SSRSpeed%\venv\Scripts\activate.bat" ( call "%SSRSpeed%\venv\Scripts\activate.bat" )
+if defined VIRTUAL_ENV ( echo 当前环境 %VIRTUAL_ENV% ) else ( echo 当前目录 %SSRSpeed% )
+if exist "%SystemRoot%\SysWOW64" path %path%;%windir%\SysNative;%SystemRoot%\SysWOW64;%SSRSpeed%
 bcdedit >nul
 if '%errorlevel%' NEQ '0' (echo 当前权限 普通用户) else (echo 当前权限 管理员)
-if exist "%cd%\resources\clients\v2ray-core\win64\v2ray.exe" ( set v1=1 ) else ( set v1=0 )
-if exist "%cd%\resources\clients\v2ray-core\win64\v2ctl.exe" ( set v2=1 ) else ( set v2=0 )
+if exist "%cd%\resources\clients\v2ray-core\v2ray.exe" ( set v1=1 ) else ( set v1=0 )
+if exist "%cd%\resources\clients\v2ray-core\v2ctl.exe" ( set v2=1 ) else ( set v2=0 )
 set /a v3=v1+v2
 if %v3%==2 (echo 已经安装 V2ray-core) else (echo 尚未安装 V2ray-core)
 :start
@@ -28,12 +31,12 @@ if %errorlevel%==1 (goto :test2)
 
 
 :pip
-if exist "%SystemRoot%\SysWOW64" path %path%;%windir%\SysNative;%SystemRoot%\SysWOW64;%pwd%
+if exist "%SystemRoot%\SysWOW64" path %path%;%windir%\SysNative;%SystemRoot%\SysWOW64;%SSRSpeed%
 bcdedit >nul
 if '%errorlevel%' NEQ '0' (echo X 当前无管理员权限，无法安装。 && echo. && echo * 您可以通过命令 5 获取权限，或右键以管理员权限启动。 && pause && goto :start) else (goto :pip2)
 :pip2
 python -m pip install --upgrade pip
-pip3 install -r "%pwd%\requirements.txt"
+pip3 install -r "%SSRSpeed%\requirements.txt"
 :: pip3 install aiohttp-socks
 :: pip install beautifulsoup4
 :: pip3 install Flask-Cors
@@ -236,7 +239,7 @@ goto :start
 
 :uac
 echo.
-if exist "%SystemRoot%\SysWOW64" path %path%;%windir%\SysNative;%SystemRoot%\SysWOW64;%pwd%
+if exist "%SystemRoot%\SysWOW64" path %path%;%windir%\SysNative;%SystemRoot%\SysWOW64;%SSRSpeed%
 bcdedit >nul
 if '%errorlevel%' NEQ '0' (goto UACPrompt) else (goto UACAdmin)
 :UACPrompt
@@ -246,7 +249,7 @@ echo       尝试获取管理员权限，程序将重启
 ping -n 3 127.0.0.1>nul && %1 start "" mshta vbscript:createobject("shell.application").shellexecute("""%~0""","::",,"runas",1)(window.close)&exit
 exit /B
 :UACAdmin
-cd /d "%pwd%"
+cd /d "%SSRSpeed%"
 echo.
 echo 已获取管理员权限
 echo.
