@@ -5,6 +5,7 @@ beautifulsoup4
 Flask-Cors
 Pillow
 pynat
+PySocks
 PyYAML
 requests
 selenium
