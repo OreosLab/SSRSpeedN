@@ -1,3 +1,5 @@
+six
+
 aiohttp-socks
 beautifulsoup4
 Flask-Cors
