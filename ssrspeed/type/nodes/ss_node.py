@@ -1,4 +1,4 @@
-from ssrspeed.types.nodes.base_node import BaseNode
+from ssrspeed.type.nodes.base_node import BaseNode
 
 
 class NodeShadowsocks(BaseNode):

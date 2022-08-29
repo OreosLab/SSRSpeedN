@@ -18,7 +18,7 @@ from ssrspeed.parsers.ss_parsers import (
 from ssrspeed.parsers.ssr_parsers import ParserShadowsocksR
 from ssrspeed.parsers.v2ray_parsers import ParserV2RayN, ParserV2RayQuantumult
 from ssrspeed.paths import KEY_PATH
-from ssrspeed.types.nodes import (
+from ssrspeed.type.nodes import (
     NodeShadowsocks,
     NodeShadowsocksR,
     NodeTrojan,

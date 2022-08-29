@@ -1,4 +1,4 @@
-from ssrspeed.types.errors.webapi import WebErrorBase
+from ssrspeed.type.errors.webapi import WebErrorBase
 
 
 class FileNotAllowed(WebErrorBase):

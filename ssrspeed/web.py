@@ -14,7 +14,7 @@ from ssrspeed.config import ssrconfig
 from ssrspeed.core import SSRSpeedCore
 from ssrspeed.paths import KEY_PATH
 from ssrspeed.shell import web_cli as console_cfg
-from ssrspeed.types.errors.webapi import FileNotAllowed, WebFileCommonError
+from ssrspeed.type.errors.webapi import FileNotAllowed, WebFileCommonError
 from ssrspeed.utils import RequirementsCheck, check_platform
 from ssrspeed.utils.web import get_post_data
 
