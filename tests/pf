@@ -1,0 +1,4 @@
+#!/bin/bash
+
+[ -f ./pf ] && cd .. && echo hello
+python -m cProfile -o data/restats -s tottime -m ssrspeed -u "$1"
