@@ -203,7 +203,9 @@ class SpeedTest(object):
                 sum_ = 0
                 r1 = requests.get(
                     "https://www.netflix.com/title/70242311",
+                    headers=headers,
                     timeout=10,
+                    proxies=proxies,
                 )
                 if r1.status_code == 200:
                     sum_ += 1
