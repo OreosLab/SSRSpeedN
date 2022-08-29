@@ -64,7 +64,7 @@ V2RayBaseConfig: dict = {
     "routing": {"domainStrategy": "IPIfNonMatch", "rules": []},
 }
 
-tcpSettingsObject = {
+tcpSettingsObject: dict = {
     "connectionReuse": True,
     "header": {
         "type": "http",
@@ -89,40 +89,40 @@ tcpSettingsObject = {
     },
 }
 
-quicSettingsObject = {
+quicSettingsObject: dict = {
     "security": "none",
     "key": "",
     "header": {"type": "none", "request": None, "response": None},
 }
-httpSettingsObject = {"path": "", "host": ["aes-128-gcm"]}
-webSocketSettingsObject = {"connectionReuse": True, "path": "", "headers": {"Host": ""}}
+httpSettingsObject: dict = {"path": "", "host": ["aes-128-gcm"]}
+webSocketSettingsObject: dict = {"connectionReuse": True, "path": "", "headers": {"Host": ""}}
 
-tlsSettingsObject = {"allowInsecure": True, "serverName": ""}
+tlsSettingsObject: dict = {"allowInsecure": True, "serverName": ""}
 
 
 class V2RayBaseConfigs:
     @staticmethod
-    def get_tls_object():
+    def get_tls_object() -> dict:
         return copy.deepcopy(tlsSettingsObject)
 
     @staticmethod
-    def get_ws_object():
+    def get_ws_object() -> dict:
         return copy.deepcopy(webSocketSettingsObject)
 
     @staticmethod
-    def get_http_object():
+    def get_http_object() -> dict:
         return copy.deepcopy(httpSettingsObject)
 
     @staticmethod
-    def get_tcp_object():
+    def get_tcp_object() -> dict:
         return copy.deepcopy(tcpSettingsObject)
 
     @staticmethod
-    def get_quic_object():
+    def get_quic_object() -> dict:
         return copy.deepcopy(quicSettingsObject)
 
     @staticmethod
-    def get_config():
+    def get_config() -> dict:
         return copy.deepcopy(V2RayBaseConfig)
 
     @staticmethod

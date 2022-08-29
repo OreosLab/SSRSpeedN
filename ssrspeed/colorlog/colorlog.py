@@ -85,7 +85,7 @@ def deco(
     fg_color: int = 0x111,
     bg_color: Optional[int] = None,
     const_deco: Union[int, str] = "",
-    **kwargs
+    **kwargs: bool
 ) -> str:
     """
     Params:

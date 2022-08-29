@@ -1,4 +1,4 @@
-def parse_qs_plus(_dict):
+def parse_qs_plus(_dict) -> dict:
     data = {}
     if type(_dict) != dict:
         return _dict

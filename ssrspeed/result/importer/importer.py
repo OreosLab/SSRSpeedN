@@ -1,7 +1,7 @@
 import json
 
 
-def import_result(filename):
+def import_result(filename: str) -> dict:
     with open(filename, "r", encoding="utf-8") as f:
         fi = json.loads(f.read())
     return fi

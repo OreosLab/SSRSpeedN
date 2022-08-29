@@ -8,8 +8,8 @@ logger = logging.getLogger("Sub")
 
 class DownloadRuleMatch:
     def __init__(self):
-        self._config = deepcopy(ssrconfig["fileDownload"])
-        self._download_links = deepcopy(self._config["downloadLinks"])
+        self._config: dict = deepcopy(ssrconfig["fileDownload"])
+        self._download_links: dict = deepcopy(self._config["downloadLinks"])
 
     def _get_download_link(self, tag: str = "") -> tuple:
         default: tuple = tuple()

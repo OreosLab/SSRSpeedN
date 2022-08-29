@@ -25,7 +25,7 @@ class ShadowsocksR(BaseClient):
         if self.useSsrCSharp:
             self.__ssr_csharp_conf({})
 
-    def __ssr_csharp_conf(self, _config: Dict[str, Any]):
+    def __ssr_csharp_conf(self, config: Dict[str, Any]):
         with open(
             f"{CLIENTS_DIR}shadowsocksr-win/gui-config.json", "r", encoding="utf-8"
         ) as f:
@@ -35,17 +35,17 @@ class ShadowsocksR(BaseClient):
         tmp_conf["index"] = 0
         tmp_conf["proxyRuleMode"] = 0
         tmp_conf["configs"] = []
-        _config["protocolparam"] = _config.get("protocol_param", "")
-        _config["obfsparam"] = _config.get("obfs_param", "")
-        tmp_conf["configs"].append(_config)
+        config["protocolparam"] = config.get("protocol_param", "")
+        config["obfsparam"] = config.get("obfs_param", "")
+        tmp_conf["configs"].append(config)
 
         with open(
             f"{CLIENTS_DIR}shadowsocksr-win/gui-config.json", "w+", encoding="utf-8"
         ) as f:
             f.write(json.dumps(tmp_conf))
 
-    def start_client(self, _config: Dict[str, Any]):
-        self._config = _config
+    def start_client(self, config: Dict[str, Any]):
+        self._config = config
         # 	self._config["server_port"] = int(self._config["server_port"])
         with open(CONFIG_FILE, "w+", encoding="utf-8") as f:
             f.write(json.dumps(self._config))
@@ -54,7 +54,7 @@ class ShadowsocksR(BaseClient):
 
             if self._platform == "Windows":
                 if self.useSsrCSharp:
-                    self.__ssr_csharp_conf(_config)
+                    self.__ssr_csharp_conf(config)
                     self._process = subprocess.Popen(
                         [f"{CLIENTS_DIR}shadowsocksr-win/shadowsocksr.exe"]
                     )
@@ -72,7 +72,7 @@ class ShadowsocksR(BaseClient):
                     )
                     logger.info(
                         "Starting shadowsocksr-libev with server %s:%d"
-                        % (_config["server"], _config["server_port"])
+                        % (config["server"], config["server_port"])
                     )
                 else:
                     self._process = subprocess.Popen(
@@ -87,7 +87,7 @@ class ShadowsocksR(BaseClient):
                     )
                     logger.info(
                         "Starting shadowsocksr-libev with server %s:%d"
-                        % (_config["server"], _config["server_port"])
+                        % (config["server"], config["server_port"])
                     )
 
             elif self._platform == "Linux" or self._platform == "MacOS":
@@ -114,7 +114,7 @@ class ShadowsocksR(BaseClient):
                     )
                 logger.info(
                     "Starting shadowsocksr-Python with server %s:%d"
-                    % (_config["server"], _config["server_port"])
+                    % (config["server"], config["server_port"])
                 )
 
             else:
@@ -222,7 +222,7 @@ class ShadowsocksRR(BaseClient):
         else:
             return True
 
-    def start_client(self, _config: Dict[str, Any]):
+    def start_client(self, config: Dict[str, Any]):
         if self._process is None:
 
             if self._platform == "Windows":
@@ -233,7 +233,7 @@ class ShadowsocksRR(BaseClient):
                 )
 
             elif self._platform == "Linux" or self._platform == "MacOS":
-                self._config = _config
+                self._config = config
                 self._config["server_port"] = int(self._config["server_port"])
                 with open(CONFIG_FILE, "w+", encoding="utf-8") as f:
                     f.write(json.dumps(self._config))
@@ -259,7 +259,7 @@ class ShadowsocksRR(BaseClient):
                     )
                 logger.info(
                     "Starting shadowsocksr-Python with server %s:%d"
-                    % (_config["server"], _config["server_port"])
+                    % (config["server"], config["server_port"])
                 )
 
             else:

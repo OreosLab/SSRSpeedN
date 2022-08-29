@@ -8,7 +8,7 @@ class BaseNode:
             raise TypeError("The 'config' parameter must be dict")
         self._config: dict = config
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<{self.__class__.__name__}>, Proxy Type: {self.node_type}"
 
     @property
@@ -25,7 +25,7 @@ class BaseNode:
         if new_cfg:
             self._config.update(new_cfg)
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         return (
             self._config["server"] == other.config["server"]
             and self._config["server_port"] == other.config["server_port"]

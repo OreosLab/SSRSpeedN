@@ -17,8 +17,8 @@ class Trojan(BaseClient):
     def __init__(self):
         super(Trojan, self).__init__()
 
-    def start_client(self, _config: Dict[str, Any]):
-        self._config = _config
+    def start_client(self, config: Dict[str, Any]):
+        self._config = config
         with open(CONFIG_FILE, "w+", encoding="utf-8") as f:
             f.write(json.dumps(self._config))
         try:
@@ -46,7 +46,7 @@ class Trojan(BaseClient):
                         )
                     logger.info(
                         "Starting trojan with server %s:%d"
-                        % (_config["server"], _config["server_port"])
+                        % (config["server"], config["server_port"])
                     )
 
                 elif self._platform == "Linux" or self._platform == "MacOS":
@@ -70,7 +70,7 @@ class Trojan(BaseClient):
                         )
                     logger.info(
                         "Starting trojan with server %s:%d"
-                        % (_config["server"], _config["server_port"])
+                        % (config["server"], config["server_port"])
                     )
 
                 else:

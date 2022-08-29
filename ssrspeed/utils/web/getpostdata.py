@@ -6,7 +6,7 @@ from flask import request
 from ssrspeed.utils.web.parseqsplus import parse_qs_plus
 
 
-def get_post_data():
+def get_post_data() -> dict:
     # print(request.content_type)
     data = {}
     if request.content_type.startswith("application/json"):

@@ -1,6 +1,6 @@
 import logging
 import signal
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List
 
 from ssrspeed.config import ssrconfig
 from ssrspeed.utils import check_platform
@@ -12,7 +12,7 @@ class BaseClient(object):
     def __init__(self):
         self._localAddress: str = ssrconfig.get("localAddress", "127.0.0.1")
         self._localPort: int = ssrconfig.get("localPort", 1087)
-        self._config_list: list = []
+        self._config_list: List[Dict[str, Any]] = []
         self._config: Dict[str, Any] = {}
         self._platform: str = self._check_platform()
         self._process = None
@@ -24,10 +24,10 @@ class BaseClient(object):
     def _before_stop_client(self):
         pass
 
-    def start_client(self, _config: Dict[str, Any]):
+    def start_client(self, config: Dict[str, Any]):
         pass
 
-    def check_alive(self) -> Optional[int]:
+    def check_alive(self) -> bool:
         return self._process.poll() is None
 
     def test_process_terminate(self):

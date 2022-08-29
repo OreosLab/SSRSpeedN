@@ -18,8 +18,8 @@ class Shadowsocks(BaseClient):
     def __init__(self):
         super(Shadowsocks, self).__init__()
 
-    def start_client(self, _config: Dict[str, Any]):
-        self._config = _config
+    def start_client(self, config: Dict[str, Any]):
+        self._config = config
         #   self._config["server_port"] = int(self._config["server_port"])
         with open(CONFIG_FILE, "w+", encoding="utf-8") as f:
             f.write(json.dumps(self._config))
@@ -50,7 +50,7 @@ class Shadowsocks(BaseClient):
                     )
                 logger.info(
                     "Starting Shadowsocks-libev with server %s:%d"
-                    % (_config["server"], _config["server_port"])
+                    % (config["server"], config["server_port"])
                 )
 
             elif self._platform == "Linux" or self._platform == "MacOS":
@@ -77,7 +77,7 @@ class Shadowsocks(BaseClient):
                     )
                 logger.info(
                     "Starting Shadowsocks-libev with server %s:%d"
-                    % (_config["server"], _config["server_port"])
+                    % (config["server"], config["server_port"])
                 )
 
             else:
@@ -92,7 +92,7 @@ class Shadowsockss(BaseClient):
         super(Shadowsockss, self).__init__()
 
     @staticmethod
-    def get_current_config() -> int:
+    def get_current_config() -> Dict[str, Any]:
         with open(
             f"{CLIENTS_DIR}shadowsocks-win/gui-config.json", "r", encoding="utf-8"
         ) as f:
@@ -100,7 +100,7 @@ class Shadowsockss(BaseClient):
         cur_index = tmp_conf["index"]
         return tmp_conf["configs"][cur_index]
 
-    def next_win_conf(self) -> Optional[list]:
+    def next_win_conf(self) -> Optional[Dict[str, Any]]:
         self.stop_client()
 
         with open(
@@ -148,7 +148,7 @@ class Shadowsockss(BaseClient):
             f.write(json.dumps(tmp_conf))
 
     # fmt: off
-    def start_client(self, _config: Dict[str, Any], testing: bool = False):
+    def start_client(self, config: Dict[str, Any], testing: bool = False):
         if self._process is None:
             
             platform = self._check_platform()
@@ -161,7 +161,7 @@ class Shadowsockss(BaseClient):
                 )
                 
             elif platform == "Linux" or platform == "MacOS":
-                self._config = _config
+                self._config = config
                 self._config["server_port"] = int(self._config["server_port"])
                 with open(CONFIG_FILE, "w+", encoding="utf-8") as f:
                     f.write(json.dumps(self._config))
@@ -177,7 +177,7 @@ class Shadowsockss(BaseClient):
                     )
                 logger.info(
                     "Starting Shadowsocks-libev with server %s:%d"
-                    % (_config["server"], _config["server_port"])
+                    % (config["server"], config["server_port"])
                 )
                 
             else:

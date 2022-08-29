@@ -17,8 +17,8 @@ class V2Ray(BaseClient):
     def __init__(self):
         super(V2Ray, self).__init__()
 
-    def start_client(self, _config: Dict[str, Any]):
-        self._config = _config
+    def start_client(self, config: Dict[str, Any]):
+        self._config = config
         with open(CONFIG_FILE, "w+", encoding="utf-8") as f:
             f.write(json.dumps(self._config))
 
@@ -46,7 +46,7 @@ class V2Ray(BaseClient):
                         )
                     logger.info(
                         "Starting v2ray-core with server %s:%d"
-                        % (_config["server"], _config["server_port"])
+                        % (config["server"], config["server_port"])
                     )
 
                 elif self._platform == "Linux" or self._platform == "MacOS":
@@ -70,7 +70,7 @@ class V2Ray(BaseClient):
                         )
                     logger.info(
                         "Starting v2ray-core with server %s:%d"
-                        % (_config["server"], _config["server_port"])
+                        % (config["server"], config["server_port"])
                     )
 
                 else:

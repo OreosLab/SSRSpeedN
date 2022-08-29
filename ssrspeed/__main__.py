@@ -78,10 +78,10 @@ if __name__ == "__main__":
                     pass
         sys.exit(0)
 
-    print("********* Important Tip 重要提示 *********")
-    print("ChenBilly yyds!")
-    print("******************************************")
-    input("Press ENTER to continue or Ctrl+C to exit.")
+    # print("********* Important Tip 重要提示 *********")
+    # print("ChenBilly yyds!")
+    # print("******************************************")
+    # input("Press ENTER to continue or Ctrl+C to exit.")
 
     if args.debug:
         DEBUG = args.debug
