@@ -1,11 +1,14 @@
+import asyncio
 import copy
 import logging
+import os
 import socket
 import time
 
+import aiohttp
 import pynat
-import requests
 import socks
+from aiohttp_socks import ProxyConnector
 from bs4 import BeautifulSoup
 
 from ssrspeed.config import ssrconfig
@@ -150,29 +153,11 @@ class SpeedTest(object):
         return inbound_ip, inbound_geo, inbound_info.get("country_code", "N/A")
 
     @staticmethod
-    def __geo_ip_outbound():
+    async def __geo_ip_outbound():
         global outboundGeoIP
         global outboundGeoRES
-        global ntype
-        global htype
-        global dtype
-        global ytype
-        global atype
-        global btype
-        global dztype
-        global ttype
-        global bltype
         outboundGeoIP = ""
         outboundGeoRES = ""
-        ntype = "None"
-        htype = False
-        dtype = False
-        ytype = False
-        atype = False
-        btype = False
-        dztype = False
-        ttype = False
-        bltype = "N/A"
 
         outbound_info = ip_loc()
         outbound_ip = outbound_info.get("ip", "N/A")
@@ -192,254 +177,314 @@ class SpeedTest(object):
             "User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
             "Chrome/64.0.3282.119 Safari/537.36 ",
         }
-        proxies = {
-            "http": "socks5h://127.0.0.1:%d" % LOCAL_PORT,
-            "https": "socks5h://127.0.0.1:%d" % LOCAL_PORT,
-        }
+        host = "127.0.0.1"
+        test_list = []
 
-        if NETFLIX_TEXT and outbound_ip != "N/A":
+        async def netflix():
+            global ntype
+            ntype = "None"
             logger.info("Performing netflix test LOCAL_PORT: {:d}.".format(LOCAL_PORT))
             try:
                 sum_ = 0
-                r1 = requests.get(
-                    "https://www.netflix.com/title/70242311",
+                async with aiohttp.ClientSession(
                     headers=headers,
-                    timeout=10,
-                    proxies=proxies,
-                )
-                if r1.status_code == 200:
-                    sum_ += 1
-                    soup = BeautifulSoup(r1.text, "html.parser")
-                    netflix_ip_str = str(soup.find_all("script"))
-                    p1 = netflix_ip_str.find("requestIpAddress")
-                    netflix_ip_r = netflix_ip_str[p1 + 19 : p1 + 60]
-                    p2 = netflix_ip_r.find(",")
-                    netflix_ip = netflix_ip_r[0:p2]
-                    logger.info("Netflix IP : " + netflix_ip)
-
-                r2 = requests.get(
-                    "https://www.netflix.com/title/70143836",
-                    headers=headers,
-                    timeout=10,
-                    proxies=proxies,
-                )
-                rg = ""
-                if r2.status_code == 200:
-                    sum_ += 1
-                    rg = "(" + r2.url.split("com/")[1].split("/")[0] + ")"
-                if rg == "(title)":
-                    rg = "(us)"
-                # 测试连接状态
-
-                if sum_ == 0:
-                    logger.info("Netflix test result: None.")
-                    ntype = "None"
-                elif sum_ == 1:
-                    logger.info("Netflix test result: Only Original.")
-                    ntype = "Only Original"
-                elif outbound_ip == netflix_ip:
-                    logger.info("Netflix test result: Full Native.")
-                    ntype = "Full Native" + rg
-                else:
-                    logger.info("Netflix test result: Full DNS.")
-                    ntype = "Full DNS" + rg
-
+                    connector=ProxyConnector(host=host, port=LOCAL_PORT),
+                    timeout=aiohttp.ClientTimeout(connect=10),
+                ) as session:
+                    async with session.get(
+                        url="https://www.netflix.com/title/70242311"
+                    ) as response1:
+                        if response1.status == 200:
+                            sum_ += 1
+                            soup = BeautifulSoup(await response1.read(), "html.parser")
+                            netflix_ip_str = str(soup.find_all("script"))
+                            p1 = netflix_ip_str.find("requestIpAddress")
+                            netflix_ip_r = netflix_ip_str[p1 + 19 : p1 + 60]
+                            p2 = netflix_ip_r.find(",")
+                            netflix_ip = netflix_ip_r[0:p2]
+                            logger.info("Netflix IP : " + netflix_ip)
+                        async with session.get(
+                            url="https://www.netflix.com/title/70143836"
+                        ) as response2:
+                            rg = ""
+                            if response2.status == 200:
+                                sum_ += 1
+                                rg = (
+                                    "("
+                                    + str(response2.url).split("com/")[1].split("/")[0]
+                                    + ")"
+                                )
+                            if rg == "(title)":
+                                rg = "(us)"
+                            # 测试连接状态
+                            if sum_ == 0:
+                                logger.info("Netflix test result: None.")
+                                ntype = "None"
+                            elif sum_ == 1:
+                                logger.info("Netflix test result: Only Original.")
+                                ntype = "Only Original"
+                            elif outbound_ip == netflix_ip:
+                                logger.info("Netflix test result: Full Native.")
+                                ntype = "Full Native" + rg
+                            else:
+                                logger.info("Netflix test result: Full DNS.")
+                                ntype = "Full DNS" + rg
             except Exception as e:
                 logger.error("代理服务器连接异常：" + str(e.args))
 
-        if HBO_TEXT and outbound_ip != "N/A":
+        async def hbomax():
+            global htype
+            htype = False
             logger.info("Performing HBO max test LOCAL_PORT: {:d}.".format(LOCAL_PORT))
             try:
-                r = requests.get(
-                    "https://www.hbomax.com/",
+                async with aiohttp.ClientSession(
                     headers=headers,
-                    timeout=10,
-                    allow_redirects=False,
-                    proxies=proxies,
-                )
-
-                if r.status_code == 200:
-                    htype = True
-                else:
-                    htype = False
-
+                    connector=ProxyConnector(host=host, port=LOCAL_PORT),
+                    timeout=aiohttp.ClientTimeout(connect=10),
+                ) as session:
+                    async with session.get(
+                        url="https://www.hbomax.com/", allow_redirects=False
+                    ) as response:
+                        if response.status == 200:
+                            htype = True
+                        else:
+                            htype = False
             except Exception as e:
                 logger.error("代理服务器连接异常：" + str(e.args))
 
-        if DISNEY_TEXT and outbound_ip != "N/A":
+        async def disneyplus():
+            global dtype
+            dtype = False
             logger.info(
                 "Performing Disney plus test LOCAL_PORT: {:d}.".format(LOCAL_PORT)
             )
             try:
-                r1 = requests.get(
-                    "https://www.disneyplus.com/",
+                async with aiohttp.ClientSession(
                     headers=headers,
-                    timeout=5,
-                    proxies=proxies,
-                )
-
-                r2 = requests.get(
-                    "https://global.edge.bamgrid.com/token",
-                    headers=headers,
-                    timeout=5,
-                    proxies=proxies,
-                )
-
-                if r1.status_code == 200 and r2.status_code != 403:
-                    if r1.text.find("Region", 0, 400) == -1:
-                        dtype = False
-                    elif r1.history:
-                        if 300 <= r1.history[0].status_code <= 399:
+                    connector=ProxyConnector(host=host, port=LOCAL_PORT),
+                    timeout=aiohttp.ClientTimeout(connect=5),
+                ) as session:
+                    async with session.get(
+                        url="https://www.disneyplus.com/"
+                    ) as response1, session.get(
+                        url="https://global.edge.bamgrid.com/token"
+                    ) as response2:
+                        if response1.status == 200 and response2.status != 403:
+                            text = await response1.text()
+                            if text.find("Region", 0, 400) == -1:
+                                dtype = False
+                            elif response1.history:
+                                if 300 <= response1.history[0].status <= 399:
+                                    dtype = False
+                            else:
+                                dtype = True
+                        else:
                             dtype = False
-                    else:
-                        dtype = True
-                else:
-                    dtype = False
-
             except Exception as e:
                 logger.error("代理服务器连接异常：" + str(e.args))
 
-        if YOUTUBE_TEXT and outbound_ip != "N/A":
+        async def youtube():
+            global ytype
+            ytype = False
             logger.info(
                 "Performing Youtube Premium test LOCAL_PORT: {:d}.".format(LOCAL_PORT)
             )
             try:
-                r = requests.get(
-                    "https://music.youtube.com/",
+                async with aiohttp.ClientSession(
                     headers=headers,
-                    timeout=10,
-                    allow_redirects=False,
-                    proxies=proxies,
-                )
-
-                if "is not available" in r.text:
-                    ytype = False
-                elif r.status_code == 200:
-                    ytype = True
-                else:
-                    ytype = False
-
+                    connector=ProxyConnector(host=host, port=LOCAL_PORT),
+                    timeout=aiohttp.ClientTimeout(connect=10),
+                ) as session:
+                    async with session.get(
+                        url="https://music.youtube.com/", allow_redirects=False
+                    ) as response:
+                        if "is not available" in await response.text():
+                            ytype = False
+                        elif response.status == 200:
+                            ytype = True
+                        else:
+                            ytype = False
             except Exception as e:
                 logger.error("代理服务器连接异常：" + str(e.args))
 
-        if ABEMA_TEXT and outbound_ip != "N/A":
+        async def abema():
+            global atype
+            atype = False
             logger.info("Performing Abema test LOCAL_PORT: {:d}.".format(LOCAL_PORT))
             try:
-                r = requests.get(
-                    "https://api.abema.io/v1/ip/check?device=android",
+                async with aiohttp.ClientSession(
                     headers=headers,
-                    timeout=10,
-                    allow_redirects=False,
-                    proxies=proxies,
-                )
-
-                if r.text.count("Country") > 0:
-                    atype = True
-                else:
-                    atype = False
-
+                    connector=ProxyConnector(host=host, port=LOCAL_PORT),
+                    timeout=aiohttp.ClientTimeout(connect=10),
+                ) as session:
+                    async with session.get(
+                        url="https://api.abema.io/v1/ip/check?device=android",
+                        allow_redirects=False,
+                    ) as response:
+                        text = await response.text()
+                        if text.count("Country") > 0:
+                            atype = True
+                        else:
+                            atype = False
             except Exception as e:
                 logger.error("代理服务器连接异常：" + str(e.args))
 
-        if BAHAMUT_TEXT and outbound_ip != "N/A":
+        async def gamer():
+            global btype
+            btype = False
             logger.info("Performing Bahamut test LOCAL_PORT: {:d}.".format(LOCAL_PORT))
             try:
-                r = requests.get(
-                    "https://ani.gamer.com.tw/ajax/token.php?adID=89422&sn=14667",
+                async with aiohttp.ClientSession(
                     headers=headers,
-                    timeout=10,
-                    allow_redirects=False,
-                    proxies=proxies,
-                )
-
-                if r.text.count("animeSn") > 0:
-                    btype = True
-                else:
-                    btype = False
-
+                    connector=ProxyConnector(host=host, port=LOCAL_PORT),
+                    timeout=aiohttp.ClientTimeout(connect=10),
+                ) as session:
+                    async with session.get(
+                        url="https://ani.gamer.com.tw/ajax/token.php?adID=89422&sn=14667",
+                        allow_redirects=False,
+                    ) as response:
+                        text = await response.text()
+                        if text.count("animeSn") > 0:
+                            btype = True
+                        else:
+                            btype = False
             except Exception as e:
                 logger.error("代理服务器连接异常：" + str(e.args))
 
-        if DAZN_TEXT and outbound_ip != "N/A":
+        async def indazn():
+            global dztype
+            dztype = False
             logger.info("Performing Dazn test LOCAL_PORT: {:d}.".format(LOCAL_PORT))
             try:
-                payload = {
-                    "LandingPageKey": "generic",
-                    "Languages": "zh-CN,zh,en",
-                    "Platform": "web",
-                    "PlatformAttributes": {},
-                    "Manufacturer": "",
-                    "PromoCode": "",
-                    "Version": "2",
-                }
-                r = requests.post(
-                    "https://startup.core.indazn.com/misl/v5/Startup",
-                    json=payload,
+                async with aiohttp.ClientSession(
                     headers=headers,
-                    timeout=10,
-                    allow_redirects=False,
-                    proxies=proxies,
-                )
-                if r.status_code == 200:
-                    dztype = True
-                else:
-                    dztype = False
-
+                    connector=ProxyConnector(
+                        host=host, port=LOCAL_PORT, verify_ssl=False
+                    ),
+                    timeout=aiohttp.ClientTimeout(connect=10),
+                ) as session:
+                    payload = {
+                        "LandingPageKey": "generic",
+                        "Languages": "zh-CN,zh,en",
+                        "Platform": "web",
+                        "PlatformAttributes": {},
+                        "Manufacturer": "",
+                        "PromoCode": "",
+                        "Version": "2",
+                    }
+                    async with session.post(
+                        url="https://startup.core.indazn.com/misl/v5/Startup",
+                        json=payload,
+                        allow_redirects=False,
+                    ) as response:
+                        if response.status == 200:
+                            dztype = True
+                        else:
+                            dztype = False
             except Exception as e:
                 logger.error("代理服务器连接异常：" + str(e.args))
 
-        if TVB_TEXT and outbound_ip != "N/A":
+        async def mytvsuper():
+            global ttype
+            ttype = False
             logger.info("Performing TVB test LOCAL_PORT: {:d}.".format(LOCAL_PORT))
             try:
-                r = requests.get(
-                    "https://www.mytvsuper.com/iptest.php",
+                async with aiohttp.ClientSession(
                     headers=headers,
-                    timeout=10,
-                    allow_redirects=False,
-                    proxies=proxies,
-                )
-
-                if r.text.count("HK") > 0:
-                    ttype = True
-                else:
-                    ttype = False
-
+                    connector=ProxyConnector(host=host, port=LOCAL_PORT),
+                    timeout=aiohttp.ClientTimeout(connect=10),
+                ) as session:
+                    async with session.get(
+                        url="https://www.mytvsuper.com/iptest.php",
+                        allow_redirects=False,
+                    ) as response:
+                        text = await response.text()
+                        if text.count("HK") > 0:
+                            ttype = True
+                        else:
+                            ttype = False
             except Exception as e:
                 logger.error("代理服务器连接异常：" + str(e.args))
 
-        if BILIBILI_TEXT and outbound_ip != "N/A":
+        async def bilibili():
+            global bltype
+            bltype = "N/A"
             logger.info("Performing Bilibili test LOCAL_PORT: {:d}.".format(LOCAL_PORT))
             try:
-                r1 = requests.get(
-                    "https://api.bilibili.com/pgc/player/web/playurl?avid=50762638&cid=100279344&qn=0&type=&otype"
-                    "=json&ep_id=268176&fourk=1&fnver=0&fnval=16&session=926c41d4f12e53291b284b94f555e7df&module"
-                    "=bangumi",
+                async with aiohttp.ClientSession(
                     headers=headers,
-                    timeout=10,
-                    allow_redirects=False,
-                    proxies=proxies,
-                )
-                if r1.status_code == 200:
-                    if r1.json()["code"] == 0:
-                        bltype = "台湾"
-                    else:
-                        r2 = requests.get(
-                            "https://api.bilibili.com/pgc/player/web/playurl?avid=18281381&cid=29892777&qn=0&type"
-                            "=&otype=json&ep_id=183799&fourk=1&fnver=0&fnval=16&session"
-                            "=926c41d4f12e53291b284b94f555e7df&module=bangumi",
-                            headers=headers,
-                            timeout=10,
-                            allow_redirects=False,
-                            proxies=proxies,
-                        )
-                        if r2.status_code == 200:
-                            if r2.json()["code"] == 0:
-                                bltype = "港澳台"
-                        else:
-                            bltype = "N/A"
-
+                    connector=ProxyConnector(host=host, port=LOCAL_PORT),
+                    timeout=aiohttp.ClientTimeout(connect=10),
+                ) as session:
+                    params = {
+                        "avid": 50762638,
+                        "cid": 100279344,
+                        "qn": 0,
+                        "type": "",
+                        "otype": "json",
+                        "ep_id": 268176,
+                        "fourk": 1,
+                        "fnver": 0,
+                        "fnval": 16,
+                        "module": "bangumi",
+                    }
+                    async with session.get(
+                        url="https://api.bilibili.com/pgc/player/web/playurl",
+                        params=params,
+                        allow_redirects=False,
+                    ) as response:
+                        if response.status == 200:
+                            json_data = await response.json()
+                            if json_data["code"] == 0:
+                                bltype = "台湾"
+                            else:
+                                params = {
+                                    "avid": 18281381,
+                                    "cid": 29892777,
+                                    "qn": 0,
+                                    "type": "",
+                                    "otype": "json",
+                                    "ep_id": 183799,
+                                    "fourk": 1,
+                                    "fnver": 0,
+                                    "fnval": 16,
+                                    "module": "bangumi",
+                                }
+                                session.cookie_jar.clear()
+                                async with session.get(
+                                    url="https://api.bilibili.com/pgc/player/web/playurl",
+                                    params=params,
+                                    allow_redirects=False,
+                                ) as response2:
+                                    if response2.status == 200:
+                                        json_data2 = await response2.json()
+                                        if json_data2["code"] == 0:
+                                            bltype = "港澳台"
+                                    else:
+                                        bltype = "N/A"
             except Exception as e:
                 logger.error("代理服务器连接异常：" + str(e.args))
+
+        if outbound_ip != "N/A":
+            if NETFLIX_TEXT:
+                test_list.append(asyncio.create_task(netflix()))
+            if HBO_TEXT:
+                test_list.append(asyncio.create_task(hbomax()))
+            if DISNEY_TEXT:
+                test_list.append(asyncio.create_task(disneyplus()))
+            if YOUTUBE_TEXT:
+                test_list.append(asyncio.create_task(youtube()))
+            if ABEMA_TEXT:
+                test_list.append(asyncio.create_task(abema()))
+            if BAHAMUT_TEXT:
+                test_list.append(asyncio.create_task(gamer()))
+            if DAZN_TEXT:
+                test_list.append(asyncio.create_task(indazn()))
+            if TVB_TEXT:
+                test_list.append(asyncio.create_task(mytvsuper()))
+            if BILIBILI_TEXT:
+                test_list.append(asyncio.create_task(bilibili()))
+            await asyncio.wait(test_list)
         return outbound_ip, outbound_geo, outbound_info.get("country_code", "N/A")
 
     def __tcp_ping(self, server, port):
@@ -574,7 +619,12 @@ class SpeedTest(object):
                 if isinstance(ping_result, dict):
                     for k in ping_result.keys():
                         _item[k] = ping_result[k]
-                outbound_info = self.__geo_ip_outbound()
+                if os.name == "nt":
+                    asyncio.set_event_loop_policy(
+                        asyncio.WindowsSelectorEventLoopPolicy()
+                    )
+                loop = asyncio.new_event_loop()
+                outbound_info = loop.run_until_complete(self.__geo_ip_outbound())
                 _item["geoIP"]["outbound"]["address"] = outbound_info[0]
                 _item["geoIP"]["outbound"]["info"] = outbound_info[1]
 
