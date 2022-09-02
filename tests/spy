@@ -1,0 +1,16 @@
+#!/bin/bash
+
+[ -f ./spy ] && cd .. && echo hello
+
+if [ "$2" == "f" ]; then
+  format=flamegraph
+  filename=stats.svg
+elif [ "$2" == "r" ]; then
+  format=raw
+  filename=stats
+else
+  format=speedscope
+  filename=stats.json
+fi
+
+py-spy record -o data/${filename} -f ${format} -- python -m ssrspeed -u "$1"
