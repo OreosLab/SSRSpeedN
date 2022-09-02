@@ -3,7 +3,7 @@
     "localPort": 10870,
     "excludeRemarks": ["剩余流量", "到期时间", "过期时间"],
     "proxy": {
-        "enabled": true,
+        "enabled": false,
         "address": "127.0.0.1",
         "port": 10808,
         "username": null,

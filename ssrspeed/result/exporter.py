@@ -266,7 +266,7 @@ class ExportResult(object):
         #     width=1,
         # )
 
-        text = "便宜机场测速 With SSRSpeed N ( v{} )".format(ssrconfig["VERSION"])
+        text = "机场测评图 with SSRSpeed N ( v{} )".format(ssrconfig["VERSION"])
         draw.text(
             (self.__get_base_pos(image_right_position, text), 4),
             text,
