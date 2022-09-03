@@ -2,6 +2,7 @@ import asyncio
 import copy
 import logging
 import os
+import re
 import socket
 import time
 
@@ -9,7 +10,6 @@ import aiohttp
 import pynat
 import socks
 from aiohttp_socks import ProxyConnector
-from bs4 import BeautifulSoup
 
 from ssrspeed.config import ssrconfig
 from ssrspeed.launchers import (
@@ -36,6 +36,8 @@ BAHAMUT_TEST = ssrconfig["bahamut"]
 DAZN_TEST = ssrconfig["dazn"]
 TVB_TEST = ssrconfig["tvb"]
 BILIBILI_TEST = ssrconfig["bilibili"]
+# Netflix requestIpAddress regex compile
+nf_ip_re = re.compile(r'"requestIpAddress":"(.*)"')
 
 
 class SpeedTest(object):
@@ -435,12 +437,7 @@ class SpeedTest(object):
                 ) as response1:
                     if response1.status == 200:
                         sum_ += 1
-                        soup = BeautifulSoup(await response1.read(), "html.parser")
-                        netflix_ip_str = str(soup.find_all("script"))
-                        p1 = netflix_ip_str.find("requestIpAddress")
-                        netflix_ip_r = netflix_ip_str[(p1 + 19) : (p1 + 60)]
-                        p2 = netflix_ip_r.find(",")
-                        netflix_ip = netflix_ip_r[0:p2]
+                        netflix_ip = nf_ip_re.findall(str(await response1.read()))[0].split(",")[0]
                         logger.info("Netflix IP : " + netflix_ip)
                     async with session.get(
                         url="https://www.netflix.com/title/70143836"
