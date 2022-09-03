@@ -330,10 +330,12 @@ class SpeedTest(object):
                         res = st.start_wps_test()
                         _item["webPageSimulation"]["results"] = res
                         logger.info(
-                            f"[{_item['group']}] - [{_item['remarks']}] - Loss: [{(_item['loss'] * 100):.2f}%]"
-                            f" - TCP Ping: [{int(_item['ping'] * 1000):.2f}] - Google Loss: "
-                            f"[{(_item['gPingLoss'] * 100):.2f}%] - Google"
-                            f"Ping: [{(int(_item['gPing'] * 1000)):.2f}] - [WebPageSimulation]"
+                            f"[{_item['group']}] - [{_item['remarks']}] "
+                            f"- Loss: [{(_item['loss'] * 100):.2f}%] "
+                            f"- TCP Ping: [{int(_item['ping'] * 1000):.2f}] "
+                            f"- Google Loss: [{(_item['gPingLoss'] * 100):.2f}%] "
+                            f"- Google Ping: [{(int(_item['gPing'] * 1000)):.2f}] "
+                            f"- [WebPageSimulation]"
                         )
                     else:
                         if ssrconfig["ntt"]["enabled"]:
@@ -350,10 +352,12 @@ class SpeedTest(object):
                                     nat_info += f" - Public End: {eip}:{eport}"
                         if test_mode == "PING":
                             logger.info(
-                                f"[{_item['group']}] - [{_item['remarks']}] - Loss: [{(_item['loss'] * 100):.2f}%]"
-                                f" - TCP Ping: [{int(_item['ping'] * 1000):.2f}] - Google Loss: "
-                                f"[{(_item['gPingLoss'] * 100):.2f}%] - Google "
-                                f"Ping: [{int(_item['gPing'] * 1000):.2f}]{nat_info}"
+                                f"[{_item['group']}] - [{_item['remarks']}] "
+                                f"- Loss: [{(_item['loss'] * 100):.2f}%] "
+                                f"- TCP Ping: [{int(_item['ping'] * 1000):.2f}] "
+                                f"- Google Loss: [{(_item['gPingLoss'] * 100):.2f}%] "
+                                f"- Google Ping: [{int(_item['gPing'] * 1000):.2f}]"
+                                f"{nat_info}"
                             )
                         elif test_mode == "FULL":
                             test_res = st.start_test(self.__test_method)
@@ -373,12 +377,14 @@ class SpeedTest(object):
                                 pass
 
                             logger.info(
-                                f"[{_item['group']}] - [{_item['remarks']}] - Loss: [{(_item['loss'] * 100):.2f}%]"
-                                f" - TCP Ping: [{int(_item['ping'] * 1000):.2f}] - Google Loss: "
-                                f"[{(_item['gPingLoss'] * 100):.2f}%] - Google "
-                                f"Ping: [{int(_item['gPing'] * 1000):.2f}] - AvgStSpeed: "
-                                f"[{(_item['dspeed'] / 1024 / 1024):.2f}MB/s] - AvgMtSpeed: "
-                                f"[{(_item['maxDSpeed'] / 1024 / 1024):.2f}MB/s]{nat_info}"
+                                f"[{_item['group']}] - [{_item['remarks']}] "
+                                f"- Loss: [{(_item['loss'] * 100):.2f}%] "
+                                f"- TCP Ping: [{int(_item['ping'] * 1000):.2f}] "
+                                f"- Google Loss: [{(_item['gPingLoss'] * 100):.2f}%] "
+                                f"- Google Ping: [{int(_item['gPing'] * 1000):.2f}] "
+                                f"- AvgStSpeed: [{(_item['dspeed'] / 1024 / 1024):.2f}MB/s] "
+                                f"- AvgMtSpeed: [{(_item['maxDSpeed'] / 1024 / 1024):.2f}MB/s]"
+                                f"{nat_info}"
                             )
                         else:
                             logger.error(f"Unknown Test Mode {test_mode}.")
