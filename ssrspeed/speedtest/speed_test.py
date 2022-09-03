@@ -22,7 +22,20 @@ from ssrspeed.speedtest.methodology import SpeedTestMethods
 from ssrspeed.utils import check_port, domain2ip, ip_loc
 
 logger = logging.getLogger("Sub")
-local_ssr_config = ssrconfig
+
+LOCAL_ADDRESS = ssrconfig["localAddress"]
+LOCAL_PORT = ssrconfig["localPort"]
+PING_TEST = ssrconfig["ping"]
+GOOGLE_PING_TEST = ssrconfig["gping"]
+NETFLIX_TEST = ssrconfig["netflix"]
+HBO_TEST = ssrconfig["hbo"]
+DISNEY_TEST = ssrconfig["disney"]
+YOUTUBE_TEST = ssrconfig["youtube"]
+ABEMA_TEST = ssrconfig["abema"]
+BAHAMUT_TEST = ssrconfig["bahamut"]
+DAZN_TEST = ssrconfig["dazn"]
+TVB_TEST = ssrconfig["tvb"]
+BILIBILI_TEST = ssrconfig["bilibili"]
 
 
 class SpeedTest(object):
@@ -136,41 +149,41 @@ class SpeedTest(object):
         }
         test_list = []
         if self.outbound_ip != "N/A":
-            if local_ssr_config["netflix"]:
+            if NETFLIX_TEST:
                 test_list.append(
                     asyncio.create_task(
                         SpeedTest.netflix(host, headers, attrs, self.outbound_ip)
                     )
                 )
-            if local_ssr_config["hbo"]:
+            if HBO_TEST:
                 test_list.append(
                     asyncio.create_task(SpeedTest.hbomax(host, headers, attrs))
                 )
-            if local_ssr_config["disney"]:
+            if DISNEY_TEST:
                 test_list.append(
                     asyncio.create_task(SpeedTest.disneyplus(host, headers, attrs))
                 )
-            if local_ssr_config["youtube"]:
+            if YOUTUBE_TEST:
                 test_list.append(
                     asyncio.create_task(SpeedTest.youtube(host, headers, attrs))
                 )
-            if local_ssr_config["abema"]:
+            if ABEMA_TEST:
                 test_list.append(
                     asyncio.create_task(SpeedTest.abema(host, headers, attrs))
                 )
-            if local_ssr_config["bahamut"]:
+            if BAHAMUT_TEST:
                 test_list.append(
                     asyncio.create_task(SpeedTest.gamer(host, headers, attrs))
                 )
-            if local_ssr_config["dazn"]:
+            if DAZN_TEST:
                 test_list.append(
                     asyncio.create_task(SpeedTest.indazn(host, headers, attrs))
                 )
-            if local_ssr_config["tvb"]:
+            if TVB_TEST:
                 test_list.append(
                     asyncio.create_task(SpeedTest.mytvsuper(host, headers, attrs))
                 )
-            if local_ssr_config["bilibili"]:
+            if BILIBILI_TEST:
                 test_list.append(
                     asyncio.create_task(SpeedTest.bilibili(host, headers, attrs))
                 )
@@ -188,7 +201,7 @@ class SpeedTest(object):
             "rawGooglePingStatus": self.__base_result["rawGooglePingStatus"],
         }
 
-        if local_ssr_config["gping"]:
+        if PING_TEST:
             st = SpeedTestMethods()
             latency_test = st.tcp_ping(server, port)
             res["loss"] = 1 - latency_test[1]
@@ -197,14 +210,14 @@ class SpeedTest(object):
             logger.debug(latency_test)
             time.sleep(1)
 
-        if (not local_ssr_config["gping"]) or (latency_test[0] > 0):
-            if local_ssr_config["gping"]:
+        if (not PING_TEST) or (latency_test[0] > 0):
+            if GOOGLE_PING_TEST:
                 try:
                     st = SpeedTestMethods()
-                    local_ssr_config["gping"] = st.google_ping()
-                    res["gPing"] = local_ssr_config["gping"][0]
-                    res["gPingLoss"] = 1 - local_ssr_config["gping"][1]
-                    res["rawGooglePingStatus"] = local_ssr_config["gping"][2]
+                    google_ping_test = st.google_ping()
+                    res["gPing"] = google_ping_test[0]
+                    res["gPingLoss"] = 1 - google_ping_test[1]
+                    res["rawGooglePingStatus"] = google_ping_test[2]
                 except Exception:
                     logger.exception("")
                     pass
@@ -213,11 +226,7 @@ class SpeedTest(object):
     @classmethod
     def __nat_type_test(cls):
         s = socks.socksocket(type=socket.SOCK_DGRAM)
-        s.set_proxy(
-            socks.PROXY_TYPE_SOCKS5,
-            local_ssr_config["localAddress"],
-            local_ssr_config["localPort"],
-        )
+        s.set_proxy(socks.PROXY_TYPE_SOCKS5, LOCAL_ADDRESS, LOCAL_PORT)
         sport = ssrconfig["ntt"]["internal_port"]
         try:
             logger.info("Performing UDP NAT Type Test.")
@@ -286,21 +295,19 @@ class SpeedTest(object):
                         break
                     time.sleep(1)
                     try:
-                        check_port(local_ssr_config["localPort"])
+                        check_port(LOCAL_PORT)
                         break
                     except socket.timeout:
                         ct += 1
-                        logger.error(f"Port {local_ssr_config['localPort']} timeout.")
+                        logger.error(f"Port {LOCAL_PORT} timeout.")
                     except ConnectionRefusedError:
                         ct += 1
-                        logger.error(
-                            f"Connection refused on port {local_ssr_config['localPort']}."
-                        )
+                        logger.error(f"Connection refused on port {LOCAL_PORT}.")
                     except Exception:
                         ct += 1
                         logger.exception("An error occurred:\n")
                 if not port_opened:
-                    logger.error(f"Port {local_ssr_config['localPort']} closed.")
+                    logger.error(f"Port {LOCAL_PORT} closed.")
                     continue
 
                 inbound_info = self.__geo_ip_inbound(cfg)
@@ -320,7 +327,7 @@ class SpeedTest(object):
                 _item["geoIP"]["outbound"]["info"] = outbound_info[1]
 
                 if (
-                    (not local_ssr_config["gping"])
+                    (not GOOGLE_PING_TEST)
                     or _item["gPing"] > 0
                     or outbound_info[2] == "CN"
                 ):
@@ -415,14 +422,12 @@ class SpeedTest(object):
 
     @classmethod
     async def netflix(cls, host, headers, attrs, outbound_ip):
-        logger.info(
-            f"Performing netflix test LOCAL_PORT: {local_ssr_config['localPort']}."
-        )
+        logger.info(f"Performing netflix test LOCAL_PORT: {LOCAL_PORT}.")
         try:
             sum_ = 0
             async with aiohttp.ClientSession(
                 headers=headers,
-                connector=ProxyConnector(host=host, port=local_ssr_config["localPort"]),
+                connector=ProxyConnector(host=host, port=LOCAL_PORT),
                 timeout=aiohttp.ClientTimeout(connect=10),
             ) as session:
                 async with session.get(
@@ -468,13 +473,11 @@ class SpeedTest(object):
 
     @classmethod
     async def hbomax(cls, host, headers, attrs):
-        logger.info(
-            f"Performing HBO max test LOCAL_PORT: {local_ssr_config['localPort']}."
-        )
+        logger.info(f"Performing HBO max test LOCAL_PORT: {LOCAL_PORT}.")
         try:
             async with aiohttp.ClientSession(
                 headers=headers,
-                connector=ProxyConnector(host=host, port=local_ssr_config["localPort"]),
+                connector=ProxyConnector(host=host, port=LOCAL_PORT),
                 timeout=aiohttp.ClientTimeout(connect=10),
             ) as session:
                 async with session.get(
@@ -489,13 +492,11 @@ class SpeedTest(object):
 
     @classmethod
     async def disneyplus(cls, host, headers, attrs):
-        logger.info(
-            f"Performing Disney plus test LOCAL_PORT: {local_ssr_config['localPort']}."
-        )
+        logger.info(f"Performing Disney plus test LOCAL_PORT: {LOCAL_PORT}.")
         try:
             async with aiohttp.ClientSession(
                 headers=headers,
-                connector=ProxyConnector(host=host, port=local_ssr_config["localPort"]),
+                connector=ProxyConnector(host=host, port=LOCAL_PORT),
                 timeout=aiohttp.ClientTimeout(connect=5),
             ) as session:
                 async with session.get(
@@ -519,13 +520,11 @@ class SpeedTest(object):
 
     @classmethod
     async def youtube(cls, host, headers, attrs):
-        logger.info(
-            f"Performing Youtube Premium test LOCAL_PORT: {local_ssr_config['localPort']}."
-        )
+        logger.info(f"Performing Youtube Premium test LOCAL_PORT: {LOCAL_PORT}.")
         try:
             async with aiohttp.ClientSession(
                 headers=headers,
-                connector=ProxyConnector(host=host, port=local_ssr_config["localPort"]),
+                connector=ProxyConnector(host=host, port=LOCAL_PORT),
                 timeout=aiohttp.ClientTimeout(connect=10),
             ) as session:
                 async with session.get(
@@ -542,13 +541,11 @@ class SpeedTest(object):
 
     @classmethod
     async def abema(cls, host, headers, attrs):
-        logger.info(
-            f"Performing Abema test LOCAL_PORT: {local_ssr_config['localPort']}."
-        )
+        logger.info(f"Performing Abema test LOCAL_PORT: {LOCAL_PORT}.")
         try:
             async with aiohttp.ClientSession(
                 headers=headers,
-                connector=ProxyConnector(host=host, port=local_ssr_config["localPort"]),
+                connector=ProxyConnector(host=host, port=LOCAL_PORT),
                 timeout=aiohttp.ClientTimeout(connect=10),
             ) as session:
                 async with session.get(
@@ -565,13 +562,11 @@ class SpeedTest(object):
 
     @classmethod
     async def gamer(cls, host, headers, attrs):
-        logger.info(
-            f"Performing Bahamut test LOCAL_PORT: {local_ssr_config['localPort']}."
-        )
+        logger.info(f"Performing Bahamut test LOCAL_PORT: {LOCAL_PORT}.")
         try:
             async with aiohttp.ClientSession(
                 headers=headers,
-                connector=ProxyConnector(host=host, port=local_ssr_config["localPort"]),
+                connector=ProxyConnector(host=host, port=LOCAL_PORT),
                 timeout=aiohttp.ClientTimeout(connect=10),
             ) as session:
                 async with session.get(
@@ -588,15 +583,11 @@ class SpeedTest(object):
 
     @classmethod
     async def indazn(cls, host, headers, attrs):
-        logger.info(
-            f"Performing Dazn test LOCAL_PORT: {local_ssr_config['localPort']}."
-        )
+        logger.info(f"Performing Dazn test LOCAL_PORT: {LOCAL_PORT}.")
         try:
             async with aiohttp.ClientSession(
                 headers=headers,
-                connector=ProxyConnector(
-                    host=host, port=local_ssr_config["localPort"], verify_ssl=False
-                ),
+                connector=ProxyConnector(host=host, port=LOCAL_PORT, verify_ssl=False),
                 timeout=aiohttp.ClientTimeout(connect=10),
             ) as session:
                 payload = {
@@ -622,11 +613,11 @@ class SpeedTest(object):
 
     @classmethod
     async def mytvsuper(cls, host, headers, attrs):
-        logger.info(f"Performing TVB test LOCAL_PORT: {local_ssr_config['localPort']}.")
+        logger.info(f"Performing TVB test LOCAL_PORT: {LOCAL_PORT}.")
         try:
             async with aiohttp.ClientSession(
                 headers=headers,
-                connector=ProxyConnector(host=host, port=local_ssr_config["localPort"]),
+                connector=ProxyConnector(host=host, port=LOCAL_PORT),
                 timeout=aiohttp.ClientTimeout(connect=10),
             ) as session:
                 async with session.get(
@@ -642,13 +633,11 @@ class SpeedTest(object):
 
     @classmethod
     async def bilibili(cls, host, headers, attrs):
-        logger.info(
-            f"Performing Bilibili test LOCAL_PORT: {local_ssr_config['localPort']}."
-        )
+        logger.info(f"Performing Bilibili test LOCAL_PORT: {LOCAL_PORT}.")
         try:
             async with aiohttp.ClientSession(
                 headers=headers,
-                connector=ProxyConnector(host=host, port=local_ssr_config["localPort"]),
+                connector=ProxyConnector(host=host, port=LOCAL_PORT),
                 timeout=aiohttp.ClientTimeout(connect=10),
             ) as session:
                 params = {
