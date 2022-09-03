@@ -1,5 +1,5 @@
 def parse_qs_plus(_dict) -> dict:
-    data = {}
+    data: dict = {}
     if type(_dict) != dict:
         return _dict
     for k, v in _dict.items():
