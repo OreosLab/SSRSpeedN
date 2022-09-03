@@ -162,7 +162,7 @@ class UniversalParser:
                 logger.info("Try Trojan Parser.")
                 ptrojan = TrojanParser()
                 try:
-                    cfg = ptrojan._parse_link(link)
+                    cfg = ptrojan.parse_single_link(link)
                 except ValueError:
                     pass
                 if cfg:

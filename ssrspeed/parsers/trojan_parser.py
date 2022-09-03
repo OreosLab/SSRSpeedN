@@ -77,6 +77,7 @@ class TrojanParser(BaseParser):
             password, link = link.split("@")
         result["password"].append(password)
 
+        host = ""
         if "?" in link:
             host, link = link.split("?")
         result["server"], result["server_port"] = host.split(":")
