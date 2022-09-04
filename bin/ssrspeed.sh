@@ -236,9 +236,10 @@ check_ssrspeedn() {
   [ ! -e data/ssrspeed.json ] && sudo cp -f data/ssrspeed.example.json data/ssrspeed.json
 }
 
+# shellcheck disable=SC2086
 test() {
   info "\n $(text 16) \n"
-  sudo python3 -m ssrspeed "$URL" "$INCLUDE_REMARK" "$EXCLUDE_REMARK" "$GROUP" $RESULT_COLOR $SORT_METHOD --skip-requirements-check --yes
+  sudo python3 -m ssrspeed $URL $INCLUDE_REMARK $EXCLUDE_REMARK $GROUP $RESULT_COLOR $SORT_METHOD --skip-requirements-check --yes
 }
 
 uninstall() {
