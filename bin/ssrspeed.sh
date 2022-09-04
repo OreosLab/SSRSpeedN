@@ -8,13 +8,13 @@ VERSION=1.0.0
 E[0]="Language:\n  1.English (default) \n  2.简体中文"
 C[0]="${E[0]}"
 E[1]="Speed test and unlocking test is for reference only and does not represent the actual usage, due to network changes, Netflix blocking and ip replacement. Speed test is time-sensitive."
-C[1]="测速及解锁测试仅供参考，不代表实际使用情况，由于网络情况变化、Netflix 封锁及 ip 更换，测速具有时效性"
+C[1]="测速及解锁测试仅供参考, 不代表实际使用情况, 由于网络情况变化、Netflix 封锁及 ip 更换, 测速具有时效性"
 E[2]="New Features: "
 C[2]="新特性: "
 E[3]="Choose:"
 C[3]="请选择:"
-E[4]="！This cannot be empty！"
-C[4]="！此处不能为空！"
+E[4]="! This cannot be empty !"
+C[4]="! 此处不能为空 !"
 E[5]="More than 5 errors have been entered, and the script exits."
 C[5]="输入错误超过5次, 脚本退出"
 E[6]="Please input a subscription url or a single node supported by v2ray (VLESS is not supported):"
@@ -236,7 +236,6 @@ check_ssrspeedn() {
   [ ! -e data/ssrspeed.json ] && sudo cp -f data/ssrspeed.example.json data/ssrspeed.json
 }
 
-# shellcheck disable=SC2086
 test() {
   info "\n $(text 16) \n"
   sudo python3 -m ssrspeed $URL $INCLUDE_REMARK $EXCLUDE_REMARK $GROUP $RESULT_COLOR $SORT_METHOD --skip-requirements-check --yes
@@ -280,8 +279,8 @@ while getopts ":HhUuR:r:" OPTNAME; do
   esac
 done
 
-input
 check_operating_system
+input
 check_brew
 check_ssrspeedn
 test
