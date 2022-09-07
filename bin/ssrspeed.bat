@@ -6,23 +6,23 @@ cd %SSRSpeed%
 echo.
 echo ================== SSRSpeedN ==================
 if exist "%SSRSpeed%\venv\Scripts\activate.bat" ( call "%SSRSpeed%\venv\Scripts\activate.bat" )
-if defined VIRTUAL_ENV ( echo µ±Ç°»·¾³ %VIRTUAL_ENV% ) else ( echo µ±Ç°Ä¿Â¼ %SSRSpeed% )
+if defined VIRTUAL_ENV ( echo ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ %VIRTUAL_ENV% ) else ( echo ï¿½ï¿½Ç°Ä¿Â¼ %SSRSpeed% )
 if exist "%SystemRoot%\SysWOW64" path %path%;%windir%\SysNative;%SystemRoot%\SysWOW64;%SSRSpeed%
 bcdedit >nul
-if '%errorlevel%' NEQ '0' ( echo µ±Ç°È¨ÏÞ ÆÕÍ¨ÓÃ»§ ) else ( echo µ±Ç°È¨ÏÞ ¹ÜÀíÔ± )
+if '%errorlevel%' NEQ '0' ( echo ï¿½ï¿½Ç°È¨ï¿½ï¿½ ï¿½ï¿½Í¨ï¿½Ã»ï¿½ ) else ( echo ï¿½ï¿½Ç°È¨ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ô± )
 if exist "%cd%\resources\clients\v2ray-core\v2ray.exe" ( set v1=1 ) else ( set v1=0 )
 if exist "%cd%\resources\clients\v2ray-core\v2ctl.exe" ( set v2=1 ) else ( set v2=0 )
 set /a v3=v1+v2
-if %v3%==2 ( echo ÒÑ¾­°²×° V2ray-core ) else ( echo ÉÐÎ´°²×° V2ray-core )
+if %v3%==2 ( echo ï¿½Ñ¾ï¿½ï¿½ï¿½×° V2ray-core ) else ( echo ï¿½ï¿½Î´ï¿½ï¿½×° V2ray-core )
 :start
 echo ===============================================
-echo [1] ¿ªÊ¼²âËÙ£¨×Ô¶¨ÒåÉèÖÃ£©
-echo [2] Ê×´ÎÔËÐÐ°²×° pip ºÍÏà¹ØÖ§³Ö£¨Ðè¹ÜÀíÔ±È¨ÏÞ£©
-echo [3] ²ÎÊý²éÔÄ
-echo [4] µ±Ç° SSRSpeed °æ±¾
-echo [5] Îª±¾´ÎÔËÐÐ»ñÈ¡¹ÜÀíÔ±È¨ÏÞ
+echo [1] ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½Ù£ï¿½ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã£ï¿½
+echo [2] ï¿½×´ï¿½ï¿½ï¿½ï¿½Ð°ï¿½×° pip ï¿½ï¿½ï¿½ï¿½ï¿½Ö§ï¿½Ö£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô±È¨ï¿½Þ£ï¿½
+echo [3] ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+echo [4] ï¿½ï¿½Ç° SSRSpeed ï¿½æ±¾
+echo [5] Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð»ï¿½È¡ï¿½ï¿½ï¿½ï¿½Ô±È¨ï¿½ï¿½
 echo ===============================================
-echo ÇëÑ¡Ôñ [1-5]: 
+echo ï¿½ï¿½Ñ¡ï¿½ï¿½ [1-5]: 
 choice /c 12345
 if %errorlevel%==5 ( goto :uac )
 if %errorlevel%==4 ( goto :ver )
@@ -34,13 +34,15 @@ if %errorlevel%==1 ( goto :test2 )
 :pip
 if exist "%SystemRoot%\SysWOW64" path %path%;%windir%\SysNative;%SystemRoot%\SysWOW64;%SSRSpeed%
 bcdedit >nul
-if '%errorlevel%' NEQ '0' ( echo X µ±Ç°ÎÞ¹ÜÀíÔ±È¨ÏÞ£¬ÎÞ·¨°²×°¡£ && echo. && echo * Äú¿ÉÒÔÍ¨¹ýÃüÁî 5 »ñÈ¡È¨ÏÞ£¬»òÓÒ¼üÒÔ¹ÜÀíÔ±È¨ÏÞÆô¶¯¡£ && pause && goto :start ) else ( goto :pip2 )
+if '%errorlevel%' NEQ '0' ( echo X ï¿½ï¿½Ç°ï¿½Þ¹ï¿½ï¿½ï¿½Ô±È¨ï¿½Þ£ï¿½ï¿½Þ·ï¿½ï¿½ï¿½×°ï¿½ï¿½ && echo. && echo * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 5 ï¿½ï¿½È¡È¨ï¿½Þ£ï¿½ï¿½ï¿½ï¿½Ò¼ï¿½ï¿½Ô¹ï¿½ï¿½ï¿½Ô±È¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ && pause && goto :start ) else ( goto :pip2 )
 :pip2
 python -m pip install --upgrade pip
 pip3 install -r "%SSRSpeed%\requirements.txt"
+:: pip3 install aiofiles
 :: pip3 install aiohttp-socks
-:: pip install beautifulsoup4
+:: pip3 install beautifulsoup4
 :: pip3 install Flask-Cors
+:: pip3 install geoip2
 :: pip3 install Pillow
 :: pip3 install pynat
 :: pip3 install PySocks
@@ -58,8 +60,8 @@ goto :start
 
 :help
 echo.
-echo [1] Ô­ÎÄ£¨en£©
-echo [2] ·­Òë£¨zh£©
+echo [1] Ô­ï¿½Ä£ï¿½enï¿½ï¿½
+echo [2] ï¿½ï¿½ï¿½ë£¨zhï¿½ï¿½
 choice /c 12
 if %errorlevel%==2 ( goto :fy )
 if %errorlevel%==1 ( goto :yw )
@@ -120,7 +122,7 @@ goto :start
 :fy
 
 echo.
-echo ÓÃ·¨£ºssrspeed [-h] [--version] [-c GUICONFIG] [-u URL] [-m TEST_METHOD]
+echo ï¿½Ã·ï¿½ï¿½ï¿½ssrspeed [-h] [--version] [-c GUICONFIG] [-u URL] [-m TEST_METHOD]
 echo                   [-M TEST_MODE] [--include FILTER [FILTER ...]]
 echo                   [--include-remark REMARKS [REMARKS ...]]
 echo                   [--include-group GROUP [GROUP ...]]
@@ -131,51 +133,51 @@ echo                   [-g GROUP_OVERRIDE] [-y] [-C RESULT_COLOR] [-s SORT_METHO
 echo                   [-i IMPORT_FILE] [--skip-requirements-check] [--debug]
 echo                   [--paolu]
 echo.
-echo Ñ¡Ïî£º
+echo Ñ¡ï¿½î£º
 echo.
-echo  --version                               ÏÔÊ¾³ÌÐòµÄ°æ±¾ºÅ²¢ÍË³ö
-echo  -h£¬--help                              ÏÔÊ¾´Ë°ïÖúÏûÏ¢²¢ÍË³ö
-echo  -c GUICONFIG£¬--config = GUICONFIG      ¼ÓÔØÓÉ shadowsocksr-csharp Éú³ÉµÄÅäÖÃ¡£
-echo  -u URL£¬--url = URL                     ´Ó¶©ÔÄ URL ¼ÓÔØ ssr ÅäÖÃ¡£
-echo  -m TEST_METHOD£¬--method = TEST_METHOD  ÔÚ [speedtestnet, fast, socket, stasync] ÖÐÑ¡Ôñ²âÊÔ·½·¨¡£
-echo  -M TEST_MODE£¬--mode = TEST_MODE        ÔÚ [all, pingonly, wps] ÖÐÑ¡Ôñ²âÊÔÄ£Ê½¡£
-echo  --include                               °´×é¹ýÂË½Úµã£¬²¢Ê¹ÓÃ¹Ø¼ü×Ö×¢ÊÍ¡£
-echo  --include-remark                        Ê¹ÓÃ¹Ø¼ü×ÖÍ¨¹ý×¢ÊÍ¹ýÂË½Úµã¡£
-echo  --include-group                         Ê¹ÓÃ¹Ø¼ü×Ö°´×éÃû¹ýÂË½Úµã¡£
-echo  --exclude                               °´×éÅÅ³ý½Úµã£¬²¢Ê¹ÓÃ¹Ø¼ü×Ö½øÐÐ×¢ÊÍ¡£
-echo  --exclude-group                         Ê¹ÓÃ¹Ø¼ü×Ö°´×éÅÅ³ý½Úµã¡£
-echo  --exclude-remark                        Í¨¹ýÊ¹ÓÃ¹Ø¼ü×ÖµÄ×¢ÊÍÅÅ³ý½Úµã¡£
-echo  --use-ssr-cs                            ÓÃ ShadowsocksR-C££ Ìæ»» ShadowsocksR-libev£¨½ö Windows£©
-echo  -g GROUP                                ÊÖ¶¯ÉèÖÃ×é¡£
-echo  -y£¬--yes                               ²âÊÔÇ°Ìø¹ý½ÚµãÁÐ±íÈ·ÈÏ¡£
-echo  -C RESULT_COLOR£¬--color = RESULT_COLOR µ¼³öÍ¼ÏñÊ±ÉèÖÃÑÕÉ«¡£
-echo  -S SORT_METHOD£¬--sort = SORT_METHOD    ÔÚ [speed, rspeed, ping, rping] ÖÐÑ¡ÔñÅÅÐò·½·¨£¬Ä¬ÈÏ²»ÅÅÐò¡£
-echo  -i IMPORT_FILE£¬--import = IMPORT_FILE  ´Ó json ÎÄ¼þµ¼Èë²âÊÔ½á¹û²¢µ¼³ö¡£
-echo  -skip-requirements-check                Ìø¹ýÒªÇó¼ì²é¡£
-echo  --debug                                 ÔÚµ÷ÊÔÄ£Ê½ÏÂÔËÐÐ³ÌÐò¡£
+echo  --version                               ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½Ä°æ±¾ï¿½Å²ï¿½ï¿½Ë³ï¿½
+echo  -hï¿½ï¿½--help                              ï¿½ï¿½Ê¾ï¿½Ë°ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½Ë³ï¿½
+echo  -c GUICONFIGï¿½ï¿½--config = GUICONFIG      ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ shadowsocksr-csharp ï¿½ï¿½ï¿½Éµï¿½ï¿½ï¿½ï¿½Ã¡ï¿½
+echo  -u URLï¿½ï¿½--url = URL                     ï¿½Ó¶ï¿½ï¿½ï¿½ URL ï¿½ï¿½ï¿½ï¿½ ssr ï¿½ï¿½ï¿½Ã¡ï¿½
+echo  -m TEST_METHODï¿½ï¿½--method = TEST_METHOD  ï¿½ï¿½ [speedtestnet, fast, socket, stasync] ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½Ô·ï¿½ï¿½ï¿½ï¿½ï¿½
+echo  -M TEST_MODEï¿½ï¿½--mode = TEST_MODE        ï¿½ï¿½ [all, pingonly, wps] ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½Ä£Ê½ï¿½ï¿½
+echo  --include                               ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë½Úµã£¬ï¿½ï¿½Ê¹ï¿½Ã¹Ø¼ï¿½ï¿½ï¿½×¢ï¿½Í¡ï¿½
+echo  --include-remark                        Ê¹ï¿½Ã¹Ø¼ï¿½ï¿½ï¿½Í¨ï¿½ï¿½×¢ï¿½Í¹ï¿½ï¿½Ë½Úµã¡£
+echo  --include-group                         Ê¹ï¿½Ã¹Ø¼ï¿½ï¿½Ö°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë½Úµã¡£
+echo  --exclude                               ï¿½ï¿½ï¿½ï¿½ï¿½Å³ï¿½ï¿½Úµã£¬ï¿½ï¿½Ê¹ï¿½Ã¹Ø¼ï¿½ï¿½Ö½ï¿½ï¿½ï¿½×¢ï¿½Í¡ï¿½
+echo  --exclude-group                         Ê¹ï¿½Ã¹Ø¼ï¿½ï¿½Ö°ï¿½ï¿½ï¿½ï¿½Å³ï¿½ï¿½Úµã¡£
+echo  --exclude-remark                        Í¨ï¿½ï¿½Ê¹ï¿½Ã¹Ø¼ï¿½ï¿½Öµï¿½×¢ï¿½ï¿½ï¿½Å³ï¿½ï¿½Úµã¡£
+echo  --use-ssr-cs                            ï¿½ï¿½ ShadowsocksR-Cï¿½ï¿½ ï¿½æ»» ShadowsocksR-libevï¿½ï¿½ï¿½ï¿½ Windowsï¿½ï¿½
+echo  -g GROUP                                ï¿½Ö¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½é¡£
+echo  -yï¿½ï¿½--yes                               ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½ï¿½Ð±ï¿½È·ï¿½Ï¡ï¿½
+echo  -C RESULT_COLORï¿½ï¿½--color = RESULT_COLOR ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É«ï¿½ï¿½
+echo  -S SORT_METHODï¿½ï¿½--sort = SORT_METHOD    ï¿½ï¿½ [speed, rspeed, ping, rping] ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ò·½·ï¿½ï¿½ï¿½Ä¬ï¿½Ï²ï¿½ï¿½ï¿½ï¿½ï¿½
+echo  -i IMPORT_FILEï¿½ï¿½--import = IMPORT_FILE  ï¿½ï¿½ json ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+echo  -skip-requirements-check                ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½é¡£
+echo  --debug                                 ï¿½Úµï¿½ï¿½ï¿½Ä£Ê½ï¿½ï¿½ï¿½ï¿½ï¿½Ð³ï¿½ï¿½ï¿½
 echo.
-echo  ²âÊÔÄ£Ê½
-echo  Ä£Ê½                 ±¸×¢
-echo  TCP_PING             ½ö tcp ping£¬ÎÞËÙ¶È²âÊÔ
-echo  WEB_PAGE_SIMULATION  ÍøÒ³Ä£Äâ²âÊÔ
-echo  ALL                  È«ËÙ²âÊÔ£¨²»°üÀ¨ÍøÒ³Ä£Äâ£©
+echo  ï¿½ï¿½ï¿½ï¿½Ä£Ê½
+echo  Ä£Ê½                 ï¿½ï¿½×¢
+echo  TCP_PING             ï¿½ï¿½ tcp pingï¿½ï¿½ï¿½ï¿½ï¿½Ù¶È²ï¿½ï¿½ï¿½
+echo  WEB_PAGE_SIMULATION  ï¿½ï¿½Ò³Ä£ï¿½ï¿½ï¿½ï¿½ï¿½
+echo  ALL                  È«ï¿½Ù²ï¿½ï¿½Ô£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò³Ä£ï¿½â£©
 echo.
-echo  ²âÊÔ·½·¨
-echo  ·½·¨                 ±¸×¢
-echo  ST_ASYNC             µ¥Ïß³ÌÒì²½ÏÂÔØ
-echo  SOCKET               ¾ßÓÐ¶àÏß³ÌµÄÔ­Ê¼Ì×½Ó×Ö
-echo  SPEED_TEST_NET       SpeedTest.Net ËÙ¶È²âÊÔ
-echo  FAST                 Fast.com ËÙ¶È²âÊÔ
+echo  ï¿½ï¿½ï¿½Ô·ï¿½ï¿½ï¿½
+echo  ï¿½ï¿½ï¿½ï¿½                 ï¿½ï¿½×¢
+echo  ST_ASYNC             ï¿½ï¿½ï¿½ß³ï¿½ï¿½ì²½ï¿½ï¿½ï¿½ï¿½
+echo  SOCKET               ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½ß³Ìµï¿½Ô­Ê¼ï¿½×½ï¿½ï¿½ï¿½
+echo  SPEED_TEST_NET       SpeedTest.Net ï¿½Ù¶È²ï¿½ï¿½ï¿½
+echo  FAST                 Fast.com ï¿½Ù¶È²ï¿½ï¿½ï¿½
 echo.
 pause
 goto :start
 
 :test2
 echo.
-echo * ÒÔÏÂ×Ô¶¨ÒåÑ¡ÏîÁô¿Õ»Ø³µ¼´¿ÉÌø¹ý
+echo * ï¿½ï¿½ï¿½ï¿½ï¿½Ô¶ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½Õ»Ø³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 echo.
 :test3
-set /p a="ÇëÊäÈëÄúµÄ¶©ÔÄÁ´½Ó£¨²»¿ÉÁô¿Õ£©: "
+set /p a="ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ£ï¿½: "
 if "%a%"=="" (
 goto :test3
 ) else (
@@ -183,13 +185,13 @@ goto :jx1
 )
 :jx1
 echo.
-echo * ÒÔÏÂ 2 Ïî¿ÉÒÔÍ¨¹ý¿Õ¸ñ·Ö¸ô¹Ø¼ü´Ê
+echo * ï¿½ï¿½ï¿½ï¿½ 2 ï¿½ï¿½ï¿½ï¿½ï¿½Í¨ï¿½ï¿½ï¿½Õ¸ï¿½Ö¸ï¿½ï¿½Ø¼ï¿½ï¿½ï¿½
 echo.
-set /p e="1. Ê¹ÓÃ¹Ø¼ü×ÖÍ¨¹ý×¢ÊÍÉ¸Ñ¡½Úµã: "
-set /p i="2. Í¨¹ýÊ¹ÓÃ¹Ø¼ü×ÖµÄ×¢ÊÍÅÅ³ý½Úµã: "
-set /p k="3. ÇëÊäÈë²âËÙ×éÃû: "
-set /p m="4. µ¼³öÍ¼ÏñÊ±ÉèÖÃÑÕÉ« [origin, poor]£¬Ä¬ÈÏ origin: "
-set /p n="5. ÔÚ [speed, rspeed, ping, rping] ÖÐÑ¡ÔñÊäÈëÅÅÐò·½·¨£¬Ä¬ÈÏ²»ÅÅÐò£¬ÈçÄ¬ÈÏÇëÌø¹ý: "
+set /p e="1. Ê¹ï¿½Ã¹Ø¼ï¿½ï¿½ï¿½Í¨ï¿½ï¿½×¢ï¿½ï¿½É¸Ñ¡ï¿½Úµï¿½: "
+set /p i="2. Í¨ï¿½ï¿½Ê¹ï¿½Ã¹Ø¼ï¿½ï¿½Öµï¿½×¢ï¿½ï¿½ï¿½Å³ï¿½ï¿½Úµï¿½: "
+set /p k="3. ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½: "
+set /p m="4. ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É« [origin, poor]ï¿½ï¿½Ä¬ï¿½ï¿½ origin: "
+set /p n="5. ï¿½ï¿½ [speed, rspeed, ping, rping] ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ò·½·ï¿½ï¿½ï¿½Ä¬ï¿½Ï²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½: "
 echo.
 if "%e%"=="" (
 set e= && goto :jx1
@@ -245,15 +247,15 @@ if exist "%SystemRoot%\SysWOW64" path %path%;%windir%\SysNative;%SystemRoot%\Sys
 bcdedit >nul
 if '%errorlevel%' NEQ '0' ( goto UACPrompt ) else ( goto UACAdmin )
 :UACPrompt
-echo ÌáÊ¾£ºÍ¨ÓÃÒÀÀµ°²×°ÐèÒª¹ÜÀíÔ±È¨ÏÞ£¨ÃüÁî 4£©
+echo ï¿½ï¿½Ê¾ï¿½ï¿½Í¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×°ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½Ô±È¨ï¿½Þ£ï¿½ï¿½ï¿½ï¿½ï¿½ 4ï¿½ï¿½
 echo.
-echo       ³¢ÊÔ»ñÈ¡¹ÜÀíÔ±È¨ÏÞ£¬³ÌÐò½«ÖØÆô
+echo       ï¿½ï¿½ï¿½Ô»ï¿½È¡ï¿½ï¿½ï¿½ï¿½Ô±È¨ï¿½Þ£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 ping -n 3 127.0.0.1>nul && %1 start "" mshta vbscript:createobject("shell.application").shellexecute("""%~0""","::",,"runas",1)(window.close)&exit
 exit /B
 :UACAdmin
 cd /d "%SSRSpeed%"
 echo.
-echo ÒÑ»ñÈ¡¹ÜÀíÔ±È¨ÏÞ
+echo ï¿½Ñ»ï¿½È¡ï¿½ï¿½ï¿½ï¿½Ô±È¨ï¿½ï¿½
 echo.
 pause
 goto :start

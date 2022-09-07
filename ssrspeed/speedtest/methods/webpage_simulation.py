@@ -1,14 +1,12 @@
+import asyncio
 import copy
 import logging
-import queue
-import threading
 import time
-from threading import Lock
 
-import requests
+import aiohttp
+from aiohttp_socks import ProxyConnector
 
 from ssrspeed.config import ssrconfig
-from ssrspeed.threadpool import AbstractTask, ThreadPool
 from ssrspeed.utils import parse_location
 
 logger = logging.getLogger("Sub")
@@ -20,74 +18,59 @@ except KeyError:
     raise Exception("Web page simulation configurations not found.")
 
 results: list = []
-resLock: Lock = threading.Lock()
-tasklist: queue.Queue = queue.Queue(maxsize=15)
 
 
-def start_web_page_simulation_test(local_host: str, local_port: int) -> list:
+async def start_web_page_simulation_test(local_host, local_port):
     while len(results):
         results.pop()
+    task_list = []
     logger.info("Start web page simulation test.")
     logger.info("Proxy {}:{}".format(local_host, local_port))
-    proxies = {
-        "http": "socks5://{}:{}".format(local_host, local_port),
-        "https": "socks5://{}:{}".format(local_host, local_port),
-    }
-    max_thread = w_config.get("maxThread", 4)
-    ip_loc = parse_location()
+    ip_loc = await parse_location(local_port)
     urls = copy.deepcopy(w_config.get("urls", []))
     if ip_loc[0]:
         if ip_loc[1] == "CN":
             urls = copy.deepcopy(w_config.get("cnUrls", []))
     logger.info("Read {} url(s).".format(len(urls)))
-    thread_pool = ThreadPool(max_thread, tasklist)
     for url in urls:
-        task = WpsTask(url=url, proxies=proxies)
-        tasklist.put(task)
-
-    thread_pool.join()
+        task_list.append(
+            asyncio.create_task(execute(url=url, host=local_host, port=local_port))
+        )
+    await asyncio.wait(task_list)
     return copy.deepcopy(results)
 
 
-class WpsTask(AbstractTask):
-    def __init__(self, *args, **kwargs):
-        super(WpsTask, self).__init__(args, kwargs)
-        self.url: str = kwargs["url"]
-        self.__proxies: dict = kwargs["proxies"]
-
-    def execute(self):
-        logger.debug(
-            "Thread {} started. Url: {}".format(
-                threading.current_thread().ident, self.url
-            )
-        )
-        logger.info("Testing Url : {}".format(self.url))
-        res = {"url": self.url, "retCode": 0, "time": 0}
-        try:
-            start_time = time.time()
-            rep = requests.get(self.url, proxies=self.__proxies, timeout=10)
-            res["retCode"] = rep.status_code
-            stop_time = time.time()
-            res["time"] = stop_time - start_time
-            logger.info(
-                "Url: {}, time used: {:.2f}s, code: {}.".format(
-                    self.url, res["time"], res["retCode"]
+async def execute(url, host, port):
+    logger.debug("{} started. Url: {}".format(asyncio.current_task().get_name(), url))
+    logger.info("Testing Url : {}".format(url))
+    res = {"url": url, "retCode": 0, "time": 0}
+    try:
+        start_time = time.time()
+        async with aiohttp.ClientSession(
+            connector=ProxyConnector(host=host, port=port),
+            timeout=aiohttp.ClientTimeout(connect=10),
+        ) as session:
+            async with session.get(url) as response:
+                res["retCode"] = response.status
+                stop_time = time.time()
+                res["time"] = stop_time - start_time
+                logger.info(
+                    "Url: {}, time used: {:.2f}s, code: {}.".format(
+                        url, res["time"], res["retCode"]
+                    )
                 )
-            )
-        except requests.exceptions.Timeout:
-            logger.error("Url: {} timeout.".format(self.url))
-        except requests.exceptions.SSLError:
-            logger.error("SSL Error on : {}".format(self.url))
-        except:
-            logger.exception("Unknown Error on : {}".format(self.url))
-        finally:
-            resLock.acquire()
-            results.append(res)
-            resLock.release()
+    except aiohttp.ClientTimeout:
+        logger.error("Url: {} timeout.".format(url))
+    except aiohttp.ClientSSLError:
+        logger.error("SSL Error on : {}".format(url))
+    except:
+        logger.exception("Unknown Error on : {}".format(url))
+    finally:
+        results.append(res)
 
 
 """
-def wps_thread(url, proxies: dict):
+def wps_thread(url, proxies):
     logger.debug(
         "Thread {} started. Url: {}".format(threading.current_thread().ident, url)
     )

@@ -4,23 +4,28 @@ import subprocess
 import sys
 from typing import Any, Dict
 
+import aiofiles
+
 from ssrspeed.launchers import BaseClient
 from ssrspeed.paths import KEY_PATH
 
 logger = logging.getLogger("Sub")
 
 CLIENTS_DIR = KEY_PATH["clients"]
-CONFIG_FILE = KEY_PATH["config.json"]
+
+
+# CONFIG_FILE = KEY_PATH["config.json"]
 
 
 class V2Ray(BaseClient):
-    def __init__(self):
+    def __init__(self, file):
         super(V2Ray, self).__init__()
+        self.config_file: str = f"{file}.json"
 
-    def start_client(self, config: Dict[str, Any]):
+    async def start_client(self, config: Dict[str, Any]):
         self._config = config
-        with open(CONFIG_FILE, "w+", encoding="utf-8") as f:
-            f.write(json.dumps(self._config))
+        async with aiofiles.open(self.config_file, "w+", encoding="utf-8") as f:
+            await f.write(json.dumps(self._config))
 
         try:
             if self._process is None:
@@ -31,7 +36,7 @@ class V2Ray(BaseClient):
                             [
                                 f"{CLIENTS_DIR}v2ray-core/v2ray.exe",
                                 "--config",
-                                CONFIG_FILE,
+                                self.config_file,
                             ]
                         )
                     else:
@@ -39,7 +44,7 @@ class V2Ray(BaseClient):
                             [
                                 f"{CLIENTS_DIR}v2ray-core/v2ray.exe",
                                 "--config",
-                                CONFIG_FILE,
+                                self.config_file,
                             ],
                             stdout=subprocess.DEVNULL,
                             stderr=subprocess.DEVNULL,
@@ -55,7 +60,7 @@ class V2Ray(BaseClient):
                             [
                                 f"{CLIENTS_DIR}v2ray-core/v2ray",
                                 "--config",
-                                CONFIG_FILE,
+                                self.config_file,
                             ]
                         )
                     else:
@@ -63,7 +68,7 @@ class V2Ray(BaseClient):
                             [
                                 f"{CLIENTS_DIR}v2ray-core/v2ray",
                                 "--config",
-                                CONFIG_FILE,
+                                self.config_file,
                             ],
                             stdout=subprocess.DEVNULL,
                             stderr=subprocess.DEVNULL,

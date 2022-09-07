@@ -375,5 +375,6 @@ bin/**
 data/**
 !data/ssrspeed.example.json
 resources/clients/
+resources/databases/
 resources/static/custom/**
 !resources/static/custom/readme.md

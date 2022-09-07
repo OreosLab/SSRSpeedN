@@ -5,6 +5,7 @@ import subprocess
 import sys
 from typing import Any, Dict, Union
 
+import aiofiles
 import requests
 
 from ssrspeed.launchers import BaseClient
@@ -13,13 +14,16 @@ from ssrspeed.paths import KEY_PATH
 logger = logging.getLogger("Sub")
 
 CLIENTS_DIR = KEY_PATH["clients"]
-CONFIG_FILE = KEY_PATH["config.json"]
+
+
+# CONFIG_FILE = KEY_PATH["config.json"]
 
 
 class ShadowsocksR(BaseClient):
-    def __init__(self):
+    def __init__(self, file):
         super(ShadowsocksR, self).__init__()
         self.useSsrCSharp: bool = False
+        self.config_file: str = f"{file}.json"
 
     def _before_stop_client(self):
         if self.useSsrCSharp:
@@ -44,11 +48,11 @@ class ShadowsocksR(BaseClient):
         ) as f:
             f.write(json.dumps(tmp_conf))
 
-    def start_client(self, config: Dict[str, Any]):
+    async def start_client(self, config: Dict[str, Any]):
         self._config = config
         # 	self._config["server_port"] = int(self._config["server_port"])
-        with open(CONFIG_FILE, "w+", encoding="utf-8") as f:
-            f.write(json.dumps(self._config))
+        async with aiofiles.open(self.config_file, "w+", encoding="utf-8") as f:
+            await f.write(json.dumps(self._config))
 
         if self._process is None:
 
@@ -66,7 +70,7 @@ class ShadowsocksR(BaseClient):
                             f"{CLIENTS_DIR}shadowsocksr-libev/ssr-local.exe",
                             "-u",
                             "-c",
-                            CONFIG_FILE,
+                            self.config_file,
                             "-v",
                         ]
                     )
@@ -80,7 +84,7 @@ class ShadowsocksR(BaseClient):
                             f"{CLIENTS_DIR}shadowsocksr-libev/ssr-local.exe",
                             "-u",
                             "-c",
-                            CONFIG_FILE,
+                            self.config_file,
                         ],
                         stdout=subprocess.DEVNULL,
                         stderr=subprocess.DEVNULL,
@@ -98,7 +102,7 @@ class ShadowsocksR(BaseClient):
                             f"{CLIENTS_DIR}shadowsocksr/shadowsocks/local.py",
                             "-v",
                             "-c",
-                            CONFIG_FILE,
+                            self.config_file,
                         ]
                     )
                 else:
@@ -107,7 +111,7 @@ class ShadowsocksR(BaseClient):
                             "python3",
                             f"{CLIENTS_DIR}shadowsocksr/shadowsocks/local.py",
                             "-c",
-                            CONFIG_FILE,
+                            self.config_file,
                         ],
                         stdout=subprocess.DEVNULL,
                         stderr=subprocess.DEVNULL,
@@ -127,9 +131,10 @@ class ShadowsocksR(BaseClient):
 
 
 class ShadowsocksRR(BaseClient):
-    def __init__(self):
+    def __init__(self, name):
         super(ShadowsocksRR, self).__init__()
         self.__ssrAuth: str = ""
+        self.config_file = f"{name}.json"
 
     def __win_conf(self):
         with open(
@@ -235,7 +240,7 @@ class ShadowsocksRR(BaseClient):
             elif self._platform == "Linux" or self._platform == "MacOS":
                 self._config = config
                 self._config["server_port"] = int(self._config["server_port"])
-                with open(CONFIG_FILE, "w+", encoding="utf-8") as f:
+                with open(self.config_file, "w+", encoding="utf-8") as f:
                     f.write(json.dumps(self._config))
                 if logger.level == logging.DEBUG:
                     self._process = subprocess.Popen(
@@ -243,7 +248,7 @@ class ShadowsocksRR(BaseClient):
                             "python3",
                             f"{CLIENTS_DIR}shadowsocksr/shadowsocks/local.py",
                             "-c",
-                            CONFIG_FILE,
+                            self.config_file,
                         ]
                     )
                 else:
@@ -252,7 +257,7 @@ class ShadowsocksRR(BaseClient):
                             "python3",
                             f"{CLIENTS_DIR}shadowsocksr/shadowsocks/local.py",
                             "-c",
-                            CONFIG_FILE,
+                            self.config_file,
                         ],
                         stdout=subprocess.DEVNULL,
                         stderr=subprocess.DEVNULL,
