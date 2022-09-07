@@ -101,21 +101,20 @@ def speed_test_thread(link: str) -> Optional[int]:
         return 0
 
 
-def speed_test_socket(port: int) -> tuple:
+async def speed_test_socket(port):
     if not SPEED_TEST:
         return 0, 0, [], 0
 
     global EXIT_FLAG, LOCAL_PORT, MAX_TIME, TOTAL_RECEIVED, MAX_FILE_SIZE
-    LOCAL_PORT = port
 
     dlrm = DownloadRuleMatch()
-    res = dlrm.get_url(ip_loc())
+    res = dlrm.get_url(await ip_loc(port))
 
     MAX_FILE_SIZE = res[1] * 1024 * 1024
     MAX_TIME = 0
     TOTAL_RECEIVED = 0
     EXIT_FLAG = False
-    socks.set_default_proxy(socks.SOCKS5, "127.0.0.1", LOCAL_PORT)
+    socks.set_default_proxy(socks.SOCKS5, "127.0.0.1", port)
     socket.socket = socks.socksocket
 
     if STSPEED_TEST:

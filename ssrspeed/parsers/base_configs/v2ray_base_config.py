@@ -95,7 +95,11 @@ quicSettingsObject: dict = {
     "header": {"type": "none", "request": None, "response": None},
 }
 httpSettingsObject: dict = {"path": "", "host": ["aes-128-gcm"]}
-webSocketSettingsObject: dict = {"connectionReuse": True, "path": "", "headers": {"Host": ""}}
+webSocketSettingsObject: dict = {
+    "connectionReuse": True,
+    "path": "",
+    "headers": {"Host": ""},
+}
 
 tlsSettingsObject: dict = {"allowInsecure": True, "serverName": ""}
 

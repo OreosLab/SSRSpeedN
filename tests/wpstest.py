@@ -1,5 +1,6 @@
 # coding:utf-8
 
+import asyncio
 import logging
 import os
 import time
@@ -42,4 +43,10 @@ for item in loggerList:
     item.addHandler(fileHandler)
     item.addHandler(consoleHandler)
 
-webPageSimulation.start_web_page_simulation_test("127.0.0.1", 1080)
+
+async def main():
+    await webPageSimulation.start_web_page_simulation_test("127.0.0.1", 10808)
+
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(main())

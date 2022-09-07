@@ -10,6 +10,7 @@ from ssrspeed.utils import check_platform
 logger = logging.getLogger("Sub")
 
 CLIENTS_DIR = KEY_PATH["clients"]
+DATABASES_DIR = KEY_PATH["databases"]
 
 
 class RequirementsCheck(object):
@@ -34,6 +35,10 @@ class RequirementsCheck(object):
                 f"{CLIENTS_DIR}v2ray-core/v2ctl.exe",
                 f"{CLIENTS_DIR}v2ray-core/v2ray.exe",
             ],
+            "GeoIP2 Databases": [
+                f"{DATABASES_DIR}GeoLite2-City.mmdb",
+                f"{DATABASES_DIR}GeoLite2-ASN.mmdb",
+            ],
         }
 
         self.__linux_require: dict = {
@@ -48,6 +53,10 @@ class RequirementsCheck(object):
             "V2Ray-Core": [
                 f"{CLIENTS_DIR}v2ray-core/v2ctl",
                 f"{CLIENTS_DIR}v2ray-core/v2ray",
+            ],
+            "GeoIP2 Databases": [
+                f"{DATABASES_DIR}GeoLite2-City.mmdb",
+                f"{DATABASES_DIR}GeoLite2-ASN.mmdb",
             ],
         }
 

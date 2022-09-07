@@ -40,11 +40,11 @@ class SpeedTestMethods(object):
     def __init_socket():
         socket.socket = DEFAULT_SOCKET
 
-    def start_test(self, method="ST_ASYNC"):
+    async def start_test(self, port, method="ST_ASYNC"):
         logger.info("Starting speed test with %s." % method)
         if method == "SPEED_TEST_NET":
             try:
-                socks.set_default_proxy(socks.SOCKS5, LOCAL_ADDRESS, LOCAL_PORT)
+                socks.set_default_proxy(socks.SOCKS5, LOCAL_ADDRESS, port)
                 socket.socket = socks.socksocket
                 logger.info("Initializing...")
                 s = speedtestnet.Speedtest()
@@ -60,7 +60,7 @@ class SpeedTestMethods(object):
                 return 0, 0, [], 0
         elif method == "FAST":
             try:
-                fast.set_proxy(LOCAL_ADDRESS, LOCAL_PORT)
+                fast.set_proxy(LOCAL_ADDRESS, port)
                 result = fast.fast_com(verbose=True)
                 self.__init_socket()
                 # print(result)
@@ -71,23 +71,25 @@ class SpeedTestMethods(object):
         elif method == "SOCKET":  # Old speedtest
             try:
                 if METHOD == "SOCKET":
-                    return stSocket.speed_test_socket(LOCAL_PORT)
+                    result = await stSocket.speed_test_socket(port)
+                    return result
                 if METHOD == "YOUTUBE":
-                    return stYtb.speed_test_ytb(LOCAL_PORT)
+                    return stYtb.speed_test_ytb(port)
                 if METHOD == "NETFLIX":
-                    return stNF.speed_test_netflix(LOCAL_PORT)
+                    return stNF.speed_test_netflix(port)
             except:
                 logger.exception("")
                 return 0, 0, [], 0
         elif method == "YOUTUBE":
             try:
-                return stSocket.speed_test_socket(LOCAL_PORT)
+                result = await stSocket.speed_test_socket(port)
+                return result
             except:
                 logger.exception("")
                 return 0, 0, [], 0
         elif method == "ST_ASYNC":
             try:
-                return st_asyncio.start(LOCAL_ADDRESS, LOCAL_PORT)
+                return st_asyncio.start(LOCAL_ADDRESS, port)
             except:
                 logger.exception("")
                 return 0, 0, [], 0
@@ -95,15 +97,13 @@ class SpeedTestMethods(object):
             raise ValueError("Invalid test method %s." % method)
 
     @staticmethod
-    def start_wps_test():
-        return webpage_simulation.start_web_page_simulation_test(
-            LOCAL_ADDRESS, LOCAL_PORT
-        )
+    def start_wps_test(port):
+        return webpage_simulation.start_web_page_simulation_test(LOCAL_ADDRESS, port)
 
     @staticmethod
-    def google_ping():
+    def google_ping(port):
         logger.info("Testing latency to google.")
-        return google_ping(LOCAL_ADDRESS, LOCAL_PORT)
+        return google_ping(LOCAL_ADDRESS, port)
 
     @staticmethod
     def tcp_ping(server, port):
