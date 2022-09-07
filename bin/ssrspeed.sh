@@ -13,8 +13,8 @@ E[2]="New Features: "
 C[2]="新特性: "
 E[3]="Choose:"
 C[3]="请选择:"
-E[4]="! This cannot be empty !"
-C[4]="! 此处不能为空 !"
+E[4]="！ This cannot be empty！"
+C[4]="！ 此处不能为空！"
 E[5]="More than 5 errors have been entered, and the script exits."
 C[5]="输入错误超过5次, 脚本退出"
 E[6]="Please input a subscription url or a single node supported by v2ray (VLESS is not supported):"
@@ -31,55 +31,60 @@ E[11]="Set the colors when exporting images:\n  1. origin (default)\n  2. poor"
 C[11]="导出图像时设置颜色:\n  1. origin (默认)\n  2. poor"
 E[12]="Select sort method, default not sorted:\n  1. Sort by [speed] from fast to slow\n  2. Sort by [speed] from slow to fast\n  3. Sort by [ping] from low to high\n  4. Sort by [ping] from high to low"
 C[12]="请选择排序方法, 默认不排序, 如默认请跳过:\n  1. 按 [速度] 从快到慢排序\n  2. 按 [速度] 从慢到快排序\n  3. 按 [ping] 从低到高排序\n  4. 按 [ping] 从高到低排序"
-E[13]="This script only supports macOS."
-C[13]="本脚本只支持 macOS "
-E[14]="Step 1/3: Detect and install brew, python3 and git."
-C[14]="进度 1/3: 检测并安装 brew, python3 和 git"
+E[13]="The script supports MacOS, Debian, Ubuntu, CentOS, Arch or Alpine systems only."
+C[13]="本脚本只支持 MacOS, Debian, Ubuntu, CentOS, Arch 或 Alpine 系统"
+E[14]="Step 1/3: Install dependence-list:"
+C[14]="进度 1/3: 安装依赖列表:"
 E[15]="Step 2/3: Update SSRSpeedN and dependencies."
 C[15]="进度 2/3: 更新 SSRSpeedN 和依赖"
 E[16]="Step 3/3: SSRSpeedN speed test."
 C[16]="进度 3/3: SSRSpeedN 测速"
-E[17]="Installing"
-C[17]="安装"
+E[17]="Step 1/3: All dependencies already exist and do not need to be installed additionally."
+C[17]="进度 1/3: 所有依赖已存在，不需要额外安装"
 E[18]="Failed to download the client zip package."
 C[18]="下载客户端压缩包失败"
 E[19]="Client decompression failed."
 C[19]="客户端解压失败"
 E[20]="Whether to uninstall the following python3 dependencies:"
 C[20]="是否卸载以下 python3 依赖:"
-E[21]="Whether to uninstall the following environment dependencies:\n git and python3."
-C[21]="是否卸载以下环境依赖:\n git 和 python3"
-E[22]="Whether to uninstall brew, a package management tool for Mac?"
-C[22]="是否卸载 Mac 下的一个包管理工具 brew"
+E[21]="The script supports AMD64 only."
+C[21]="本脚本只支持 AMD64 架构"
+E[22]="Step 1/3: Detect and install brew, python3 and git."
+C[22]="进度 1/3: 检测并安装 brew, python3 和 git"
 E[23]="To uninstall the above dependencies, please press [y]. The default is not to uninstall:"
 C[23]="卸载以上依赖请按[y], 默认为不卸载:"
 E[24]="Uninstallation of SSRSpeedN is complete."
 C[24]="卸载 SSRSpeedN 已完成"
 E[25]="The SSRSpeedN installation folder cannot be found in the current path. Please check if it is already installed or the installation path."
 C[25]="当前路径下找不到 SSRSpeedN 安装文件夹, 请确认是否已安装或安装路径"
+E[26]="Installing"
+C[26]="安装"
+E[27]="Whether to uninstall the following environment dependencies:\n git and python3."
+C[27]="是否卸载以下环境依赖:\n git 和 python3"
+E[28]="Whether to uninstall brew, a package management tool for Mac?"
+C[28]="是否卸载 Mac 下的一个包管理工具 brew"
 
-# 彩色 log 函数, read 函数, text 函数, 友道翻译函数
+# 彩色 log 函数, read 函数, text 函数
 error() { echo -e "\033[31m\033[01m$1\033[0m" && exit 1; }
 info() { echo -e "\033[32m\033[01m$1\033[0m"; }
 warning() { echo -e "\033[33m\033[01m$1\033[0m"; }
 reading() { read -rp "$(info "$1")" "$2"; }
-text() { eval echo "\${${T}[$1]}"; }
-# translate() { [[ -n "$1" ]] && curl -ksm8 "http://fanyi.youdao.com/translate?&doctype=json&type=AUTO&i=${1//[[:space:]]/}" | cut -d \" -f18 2>/dev/null; }
+text() { eval echo "\${${L}[$*]}"; }
 
-# 选择语言, 先判断 SSRSpeedN/data/language 里的语言选择, 没有的话再让用户选择, 默认英语
+# 选择语言, 先判断 SSRSpeedN/data/setting 里的语言选择, 没有的话再让用户选择, 默认英语
 select_language() {
-  if [[ $T != [CE] ]]; then
-    if [ -e SSRSpeedN/data/language ]; then
-      T=$(cat SSRSpeedN/data/language 2>&1)
+  if [[ "$L" != [CE] ]]; then
+    if [ -e SSRSpeedN/data/setting ]; then
+      L=$(grep 'language' SSRSpeedN/data/setting | cut -d= -f2)
     else
-      T=E && warning "\n $(text 0) \n" && reading " $(text 3) " LNG_CHOICE
-      [[ $LNG_CHOICE = 2 ]] && T=C
+      L=E && warning "\n $(text 0) \n" && reading " $(text 3) " LNG_CHOICE
+      [ "$LNG_CHOICE" = 2 ] && L=C
     fi
   fi
 }
 
 help() {
-  if [[ $T = C ]] || grep -q 'C' SSRSpeedN/data/language; then
+  if [ $L = C ] || grep -q 'language=C' SSRSpeedN/data/setting; then
     echo "
 用法: ssrspeed [-h] [--version] [-c GUICONFIG] [-u URL] [-m TEST_METHOD]
                    [-M TEST_MODE] [--include FILTER [FILTER ...]]
@@ -182,6 +187,38 @@ Options:
   exit 0
 }
 
+check_operating_system(){
+  UNAME=$(uname 2>/dev/null)
+  case "$UNAME" in
+    Darwin ) FILE=clients_darwin_64.zip ;;
+    Linux ) FILE=clients_linux_amd64.zip
+            [ "$(uname -m)"  != "x86_64" ] && error " $(text 21) "
+            [ "$L" = C ] && timedatectl set-timezone Asia/Shanghai || timedatectl set-timezone UTC
+            CMD=( "$(grep -i pretty_name /etc/os-release 2>/dev/null | cut -d \" -f2)"
+                  "$(hostnamectl 2>/dev/null | grep -i system | cut -d : -f2)"
+                  "$(lsb_release -sd 2>/dev/null)"
+                  "$(grep -i description /etc/lsb-release 2>/dev/null | cut -d \" -f2)"
+                  "$(grep . /etc/redhat-release 2>/dev/null)"
+                  "$(grep . /etc/issue 2>/dev/null | cut -d \\ -f1 | sed '/^[ ]*$/d')"
+                )
+
+            for i in "${CMD[@]}"; do SYS="$i" && [ -n "$SYS" ] && break; done
+  
+            REGEX=("debian" "ubuntu" "centos|red hat|kernel|oracle linux|alma|rocky" "'amazon linux'" "alpine" "arch linux")
+            RELEASE=("Debian" "Ubuntu" "CentOS" "CentOS" "Alpine" "Arch")
+            EXCLUDE=("bookworm")
+            PACKAGE_UPDATE=("apt -y update" "apt -y update" "yum -y update" "yum -y update" "apk update -f" "pacman -Sy")
+            PACKAGE_INSTALL=("apt -y install" "apt -y install" "yum -y install" "yum -y install" "apk add -f" "pacman -S --noconfirm")
+            PACKAGE_UNINSTALL=("apt -y autoremove" "apt -y autoremove" "yum -y autoremove" "yum -y autoremove" "apk del -f" "pacman -Rcnsu --noconfirm")
+ 
+            for ((int=0; int<${#REGEX[@]}; int++)); do
+              echo "$SYS" | grep -iq "${REGEX[int]}" && SYSTEM="${RELEASE[int]}" && [ -n "$SYSTEM" ] && break
+            done
+            [ -z "$SYSTEM" ] && error " $(text 13) " ;;
+    * )  error " $(text 13) " ;;
+  esac
+}
+
 input() {
   local i=0
   while [ -z "$URL" ]; do
@@ -203,15 +240,23 @@ input() {
   case "$METHOD_CHOICE" in 1) SORT_METHOD="--sort=speed" ;; 2) SORT_METHOD="--sort=rspeed" ;; 3) SORT_METHOD="--sort=ping" ;; 4) SORT_METHOD="--sort=rping" ;; esac
 }
 
-check_operating_system() {
-  sw_vesrs 2>/dev/null | grep -iqv macos && error " $(text 13) "
+check_dependencies_Darwin() {
+  info "\n $(text 22) \n"
+  ! type -p brew >/dev/null 2>&1 && warning " $(text 26) brew " && sudo /bin/zsh -c "$(curl -fsSL https://gitee.com/cunkai/HomebrewCN/raw/master/Homebrew.sh)"
+  ! type -p pip3 >/dev/null 2>&1 && warning " $(text 26) python3 " && sudo brew install python3
+  ! type -p git >/dev/null 2>&1 && warning " $(text 26) git " && sudo brew install git
+  ! type -p wget >/dev/null 2>&1 && warning " $(text 26) wget " && sudo brew install wget
 }
 
-check_brew() {
-  info "\n $(text 14) \n"
-  ! type -p brew >/dev/null 2>&1 && warning " $(text 17) brew " && sudo /bin/zsh -c "$(curl -fsSL https://gitee.com/cunkai/HomebrewCN/raw/master/Homebrew.sh)"
-  ! type -p pip3 >/dev/null 2>&1 && warning " $(text 17) python3 " && sudo brew install python3
-  ! type -p git >/dev/null 2>&1 && warning " $(text 17) git " && sudo brew install git
+check_dependencies_Linux() {
+  for j in {" sudo"," wget"," git"," python3"," unzip"}; do ! type -p $j >/dev/null 2>&1 && DEPS+=$j; done
+  if [ -n "$DEPS" ]; then
+    info "\n $(text 14) $DEPS \n"
+    ${PACKAGE_UPDATE[int]}
+    ${PACKAGE_INSTALL[int]} $DEPS
+  else
+    info "\n $(text 17) \n"
+  fi
 }
 
 # shellcheck disable=SC2015
@@ -219,17 +264,16 @@ check_ssrspeedn() {
   info "\n $(text 15) \n"
   [ ! -e SSRSpeedN ] && sudo git clone https://github.com/Oreomeow/SSRSpeedN
   if [ ! -e SSRSpeedN/resources/clients ]; then
-    local LATEST
-    LATEST=$(sudo curl -fsSL "https://api.github.com/repos/Oreomeow/SSRSpeedN/releases/latest" | grep tag_name | sed -E 's/.*"([^"]+)".*/\1/' | cut -c 2-)
+    LATEST=$(sudo wget -qO- "https://api.github.com/repos/Oreomeow/SSRSpeedN/releases/latest" | grep tag_name | sed -E 's/.*"([^"]+)".*/\1/' | cut -c 2-)
     LATEST=${LATEST:-'1.1.1'}
-    sudo curl -oL SSRSpeedN/resources/clients_darwin_64.zip https://github.com/OreosLab/SSRSpeedN/releases/download/v"$LATEST"/clients_darwin_64.zip
-    [ ! -e SSRSpeedN/resources/clients_darwin_64.zip ] && error " $(text 18) " || sudo unzip -d SSRSpeedN/resources/ SSRSpeedN/resources/clients_darwin_64.zip
-    [ ! -e SSRSpeedN/resources/clients ] && error " $(text 19) " || sudo rm -f SSRSpeedN/resources/clients_darwin_64.zip
+    sudo wget -O SSRSpeedN/resources/$FILE https://github.com/OreosLab/SSRSpeedN/releases/download/v"$LATEST"/$FILE
+    [ ! -e SSRSpeedN/resources/$FILE ] && error " $(text 18) " || sudo unzip -d SSRSpeedN/resources/ SSRSpeedN/resources/$FILE
+    [ ! -e SSRSpeedN/resources/clients ] && error " $(text 19) " || sudo rm -f SSRSpeedN/resources/$FILE
   fi
   sudo chmod -R +x SSRSpeedN
   cd SSRSpeedN || exit 1
   sudo git pull || sudo git fetch --all && sudo git reset --hard origin/main
-  echo "$T" | sudo tee data/language >/dev/null 2>&1
+  echo "language=$L" | sudo tee data/setting >/dev/null 2>&1
   sudo pip3 install --upgrade pip
   sudo pip3 install six
   sudo pip3 install -r requirements.txt
@@ -247,27 +291,30 @@ uninstall() {
     REQS=$(sed "/^$/d" SSRSpeedN/requirements.txt)
     REQS="${REQS//[[:space:]]/, }"
     warning "\n $(text 20)\n $REQS " && reading " $(text 23) " UNINSTALL_REQS
-    #   warning "\n $(text 21) " && reading " $(text 23) " UNINSTALL_GIT_PYTHON3
-    #   warning "\n $(text 22) " && reading " $(text 23) " UNINSTALL_BREW
+    #  if [ "$UNAME" = Darwin ]; then
+    #    warning "\n $(text 27) " && reading " $(text 23) " UNINSTALL_GIT_PYTHON3
+    #    warning "\n $(text 28) " && reading " $(text 23) " UNINSTALL_BREW
+    #  fi
     cd SSRSpeedN || exit 1
-    [[ $UNINSTALL_REQS = [Yy] ]] && sudo pip3 uninstall -ry requirements.txt
+    [[ "$UNINSTALL_REQS" = [Yy] ]] && sudo pip3 uninstall -yr requirements.txt
     cd ..
-    sudo rm -rf SSRSpeedN
-    #   [[ $UNINSTALL_GIT_PYTHON3 = [Yy] ]] && brew uninstall git
-    #   [[ $UNINSTALL_BREW = [Yy] ]] && sudo
+    sudo rm -rf SSRSpeedN 
+    #  if [ "$UNAME" = Darwin ]; then
+    #    [[ $UNINSTALL_GIT_PYTHON3 = [Yy] ]] && brew uninstall git
+    #    [[ $UNINSTALL_BREW = [Yy] ]] && sudo
+    #  fi
     info " $(text 24) "
     exit 0
   else
     error " $(text 25) "
-    exit 1
   fi
 }
 
 ## Main ##
 
 # 传参 1/2
-[[ "$*" =~ -[Ee] ]] && T=E
-[[ "$*" =~ -[Cc] ]] && T=C
+[[ "$*" =~ -[Ee] ]] && L=E
+[[ "$*" =~ -[Cc] ]] && L=C
 
 select_language
 
@@ -282,6 +329,6 @@ done
 
 check_operating_system
 input
-check_brew
+check_dependencies_$UNAME
 check_ssrspeedn
 test
