@@ -15,6 +15,7 @@ KEY_PATH = {
     "ssrspeed.json": f"{ROOT_PATH}data{_}ssrspeed.json",
     "resources": f"{ROOT_PATH}resources{_}",
     "clients": f"{ROOT_PATH}resources{_}clients{_}",
+    "databases": f"{ROOT_PATH}resources{_}databases{_}",
     "static": f"{ROOT_PATH}resources{_}static{_}",
     "custom": f"{ROOT_PATH}resources{_}static{_}custom{_}",
     "fonts": f"{ROOT_PATH}resources{_}static{_}fonts{_}",

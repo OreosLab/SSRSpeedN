@@ -13,8 +13,8 @@ E[2]="New Features: "
 C[2]="新特性: "
 E[3]="Choose:"
 C[3]="请选择:"
-E[4]="！ This cannot be empty！"
-C[4]="！ 此处不能为空！"
+E[4]="! This cannot be empty !"
+C[4]="! 此处不能为空 !"
 E[5]="More than 5 errors have been entered, and the script exits."
 C[5]="输入错误超过5次, 脚本退出"
 E[6]="Please input a subscription url or a single node supported by v2ray (VLESS is not supported):"
@@ -251,17 +251,16 @@ check_dependencies_Darwin() {
 }
 
 check_dependencies_Linux() {
-  for j in {" sudo"," wget"," git"," python3"," unzip"}; do ! type -p $j >/dev/null 2>&1 && DEPS+=$j; done
+  for j in {" sudo"," wget"," git"," python3"," unzip"}; do ! type -p "$j" >/dev/null 2>&1 && DEPS+=$j; done
   if [ -n "$DEPS" ]; then
     info "\n $(text 14) $DEPS \n"
     ${PACKAGE_UPDATE[int]}
-    ${PACKAGE_INSTALL[int]} $DEPS
+    ${PACKAGE_INSTALL[int]} "$DEPS"
   else
     info "\n $(text 17) \n"
   fi
 }
 
-# shellcheck disable=SC2015
 check_ssrspeedn() {
   info "\n $(text 15) \n"
   [ ! -e SSRSpeedN ] && sudo git clone https://github.com/Oreomeow/SSRSpeedN
@@ -331,6 +330,6 @@ done
 
 check_operating_system
 input
-check_dependencies_$UNAME
+check_dependencies_"$UNAME"
 check_ssrspeedn
 test
