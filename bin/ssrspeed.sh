@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# shellcheck disable=SC2034
+# shellcheck disable=SC2015,2034
 
 # 当前脚本版本号和新增功能
 VERSION=1.0.0
@@ -187,35 +187,37 @@ Options:
   exit 0
 }
 
-check_operating_system(){
+check_operating_system() {
   UNAME=$(uname 2>/dev/null)
   case "$UNAME" in
-    Darwin ) FILE=clients_darwin_64.zip ;;
-    Linux ) FILE=clients_linux_amd64.zip
-            [ "$(uname -m)"  != "x86_64" ] && error " $(text 21) "
-            [ "$L" = C ] && timedatectl set-timezone Asia/Shanghai || timedatectl set-timezone UTC
-            CMD=( "$(grep -i pretty_name /etc/os-release 2>/dev/null | cut -d \" -f2)"
-                  "$(hostnamectl 2>/dev/null | grep -i system | cut -d : -f2)"
-                  "$(lsb_release -sd 2>/dev/null)"
-                  "$(grep -i description /etc/lsb-release 2>/dev/null | cut -d \" -f2)"
-                  "$(grep . /etc/redhat-release 2>/dev/null)"
-                  "$(grep . /etc/issue 2>/dev/null | cut -d \\ -f1 | sed '/^[ ]*$/d')"
-                )
+  Darwin) FILE=clients_darwin_64.zip ;;
+  Linux)
+    FILE=clients_linux_amd64.zip
+    [ "$(uname -m)" != "x86_64" ] && error " $(text 21) "
+    [ "$L" = C ] && timedatectl set-timezone Asia/Shanghai || timedatectl set-timezone UTC
+    CMD=("$(grep -i pretty_name /etc/os-release 2>/dev/null | cut -d \" -f2)"
+    "$(hostnamectl 2>/dev/null | grep -i system | cut -d : -f2)"
+    "$(lsb_release -sd 2>/dev/null)"
+    "$(grep -i description /etc/lsb-release 2>/dev/null | cut -d \" -f2)"
+    "$(grep . /etc/redhat-release 2>/dev/null)"
+    "$(grep . /etc/issue 2>/dev/null | cut -d \\ -f1 | sed '/^[ ]*$/d')"
+    )
 
-            for i in "${CMD[@]}"; do SYS="$i" && [ -n "$SYS" ] && break; done
-  
-            REGEX=("debian" "ubuntu" "centos|red hat|kernel|oracle linux|alma|rocky" "'amazon linux'" "alpine" "arch linux")
-            RELEASE=("Debian" "Ubuntu" "CentOS" "CentOS" "Alpine" "Arch")
-            EXCLUDE=("bookworm")
-            PACKAGE_UPDATE=("apt -y update" "apt -y update" "yum -y update" "yum -y update" "apk update -f" "pacman -Sy")
-            PACKAGE_INSTALL=("apt -y install" "apt -y install" "yum -y install" "yum -y install" "apk add -f" "pacman -S --noconfirm")
-            PACKAGE_UNINSTALL=("apt -y autoremove" "apt -y autoremove" "yum -y autoremove" "yum -y autoremove" "apk del -f" "pacman -Rcnsu --noconfirm")
- 
-            for ((int=0; int<${#REGEX[@]}; int++)); do
-              echo "$SYS" | grep -iq "${REGEX[int]}" && SYSTEM="${RELEASE[int]}" && [ -n "$SYSTEM" ] && break
-            done
-            [ -z "$SYSTEM" ] && error " $(text 13) " ;;
-    * )  error " $(text 13) " ;;
+    for i in "${CMD[@]}"; do SYS="$i" && [ -n "$SYS" ] && break; done
+
+    REGEX=("debian" "ubuntu" "centos|red hat|kernel|oracle linux|alma|rocky" "'amazon linux'" "alpine" "arch linux")
+    RELEASE=("Debian" "Ubuntu" "CentOS" "CentOS" "Alpine" "Arch")
+    EXCLUDE=("bookworm")
+    PACKAGE_UPDATE=("apt -y update" "apt -y update" "yum -y update" "yum -y update" "apk update -f" "pacman -Sy")
+    PACKAGE_INSTALL=("apt -y install" "apt -y install" "yum -y install" "yum -y install" "apk add -f" "pacman -S --noconfirm")
+    PACKAGE_UNINSTALL=("apt -y autoremove" "apt -y autoremove" "yum -y autoremove" "yum -y autoremove" "apk del -f" "pacman -Rcnsu --noconfirm")
+
+    for ((int = 0; int < ${#REGEX[@]}; int++)); do
+      echo "$SYS" | grep -iq "${REGEX[int]}" && SYSTEM="${RELEASE[int]}" && [ -n "$SYSTEM" ] && break
+    done
+    [ -z "$SYSTEM" ] && error " $(text 13) "
+    ;;
+  *) error " $(text 13) " ;;
   esac
 }
 
@@ -298,7 +300,7 @@ uninstall() {
     cd SSRSpeedN || exit 1
     [[ "$UNINSTALL_REQS" = [Yy] ]] && sudo pip3 uninstall -yr requirements.txt
     cd ..
-    sudo rm -rf SSRSpeedN 
+    sudo rm -rf SSRSpeedN
     #  if [ "$UNAME" = Darwin ]; then
     #    [[ $UNINSTALL_GIT_PYTHON3 = [Yy] ]] && brew uninstall git
     #    [[ $UNINSTALL_BREW = [Yy] ]] && sudo
