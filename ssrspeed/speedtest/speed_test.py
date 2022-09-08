@@ -468,8 +468,8 @@ class SpeedTest(object):
         self.load_geo_info()
         if os.name == "nt":
             asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-            loop = asyncio.get_event_loop()
-            loop.run_until_complete(self.__run(test_mode))
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(self.__run(test_mode))
         self.__current = {}
 
     def web_page_simulation(self):
