@@ -55,7 +55,7 @@ class SpeedTestMethods(object):
                 result = s.results.dict()
                 self.__init_socket()
                 return result["download"] / 8, 0, [], 0  # bits to bytes
-            except:
+            except Exception:
                 logger.error("", exc_info=True)
                 return 0, 0, [], 0
         elif method == "FAST":
@@ -65,7 +65,7 @@ class SpeedTestMethods(object):
                 self.__init_socket()
                 # print(result)
                 return result, 0, [], 0
-            except:
+            except Exception:
                 logger.error("", exc_info=True)
                 return 0, 0, [], 0
         elif method == "SOCKET":  # Old speedtest
@@ -77,20 +77,20 @@ class SpeedTestMethods(object):
                     return stYtb.speed_test_ytb(port)
                 if METHOD == "NETFLIX":
                     return stNF.speed_test_netflix(port)
-            except:
+            except Exception:
                 logger.error("", exc_info=True)
                 return 0, 0, [], 0
         elif method == "YOUTUBE":
             try:
                 result = await stSocket.speed_test_socket(port)
                 return result
-            except:
+            except Exception:
                 logger.error("", exc_info=True)
                 return 0, 0, [], 0
         elif method == "ST_ASYNC":
             try:
                 return st_asyncio.start(LOCAL_ADDRESS, port)
-            except:
+            except Exception:
                 logger.error("", exc_info=True)
                 return 0, 0, [], 0
         else:

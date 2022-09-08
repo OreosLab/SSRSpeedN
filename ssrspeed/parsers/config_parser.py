@@ -242,7 +242,7 @@ class UniversalParser:
                 t = r.headers["subscription-userinfo"]
                 dl = int(t[t.find("download") + 9 : t.find("total") - 2])
                 _sum = dl
-            except:
+            except Exception:
                 _sum = 0
 
             with open(TEST_TXT, "a+", encoding="utf-8") as test:

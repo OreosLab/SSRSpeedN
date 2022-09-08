@@ -46,7 +46,7 @@ class ParserShadowsocksBasic(object):
             _config["remarks"] = _config["server"]
         except binascii.Error:
             raise ValueError("Not shadowsocks basic link.")
-        except:
+        except Exception:
             logger.error(f"Exception link {link}", exc_info=True)
             return None
         return _config
@@ -108,7 +108,7 @@ class ParserShadowsocksBasic(object):
                 self.parse_gui_data(full_conf)
             except json.decoder.JSONDecodeError:
                 return []
-            except:
+            except Exception:
                 logger.error("Not Shadowsocks configuration file.", exc_info=True)
                 return []
 

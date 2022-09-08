@@ -33,11 +33,11 @@ async def parse_location(port):
             return True, tmp["country_code"], tmp["continent_code"], tmp["organization"]
     except asyncio.TimeoutError:
         logger.error("Parse location timeout.")
-    except:
+    except Exception:
         logger.error("Parse location failed.", exc_info=True)
         try:
             logger.error(response.content)
-        except:
+        except Exception:
             pass
     return False, "DEFAULT", "DEFAULT", "DEFAULT"
 
@@ -105,11 +105,11 @@ async def ip_loc(port):
     except asyncio.IncompleteReadError:
         logger.error("Geo IP Incomplete Read.")
         return {}
-    except:
+    except Exception:
         logger.error("Geo IP Failed.", exc_info=True)
         try:
             logger.error(response.content)
-        except:
+        except Exception:
             return {}
     finally:
         await asyncio.sleep(0.1)

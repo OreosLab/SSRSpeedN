@@ -63,9 +63,7 @@ class ClashParser:
             plugin_opts = ""
             if plugin:
                 plugin_opts += (
-                    f'obfs={p_opts.get("mode", "")}'
-                    if p_opts.get("mode", "")
-                    else ""
+                    f'obfs={p_opts.get("mode", "")}' if p_opts.get("mode", "") else ""
                 )
                 plugin_opts += (
                     f';obfs-host={p_opts.get("host", "")}'
@@ -195,5 +193,5 @@ class ClashParser:
         with open(filename, "r+", encoding="utf-8") as f:
             try:
                 self.parse_config(f.read())
-            except:
+            except Exception:
                 logger.error("Not Clash config.", exc_info=True)

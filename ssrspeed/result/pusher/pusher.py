@@ -28,7 +28,7 @@ def push2server(filename: str) -> dict:
     except requests.exceptions.Timeout:
         logger.error("Connect to server timeout.")
         return result
-    except:
+    except Exception:
         logger.error("Pushing result to server error.", exc_info=True)
         return result
 

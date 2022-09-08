@@ -20,10 +20,10 @@ class TrojanParser(BaseParser):
         def percent_decode(s: str) -> str:
             try:
                 s = unquote(s, encoding="gb2312", errors="strict")
-            except:
+            except Exception:
                 try:
                     s = unquote(s, encoding="utf8", errors="strict")
-                except:
+                except Exception:
                     # error decoding
                     # raise # warning is enough
                     pass

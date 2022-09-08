@@ -68,7 +68,7 @@ class ExportResult(object):
                 for speed in self.__colors.keys():
                     try:
                         self.__color_speed_list.append(float(speed))
-                    except:
+                    except Exception:
                         continue
                 self.__color_speed_list.sort()
                 return
@@ -1045,7 +1045,7 @@ class ExportResult(object):
                 t = r.headers["subscription-userinfo"]
                 dl = int(t[t.find("download") + 9 : t.find("total") - 2])
                 sum_ = dl
-            except:
+            except Exception:
                 sum_ = 0
             avgrate = (sum_ - sum0) / total_traffic if total_traffic else 0
             if (sum_ - sum0) > 0:

@@ -58,6 +58,6 @@ class DownloadRuleMatch:
                 return self._check_rule(data)
             else:
                 return self._get_download_link()
-        except:
+        except Exception:
             logger.error("", exc_info=True)
             return self._get_download_link()

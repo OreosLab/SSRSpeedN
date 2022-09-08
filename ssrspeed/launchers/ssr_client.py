@@ -114,9 +114,9 @@ class ShadowsocksR(BaseClient):
                         stdout=subprocess.DEVNULL,
                         stderr=subprocess.DEVNULL,
                     )
-                    logger.info(
-                        f'Starting shadowsocksr-Python with server {config["server"]}:{config["server_port"]}'
-                    )
+                logger.info(
+                    f'Starting shadowsocksr-Python with server {config["server"]}:{config["server_port"]}'
+                )
 
             else:
                 logger.critical(
@@ -182,7 +182,7 @@ class ShadowsocksRR(BaseClient):
                 continue
             # 	self.next_win_conf()
             # 	return False
-            except:
+            except Exception:
                 logger.error("Get current config failed.", exc_info=True)
                 return False
 
@@ -213,7 +213,7 @@ class ShadowsocksRR(BaseClient):
                     return False
                 continue
             # 	return False
-            except:
+            except Exception:
                 logger.error("Request next config failed.", exc_info=True)
                 return False
 

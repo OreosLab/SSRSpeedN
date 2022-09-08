@@ -49,9 +49,7 @@ class ParserV2RayQuantumult(object):
             if link_split[6].split("=")[1] == "true":
                 tls = "tls"
                 tls_host = link_split[7].split("=")[1]
-                allow_insecure = (
-                    False if (link_split[8].split("=")[1] == "1") else True
-                )
+                allow_insecure = False if (link_split[8].split("=")[1] == "1") else True
             else:
                 allow_insecure = True
             i = 7
@@ -61,10 +59,7 @@ class ParserV2RayQuantumult(object):
                 net = link_split[i + 1].split("=")[1]
                 path = link_split[i + 2].split("=")[1].replace('"', "")
                 header = (
-                    link_split[i + 3]
-                    .split("=")[1]
-                    .replace('"', "")
-                    .split("[Rr][Nn]")
+                    link_split[i + 3].split("=")[1].replace('"', "").split("[Rr][Nn]")
                 )
                 if len(header) > 0:
                     host = header[0].split(":")[1].strip()
@@ -102,6 +97,6 @@ class ParserV2RayQuantumult(object):
                 "tls-host": tls_host,
             }
             return _config
-        except:
+        except Exception:
             logger.error(f"Parse {raw_link} failed. (Quantumult Method)", exc_info=True)
             return None

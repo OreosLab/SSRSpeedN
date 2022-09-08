@@ -63,7 +63,7 @@ async def execute(url, host, port):
         logger.error("Url: {} timeout.".format(url))
     except aiohttp.ClientSSLError:
         logger.error("SSL Error on : {}".format(url))
-    except:
+    except Exception:
         logger.error(f"Unknown Error on : {url}", exc_info=True)
     finally:
         results.append(res)
@@ -88,7 +88,7 @@ def wps_thread(url, proxies):
         )
     except requests.exceptions.Timeout:
         logger.error("Url: {} timeout.".format(url))
-    except:
+    except Exception:
         logger.error("", exc_info=True)
     finally:
         resLock.acquire()

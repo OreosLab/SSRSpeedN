@@ -17,7 +17,7 @@ try:
     check_port(ssrconfig["localPort"])
     print(
         f'Port {ssrconfig["localPort"]} already in use, '
-        f'please change the local port in ssrspeed.json or terminate the application.'
+        f"please change the local port in ssrspeed.json or terminate the application."
     )
     sys.exit(0)
 except (ConnectionRefusedError, socket.timeout):

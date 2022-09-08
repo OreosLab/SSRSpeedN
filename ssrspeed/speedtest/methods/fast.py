@@ -89,7 +89,7 @@ def fast_com(verbose=False, maxtime=15, forceipv4=False, forceipv6=False):
     url = "https://fast.com/"
     try:
         urlresult = urllib.request.urlopen(url)
-    except:
+    except Exception:
         logger.error("No connection at all", exc_info=True)
         # no connection at all?
         return 0
@@ -106,7 +106,7 @@ def fast_com(verbose=False, maxtime=15, forceipv4=False, forceipv6=False):
         logger.debug("javascript url is" + url)
     try:
         urlresult = urllib.request.urlopen(url)
-    except:
+    except Exception:
         # connection is broken
         return 0
     all_js_stuff = (
@@ -142,7 +142,7 @@ def fast_com(verbose=False, maxtime=15, forceipv4=False, forceipv6=False):
         logger.debug("API url is" + url)
     try:
         urlresult = urllib.request.urlopen(url=url, timeout=2)  # 2 second time-out
-    except:
+    except Exception:
         # not good
         if verbose:
             logger.error(
@@ -174,7 +174,7 @@ def fast_com(verbose=False, maxtime=15, forceipv4=False, forceipv6=False):
             socket.getaddrinfo(fqdn, None, socket.AF_INET6)
             if verbose:
                 logger.info("IPv6")
-        except:
+        except Exception:
             pass
 
     # Now start the threads

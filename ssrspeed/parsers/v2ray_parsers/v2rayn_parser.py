@@ -70,7 +70,7 @@ class ParserV2RayN(object):
                 "tls": tls,
             }
             return _config
-        except:
+        except Exception:
             logger.error(f"Parse {raw_link} failed. (V2RayN Method)", exc_info=True)
             return None
 
@@ -107,7 +107,7 @@ class ParserV2RayN(object):
         with open(filename, "r", encoding="utf-8") as f:
             try:
                 config = json.load(f)
-            except:
+            except Exception:
                 logger.error("Not V2RayN Config.", exc_info=True)
                 return False
         return self.parse_gui_data(config)

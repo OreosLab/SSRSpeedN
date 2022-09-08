@@ -116,7 +116,7 @@ class RequirementsCheck(object):
                     logger.error("Libsodium not found.")
                     return False
                 return True
-            except:
+            except Exception:
                 logger.error("", exc_info=True)
                 return False
         # 	return True
@@ -138,7 +138,7 @@ class RequirementsCheck(object):
                 if "libsodium" not in out.decode("utf-8"):
                     return False
                 return True
-            except:
+            except Exception:
                 logger.error("", exc_info=True)
                 return False
 

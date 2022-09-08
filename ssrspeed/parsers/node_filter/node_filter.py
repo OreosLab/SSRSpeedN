@@ -50,7 +50,7 @@ class NodeFilter:
                     logger.warning(
                         f'{item.get("group", "N/A")} - {item.get("remarks", "N/A")} '
                         f'({item.get("server", "Server EMPTY")}:{item.get("server_port", item.get("port", 0))}) '
-                        f'already in list. '
+                        f"already in list. "
                     )
                     return True
             else:

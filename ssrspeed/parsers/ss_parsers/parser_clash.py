@@ -87,7 +87,7 @@ class ParserShadowsocksClash(object):
     def parse_subs_config(self, config) -> list:
         try:
             clash_cfg = yaml.load(config, Loader=yaml.FullLoader)
-        except:
+        except Exception:
             logger.error("Not Clash Subscription.", exc_info=True)
             return []
 
@@ -99,7 +99,7 @@ class ParserShadowsocksClash(object):
         with open(filename, "r+", encoding="utf-8") as f:
             try:
                 clash_cfg = yaml.load(f, Loader=yaml.FullLoader)
-            except:
+            except Exception:
                 logger.error("Not Clash config.", exc_info=True)
                 return []
 

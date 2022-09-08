@@ -48,7 +48,7 @@ def speed_test_thread(link: str) -> Optional[int]:
         try:
             s.connect((host, 80))
             logger.debug("Connected to %s" % host)
-        except:
+        except Exception:
             logger.error("Connect to %s error." % host)
             LOCK.acquire()
             TOTAL_RECEIVED += 0
@@ -96,7 +96,7 @@ def speed_test_thread(link: str) -> Optional[int]:
         # 	TOTAL_RECEIVED += received
         MAX_TIME = max(MAX_TIME, delta_time)
         LOCK.release()
-    except:
+    except Exception:
         logger.error("", exc_info=True)
         return 0
 
