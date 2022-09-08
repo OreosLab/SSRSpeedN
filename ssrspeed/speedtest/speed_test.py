@@ -26,7 +26,8 @@ from ssrspeed.utils import check_port, domain2ip, ip_loc
 logger = logging.getLogger("Sub")
 
 LOCAL_ADDRESS = ssrconfig["localAddress"]
-LOCAL_PORT = ssrconfig["localPort"]
+LOCAL_PORT = int(ssrconfig["localPort"])
+MAX_CONNECTIONS = int(ssrconfig["maxConnections"])
 PING_TEST = ssrconfig["ping"]
 GOOGLE_PING_TEST = ssrconfig["gping"]
 NETFLIX_TEST = ssrconfig["netflix"]
@@ -140,11 +141,10 @@ class SpeedTest(object):
             country = country_info.names.get("en", "N/A")
             country_code = country_info.iso_code
             city = self.__city_data.city(ip).city.names.get("en", "Unknown City")
+            organization = self.__ans_data.asn(ip).autonomous_system_organization
         except ValueError as e:
             logger.error(e)
-        try:
-            organization = self.__ans_data.asn(ip).autonomous_system_organization
-        except geoip2.errors.AddressNotFoundError as e:
+        except AddressNotFoundError as e:
             logger.error(e)
         return {
             "country": country,
@@ -451,7 +451,7 @@ class SpeedTest(object):
         semaphore = asyncio.Semaphore(1)
         port_queue = asyncio.Queue()
         dic = {"done_nodes": 0, "total_nodes": len(self.__configs)}
-        for i in range(10870, 10920):
+        for i in range(LOCAL_PORT, LOCAL_PORT + MAX_CONNECTIONS):
             port_queue.put_nowait(i)
         for node in self.__configs:
             task_list.append(

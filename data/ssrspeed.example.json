@@ -1,6 +1,7 @@
 {
     "localAddress": "127.0.0.1",
     "localPort": 10870,
+    "maxConnections": 50,
     "excludeRemarks": ["剩余流量", "到期时间", "过期时间"],
     "proxy": {
         "enabled": false,
