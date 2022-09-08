@@ -246,8 +246,9 @@ class SpeedTest(object):
             "country_code": outbound_info.get("country_code", "N/A"),
         }
 
-    def __tcp_ping(self, server, server_port, port):
+    async def __tcp_ping(self, server, server_port, port):
         latency_test = None
+        st = SpeedTestMethods()
         res = {
             "loss": self.__base_result["loss"],
             "ping": self.__base_result["ping"],
@@ -258,8 +259,7 @@ class SpeedTest(object):
         }
 
         if PING_TEST:
-            st = SpeedTestMethods()
-            latency_test = st.tcp_ping(server, server_port)
+            latency_test = await st.tcp_ping(server, server_port)
             res["loss"] = 1 - latency_test[1]
             res["ping"] = latency_test[0]
             res["rawTcpPingStatus"] = latency_test[2]
@@ -268,8 +268,7 @@ class SpeedTest(object):
         if (not PING_TEST) or (latency_test[0] > 0):
             if GOOGLE_PING_TEST:
                 try:
-                    st = SpeedTestMethods()
-                    google_ping_test = st.google_ping(port)
+                    google_ping_test = await st.google_ping(port)
                     res["gPing"] = google_ping_test[0]
                     res["gPingLoss"] = 1 - google_ping_test[1]
                     res["rawGooglePingStatus"] = google_ping_test[2]
@@ -363,7 +362,7 @@ class SpeedTest(object):
         inbound_info = await self.__geo_ip_inbound(cfg)
         _item["geoIP"]["inbound"]["address"] = self.inboundGeoIP
         _item["geoIP"]["inbound"]["info"] = inbound_info[0]
-        ping_result = self.__tcp_ping(cfg["server"], cfg["server_port"], port)
+        ping_result = await self.__tcp_ping(cfg["server"], cfg["server_port"], port)
         if isinstance(ping_result, dict):
             for k in ping_result.keys():
                 _item[k] = ping_result[k]
@@ -470,6 +469,7 @@ class SpeedTest(object):
             asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
         loop = asyncio.get_event_loop()
         loop.run_until_complete(self.__run(test_mode))
+        loop.close()
         self.__current = {}
 
     def web_page_simulation(self):
