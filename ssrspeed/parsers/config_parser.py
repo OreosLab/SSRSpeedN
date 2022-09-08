@@ -211,7 +211,7 @@ class UniversalParser:
 
     def print_nodes(self):
         for item in self.nodes:
-            logger.info("{} - {}".format(item.config["group"], item.config["remarks"]))
+            logger.info(f'{item.config["group"]} - {item.config["remarks"]}')
 
     # logger.info(f"{len(self.__nodes)} node(s) in list.")
 
@@ -233,7 +233,7 @@ class UniversalParser:
                 "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) "
                 "Chrome/39.0.2171.95 Safari/537.36 "
             }
-            logger.info("Reading {}".format(url))
+            logger.info(f"Reading {url}")
 
             clash_ua = {"User-Agent": "Clash"}
 
@@ -246,20 +246,16 @@ class UniversalParser:
                 _sum = 0
 
             with open(TEST_TXT, "a+", encoding="utf-8") as test:
-                test.write("{}\n".format(url))
-                test.write("{}\n".format(_sum))
+                test.write(f"{url}\n")
+                test.write(f"{_sum}\n")
 
             if PROXY_SETTINGS["enabled"]:
                 auth = ""
                 if PROXY_SETTINGS["username"]:
-                    auth = "{}:{}@".format(
-                        PROXY_SETTINGS["username"], PROXY_SETTINGS["password"]
-                    )
-                proxy = "socks5://{}{}:{}".format(
-                    auth, PROXY_SETTINGS["address"], PROXY_SETTINGS["port"]
-                )
+                    auth = f'{PROXY_SETTINGS["username"]}:{PROXY_SETTINGS["password"]}@'
+                proxy = f'socks5://{auth}{PROXY_SETTINGS["address"]}:{PROXY_SETTINGS["port"]}'
                 proxies = {"http": proxy, "https": proxy}
-                logger.info("Reading subscription via {}".format(proxy))
+                logger.info(f"Reading subscription via {proxy}")
                 rep = requests.get(url, headers=header, timeout=15, proxies=proxies)
             else:
                 rep = requests.get(url, headers=header, timeout=15)

@@ -20,7 +20,7 @@ CLIENTS_DIR = KEY_PATH["clients"]
 
 
 class ShadowsocksR(BaseClient):
-    def __init__(self, file):
+    def __init__(self, file: str):
         super(ShadowsocksR, self).__init__()
         self.useSsrCSharp: bool = False
         self.config_file: str = f"{file}.json"
@@ -75,8 +75,7 @@ class ShadowsocksR(BaseClient):
                         ]
                     )
                     logger.info(
-                        "Starting shadowsocksr-libev with server %s:%d"
-                        % (config["server"], config["server_port"])
+                        f'Starting shadowsocksr-libev with server {config["server"]}:{config["server_port"]}'
                     )
                 else:
                     self._process = subprocess.Popen(
@@ -90,8 +89,7 @@ class ShadowsocksR(BaseClient):
                         stderr=subprocess.DEVNULL,
                     )
                     logger.info(
-                        "Starting shadowsocksr-libev with server %s:%d"
-                        % (config["server"], config["server_port"])
+                        f'Starting shadowsocksr-libev with server {config["server"]}:{config["server_port"]}'
                     )
 
             elif self._platform == "Linux" or self._platform == "MacOS":
@@ -116,10 +114,9 @@ class ShadowsocksR(BaseClient):
                         stdout=subprocess.DEVNULL,
                         stderr=subprocess.DEVNULL,
                     )
-                logger.info(
-                    "Starting shadowsocksr-Python with server %s:%d"
-                    % (config["server"], config["server_port"])
-                )
+                    logger.info(
+                        f'Starting shadowsocksr-Python with server {config["server"]}:{config["server_port"]}'
+                    )
 
             else:
                 logger.critical(
@@ -172,8 +169,7 @@ class ShadowsocksRR(BaseClient):
         while True:
             try:
                 rep = requests.post(
-                    "http://%s:%d/api?auth=%s"
-                    % (self._localAddress, self._localPort, self.__ssrAuth),
+                    f"http://{self._localAddress}:{self._localPort}/api?auth={self.__ssrAuth}",
                     params=param,
                     timeout=5,
                 )
@@ -187,7 +183,7 @@ class ShadowsocksRR(BaseClient):
             # 	self.next_win_conf()
             # 	return False
             except:
-                logger.exception("Get current config failed.")
+                logger.error("Get current config failed.", exc_info=True)
                 return False
 
         rep.encoding = "utf-8"
@@ -205,8 +201,7 @@ class ShadowsocksRR(BaseClient):
         while True:
             try:
                 rep = requests.post(
-                    "http://%s:%d/api?auth=%s"
-                    % (self._localAddress, self._localPort, self.__ssrAuth),
+                    f"http://{self._localAddress}:{self._localPort}/api?auth={self.__ssrAuth}",
                     params=param,
                     timeout=5,
                 )
@@ -219,7 +214,7 @@ class ShadowsocksRR(BaseClient):
                 continue
             # 	return False
             except:
-                logger.exception("Request next config failed.")
+                logger.error("Request next config failed.", exc_info=True)
                 return False
 
         if rep.status_code == 403:
@@ -263,8 +258,7 @@ class ShadowsocksRR(BaseClient):
                         stderr=subprocess.DEVNULL,
                     )
                 logger.info(
-                    "Starting shadowsocksr-Python with server %s:%d"
-                    % (config["server"], config["server_port"])
+                    f'Starting shadowsocksr-Python with server {config["server"]}:{config["server_port"]}'
                 )
 
             else:

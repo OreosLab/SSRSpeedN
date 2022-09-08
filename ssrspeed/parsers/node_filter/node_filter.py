@@ -48,12 +48,9 @@ class NodeFilter:
             if server1 and server2 and port1 and port2:
                 if server1 == server2 and port1 == port2:
                     logger.warning(
-                        "{} - {} ({}:{}) already in list.".format(
-                            item.get("group", "N/A"),
-                            item.get("remarks", "N/A"),
-                            item.get("server", "Server EMPTY"),
-                            item.get("server_port", item.get("port", 0)),
-                        )
+                        f'{item.get("group", "N/A")} - {item.get("remarks", "N/A")} '
+                        f'({item.get("server", "Server EMPTY")}:{item.get("server_port", item.get("port", 0))}) '
+                        f'already in list. '
                     )
                     return True
             else:
@@ -164,9 +161,7 @@ class NodeFilter:
                         _list.append(item)
                     else:
                         logger.debug(
-                            "Excluded {} - {}".format(
-                                config["group"], config["remarks"]
-                            )
+                            f'Excluded {config["group"]} - {config["remarks"]}'
                         )
                 self.__node_list = _list
         self.__exclude_group(gkwl)

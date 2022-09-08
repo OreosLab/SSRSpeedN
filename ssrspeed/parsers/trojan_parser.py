@@ -14,7 +14,7 @@ class TrojanParser(BaseParser):
     # From: https://github.com/NyanChanMeow/SSRSpeed/issues/105
     def _parse_link(self, link: str) -> dict:
         if not link.startswith("trojan://"):
-            logger.error("Unsupported link : {}".format(link))
+            logger.error(f"Unsupported link : {link}")
             return {}
 
         def percent_decode(s: str) -> str:

@@ -19,7 +19,7 @@ class ParserShadowsocksSIP002:
     def __parse_link(self, link: str) -> Optional[dict]:
         _config = self.__get_shadowsocks_base_config()
         if link[:5] != "ss://":
-            logger.error("Unsupported link : %s" % link)
+            logger.error(f"Unsupported link : {link}")
             return None
 
         url_unquoted = urllib.parse.unquote(link)
@@ -77,5 +77,5 @@ class ParserShadowsocksSIP002:
             cfg = self.__parse_link(link)
             if cfg:
                 self.__config_list.append(cfg)
-        logger.info("Read {} config(s).".format(len(self.__config_list)))
+        logger.info(f"Read {len(self.__config_list)} config(s).")
         return self.__config_list

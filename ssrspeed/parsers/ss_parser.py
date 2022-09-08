@@ -53,7 +53,7 @@ class ShadowsocksParser(BaseParser):
                 logger.info("Try Shadowsocks Clash Parser.")
                 pssc = ParserShadowsocksClash(self._get_shadowsocks_base_config())
                 self._config_list = pssc.parse_subs_config(res)
-        logger.info("Read %d node(s)." % len(self._config_list))
+        logger.info(f"Read {len(self._config_list)} node(s).")
 
     def read_gui_config(self, filename: str):
         logger.info("Try Shadowsocks Basic or ShadowsocksD Parser.")
@@ -69,4 +69,4 @@ class ShadowsocksParser(BaseParser):
                 cfg = []
                 logger.critical("Unsupported config file.")
         self._config_list = cfg
-        logger.info("Read %d node(s)." % len(self._config_list))
+        logger.info(f"Read {len(self._config_list)} node(s).")

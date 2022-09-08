@@ -15,30 +15,30 @@ class ParserV2RayQuantumult(object):
         link = raw_link[8:]
         link_decoded = b64plus.decode(link).decode("utf-8")
         try:
-            link_splited = link_decoded.split(",")
+            link_split = link_decoded.split(",")
 
             new_list = []
             while True:
                 try:
-                    item = link_splited.pop(0)
+                    item = link_split.pop(0)
                 except IndexError:
                     break
                 text = item
                 while text.count('"') % 2 != 0:
                     try:
-                        text += ", {}".format(link_splited.pop(0))
+                        text += f", {link_split.pop(0)}"
                     except IndexError:
                         raise ValueError("Invalid Quantumult URL.")
                 new_list.append(text)
-            link_splited = new_list
+            link_split = new_list
 
-            remarks = link_splited[0].split(" = ")[0]
-            server = link_splited[1]
+            remarks = link_split[0].split(" = ")[0]
+            server = link_split[1]
             remarks = remarks if remarks else server
-            port = int(link_splited[2])
-            security = link_splited[3]
-            uuid = link_splited[4].replace('"', "")
-            group = link_splited[5].split("=")[1]
+            port = int(link_split[2])
+            security = link_split[3]
+            uuid = link_split[4].replace('"', "")
+            group = link_split[5].split("=")[1]
             tls = ""
             tls_host = ""
             host = ""  # http host, web socket host, h2 host, quic encrypt method
@@ -46,22 +46,25 @@ class ParserV2RayQuantumult(object):
             path = ""  # Websocket path, http path, quic encrypt key
             headers = []
 
-            if link_splited[6].split("=")[1] == "true":
+            if link_split[6].split("=")[1] == "true":
                 tls = "tls"
-                tls_host = link_splited[7].split("=")[1]
+                tls_host = link_split[7].split("=")[1]
                 allow_insecure = (
-                    False if (link_splited[8].split("=")[1] == "1") else True
+                    False if (link_split[8].split("=")[1] == "1") else True
                 )
             else:
                 allow_insecure = True
             i = 7
             if tls:
                 i = 8
-            if len(link_splited) == 11 or len(link_splited) == 12:
-                net = link_splited[i + 1].split("=")[1]
-                path = link_splited[i + 2].split("=")[1].replace('"', "")
+            if len(link_split) == 11 or len(link_split) == 12:
+                net = link_split[i + 1].split("=")[1]
+                path = link_split[i + 2].split("=")[1].replace('"', "")
                 header = (
-                    link_splited[i + 3].split("=")[1].replace('"', "").split("[Rr][Nn]")
+                    link_split[i + 3]
+                    .split("=")[1]
+                    .replace('"', "")
+                    .split("[Rr][Nn]")
                 )
                 if len(header) > 0:
                     host = header[0].split(":")[1].strip()
@@ -76,22 +79,10 @@ class ParserV2RayQuantumult(object):
             _type = "none"  # Obfs type under tcp mode
             aid = 0
             logger.debug(
-                "Server : {}, Port : {}, tls-host : {}, Path : {}, Type : {}, UUID : {}, AlterId : {}, Network : {}, "
-                "Host : {}, Headers : {}, TLS : {}, Remarks : {}, group={}".format(
-                    server,
-                    port,
-                    tls_host,
-                    path,
-                    _type,
-                    uuid,
-                    aid,
-                    net,
-                    host,
-                    headers,
-                    tls,
-                    remarks,
-                    group,
-                )
+                f"Server : {server}, Port : {port}, tls-host : {tls_host}, Path : {path}, "
+                f"Type : {_type}, UUID : {uuid}, AlterId : {aid}, Network : {net}, "
+                f"Host : {host}, Headers : {headers}, TLS : {tls}, Remarks : {remarks}, "
+                f"group={group}"
             )
             _config = {
                 "remarks": remarks,
@@ -112,5 +103,5 @@ class ParserV2RayQuantumult(object):
             }
             return _config
         except:
-            logger.exception("Parse {} failed. (Quantumult Method)".format(raw_link))
+            logger.error(f"Parse {raw_link} failed. (Quantumult Method)", exc_info=True)
             return None

@@ -26,14 +26,15 @@ async def parse_location(port):
             async with session.get(url=url) as response:
                 tmp = await response.json()
                 logger.info(
-                    "Server Country Code : %s,Continent Code : %s,ISP : %s"
-                    % (tmp["country_code"], tmp["continent_code"], tmp["organization"])
+                    f'Server Country Code : {tmp["country_code"]}, '
+                    f'Continent Code : {tmp["continent_code"]}, '
+                    f'ISP : {tmp["organization"]}'
                 )
             return True, tmp["country_code"], tmp["continent_code"], tmp["organization"]
     except asyncio.TimeoutError:
         logger.error("Parse location timeout.")
     except:
-        logger.exception("Parse location failed.")
+        logger.error("Parse location failed.", exc_info=True)
         try:
             logger.error(response.content)
         except:
@@ -51,7 +52,7 @@ def check_ipv4(ip: str) -> bool:
 
 
 def domain2ip(domain: str) -> str:
-    logger.info("Translating {} to ipv4.".format(domain))
+    logger.info(f"Translating {domain} to ipv4.")
     """
     if check_ipv4(domain):
         return domain
@@ -61,7 +62,7 @@ def domain2ip(domain: str) -> str:
         ip = socket.gethostbyname(domain)
         return ip
     except Exception:
-        logger.exception("Translate {} to ipv4 failed.".format(domain))
+        logger.error(f"Translate {domain} to ipv4 failed.", exc_info=True)
         return "N/A"
 
 
@@ -69,7 +70,7 @@ async def ip_loc(port):
     try:
         """
         if ip != "" and not check_ipv4(ip):
-            logger.error("Invalid IP : {}".format(ip))
+            logger.error(f"Invalid IP : {ip}")
             return {}
         """
         logger.info("Starting Geo IP.")
@@ -105,7 +106,7 @@ async def ip_loc(port):
         logger.error("Geo IP Incomplete Read.")
         return {}
     except:
-        logger.exception("Geo IP Failed.")
+        logger.error("Geo IP Failed.", exc_info=True)
         try:
             logger.error(response.content)
         except:

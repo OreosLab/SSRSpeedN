@@ -33,11 +33,11 @@ def tcp_ping(host: str, port: int) -> tuple:
             logger.warning("TCP Ping (%s,%d) Timeout %d times." % (host, port, fac))
         # 	print("TCP Ping Timeout %d times." % fac)
         except ConnectionResetError:
-            logger.exception("TCP Ping Reset:")
+            logger.error("TCP Ping Reset:", exc_info=True)
             _list.append(0)
             fac += 1
         except Exception:
-            logger.exception("TCP Ping Exception:")
+            logger.error("TCP Ping Exception:", exc_info=True)
             _list.append(0)
             fac += 1
     if suc == 0:
@@ -76,7 +76,7 @@ def google_ping(address: str, port: int) -> tuple:
             _list.append(0)
             logger.warning("Google Ping Timeout %d times." % fac)
         except Exception:
-            logger.exception("Google Ping Exception:")
+            logger.error("Google Ping Exception:", exc_info=True)
             _list.append(0)
             fac += 1
     if suc == 0:

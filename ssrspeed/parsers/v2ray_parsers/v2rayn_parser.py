@@ -51,21 +51,9 @@ class ParserV2RayN(object):
             remarks = _conf.get("ps", server)
             remarks = remarks if remarks else server
             logger.debug(
-                "Server : {}, Port : {}, tls-host : {}, Path : {}, Type : {}, UUID : {}, AlterId : {}, Network : {}, "
-                "Host : {}, TLS : {}, Remarks : {}, group={}".format(
-                    server,
-                    port,
-                    tls_host,
-                    path,
-                    _type,
-                    uuid,
-                    aid,
-                    net,
-                    host,
-                    tls,
-                    remarks,
-                    group,
-                )
+                f"Server : {server}, Port : {port}, tls-host : {tls_host}, Path : {path}, "
+                f"Type : {_type}, UUID : {uuid}, AlterId : {aid}, Network : {net}, "
+                f"Host : {host}, TLS : {tls}, Remarks : {remarks}, group={group}"
             )
             _config = {
                 "remarks": remarks,
@@ -83,7 +71,7 @@ class ParserV2RayN(object):
             }
             return _config
         except:
-            logger.exception("Parse {} failed. (V2RayN Method)".format(raw_link))
+            logger.error(f"Parse {raw_link} failed. (V2RayN Method)", exc_info=True)
             return None
 
     def parse_gui_data(self, data: dict) -> list:
@@ -120,6 +108,6 @@ class ParserV2RayN(object):
             try:
                 config = json.load(f)
             except:
-                logger.exception("Not V2RayN Config.")
+                logger.error("Not V2RayN Config.", exc_info=True)
                 return False
         return self.parse_gui_data(config)

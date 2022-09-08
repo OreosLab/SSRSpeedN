@@ -11,7 +11,7 @@ def geo_info(ip):
     try:
         # This creates a Reader object. You should use the same object
         # across multiple requests as creation of it is expensive.
-        with geoip2.database.Reader("data/database/GeoLite2-City.mmdb") as reader:
+        with geoip2.database.Reader("resources/databases/GeoLite2-City.mmdb") as reader:
 
             # Replace "city" with the method corresponding to the database
             # that you are using, e.g., "country".
@@ -24,11 +24,14 @@ def geo_info(ip):
             city = reader.city(ip).city.names.get("en", "Unknown City")
             # print(country, country_code, city)
 
+    except AddressNotFoundError as e:
+        print(e)
+
     except ValueError as e:
         print(e)
 
     try:
-        with geoip2.database.Reader("data/database/GeoLite2-ASN.mmdb") as reader:
+        with geoip2.database.Reader("resources/databases/GeoLite2-ASN.mmdb") as reader:
 
             # response = reader.asn(ip)
             # print(response)

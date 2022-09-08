@@ -21,7 +21,7 @@ class ParserShadowsocksBasic(object):
         _config = self.__get_shadowsocks_base_config()
 
         if link[:5] != "ss://":
-            logger.error("Unsupported link : %s" % link)
+            logger.error(f"Unsupported link : {link}")
             return None
 
         try:
@@ -47,7 +47,7 @@ class ParserShadowsocksBasic(object):
         except binascii.Error:
             raise ValueError("Not shadowsocks basic link.")
         except:
-            logger.exception(f"Exception link {link}\n")
+            logger.error(f"Exception link {link}", exc_info=True)
             return None
         return _config
 
@@ -60,7 +60,7 @@ class ParserShadowsocksBasic(object):
             cfg = self.__parse_link(link)
             if cfg:
                 self.__config_list.append(cfg)
-        logger.info("Read {} config(s).".format(len(self.__config_list)))
+        logger.info(f"Read {len(self.__config_list)} config(s).")
         return self.__config_list
 
     @staticmethod
@@ -109,8 +109,8 @@ class ParserShadowsocksBasic(object):
             except json.decoder.JSONDecodeError:
                 return []
             except:
-                logger.exception("Not Shadowsocks configuration file.")
+                logger.error("Not Shadowsocks configuration file.", exc_info=True)
                 return []
 
-        logger.info("Read {} node(s).".format(len(self.__config_list)))
+        logger.info(f"Read {len(self.__config_list)} node(s).")
         return self.__config_list

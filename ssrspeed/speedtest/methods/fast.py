@@ -90,7 +90,7 @@ def fast_com(verbose=False, maxtime=15, forceipv4=False, forceipv6=False):
     try:
         urlresult = urllib.request.urlopen(url)
     except:
-        logger.exception("No connection at all")
+        logger.error("No connection at all", exc_info=True)
         # no connection at all?
         return 0
     response = urlresult.read().decode().strip()
@@ -145,8 +145,8 @@ def fast_com(verbose=False, maxtime=15, forceipv4=False, forceipv6=False):
     except:
         # not good
         if verbose:
-            logger.exception(
-                "No connection possible"
+            logger.error(
+                "No connection possible", exc_info=True
             )  # probably IPv6, or just no network
         return 0  # no connection, thus no speed
 

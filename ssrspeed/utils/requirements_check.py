@@ -77,13 +77,13 @@ class RequirementsCheck(object):
             requires = {}
         for key in requires.keys():
             for require in requires[key]:
-                logger.info("Checking {}".format(require))
+                logger.info(f"Checking {require}")
                 if os.path.exists(require):
                     if os.path.isdir(require):
-                        logger.warning("Requirement {} not found !!!".format(require))
+                        logger.warning(f"Requirement {require} not found !!!")
                         continue
                 else:
-                    logger.warning("Requirement {} not found !!!".format(require))
+                    logger.warning(f"Requirement {require} not found !!!")
 
     def __linux_check(self):
         if not self.__linux_check_libsodium():
@@ -107,15 +107,17 @@ class RequirementsCheck(object):
                 except subprocess.TimeoutExpired:
                     process.terminate()
                     out, errs = process.communicate()
-                    logger.exception(out.decode("utf-8") + errs.decode("utf-8"))
+                    logger.error(
+                        out.decode("utf-8") + errs.decode("utf-8"), exc_info=True
+                    )
                     return False
-                logger.debug("brew info libsodium : {!r}".format(out))
+                logger.debug(f"brew info libsodium : {out!r}")
                 if "Not installed\n" in out.decode("utf-8"):
                     logger.error("Libsodium not found.")
                     return False
                 return True
             except:
-                logger.exception("")
+                logger.error("", exc_info=True)
                 return False
         # 	return True
         else:
@@ -128,17 +130,18 @@ class RequirementsCheck(object):
                 except subprocess.TimeoutExpired:
                     process.terminate()
                     out, errs = process.communicate()
-                    logger.exception(out.decode("utf-8") + errs.decode("utf-8"))
+                    logger.error(
+                        out.decode("utf-8") + errs.decode("utf-8"), exc_info=True
+                    )
                     return False
-                logger.debug("ldconfig : {!r}".format(out))
+                logger.debug(f"ldconfig : {out!r}")
                 if "libsodium" not in out.decode("utf-8"):
                     return False
                 return True
             except:
-                logger.exception("")
+                logger.error("", exc_info=True)
                 return False
 
-    """
     @staticmethod
     def __linux_check_shadowsocks() -> bool:
         sslibev = False
@@ -149,16 +152,12 @@ class RequirementsCheck(object):
             for filename in os.listdir(cmdpath):
                 if filename == "obfs-local":
                     logger.info(
-                        "Obfs-Local found {}".format(
-                            os.path.join(cmdpath, "obfs-local")
-                        )
+                        f'Obfs-Local found {os.path.join(cmdpath, "obfs-local")}'
                     )
                     simpleobfs = True
                 elif filename == "ss-local":
                     logger.info(
-                        "Shadowsocks-libev found {}".format(
-                            os.path.join(cmdpath, "ss-local")
-                        )
+                        f'Shadowsocks-libev found {os.path.join(cmdpath, "ss-local")}'
                     )
                     sslibev = True
                 if simpleobfs and sslibev:
@@ -170,4 +169,3 @@ class RequirementsCheck(object):
         if not sslibev:
             logger.warning("Shadowsocks-libev not found !!!")
         return True if (simpleobfs and sslibev) else False
-    """

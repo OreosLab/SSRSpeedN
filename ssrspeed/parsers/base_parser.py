@@ -54,12 +54,9 @@ class BaseParser(object):
             if server1 and server2 and port1 and port2:
                 if server1 == server2 and port1 == port2:
                     logger.warning(
-                        "{} - {} ({}:{}) already in list.".format(
-                            item.get("group", "N/A"),
-                            item.get("remarks", "N/A"),
-                            item.get("server", "Server EMPTY"),
-                            item.get("server_port", item.get("port", 0)),
-                        )
+                        f'{item.get("group", "N/A")} - {item.get("remarks", "N/A")} '
+                        f'({item.get("server", "Server EMPTY")}:{item.get("server_port", item.get("port", 0))}) '
+                        f"already in list."
                     )
                     return True
             else:
@@ -166,9 +163,7 @@ class BaseParser(object):
                     if (kw not in item["group"]) and (kw not in item["remarks"]):
                         _list.append(item)
                     else:
-                        logger.debug(
-                            "Excluded {} - {}".format(item["group"], item["remarks"])
-                        )
+                        logger.debug(f'Excluded {item["group"]} - {item["remarks"]}')
                 self._config_list = _list
         self.__exclude_group(gkwl)
         self.__exclude_remark(rkwl)
@@ -177,8 +172,8 @@ class BaseParser(object):
 
     def print_node(self):
         for item in self._config_list:
-            # 	print("%s - %s" % (item["group"],item["remarks"]))
-            logger.info("%s - %s" % (item["group"], item["remarks"]))
+            # 	print(f'{item["group"]} - {item["remarks"]}')
+            logger.info(f'{item["group"]} - {item["remarks"]}')
 
     def read_subscription_config(self, url: str):
         header = {
@@ -196,7 +191,7 @@ class BaseParser(object):
             if cfg:
                 # 	print(cfg["remarks"])
                 self._config_list.append(cfg)
-        logger.info("Read %d node(s)" % len(self._config_list))
+        logger.info(f"Read {len(self._config_list)} node(s)")
 
     def read_gui_config(self, filename: str):
         with open(filename, "r", encoding="utf-8") as f:
@@ -225,7 +220,7 @@ class BaseParser(object):
                 # 	logger.info(_dict["server"])
                 self._config_list.append(_dict)
 
-        logger.info("Read %d node(s)." % len(self._config_list))
+        logger.info(f"Read {len(self._config_list)} node(s).")
 
     def get_all_config(self) -> list:
         return self._config_list

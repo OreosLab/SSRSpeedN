@@ -35,7 +35,7 @@ class ParserShadowsocksD(object):
             if not _config["remarks"]:
                 _config["remarks"] = _config["server"]
             self.__config_list.append(_config)
-        logger.info("Read {} config(s).".format(len(self.__config_list)))
+        logger.info(f"Read {len(self.__config_list)} config(s).")
         return self.__config_list
 
     def parse_gui_config(self, filename: str):

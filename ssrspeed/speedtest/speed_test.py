@@ -274,7 +274,7 @@ class SpeedTest(object):
                     res["gPingLoss"] = 1 - google_ping_test[1]
                     res["rawGooglePingStatus"] = google_ping_test[2]
                 except Exception:
-                    logger.exception("")
+                    logger.error("", exc_info=True)
                     pass
         return res
 
@@ -293,7 +293,7 @@ class SpeedTest(object):
             )
             return t, eip, eport, sip, sport
         except Exception:
-            logger.exception("\n")
+            logger.error("", exc_info=True)
             return None, None, None, None, None
         finally:
             s.close()
@@ -355,7 +355,7 @@ class SpeedTest(object):
                 logger.error(f"Connection refused on port {port}.")
             except Exception:
                 ct += 1
-                logger.exception("An error occurred:\n")
+                logger.error("", exc_info=True)
         if not port_opened:
             logger.error(f"Port {port} closed.")
             return False
@@ -531,7 +531,7 @@ class SpeedTest(object):
                             _item["Ntype"] = "Full DNS" + rg
                         return {"netflix_ip": netflix_ip, "text": f"Full Native{rg}"}
         except Exception as e:
-            logger.error("代理服务器连接异常：" + str(e.args))
+            logger.error("Connect to Netflix exception: " + str(e))
             return {}
 
     @classmethod
@@ -553,7 +553,7 @@ class SpeedTest(object):
                     else:
                         _item["Htype"] = False
         except Exception as e:
-            logger.error("代理服务器连接异常：" + str(e.args))
+            logger.error("Connect to HBO max exception: " + str(e))
 
     @classmethod
     async def disneyplus(cls, host, headers, _item, port):
@@ -581,7 +581,7 @@ class SpeedTest(object):
                     else:
                         _item["Dtype"] = False
         except Exception as e:
-            logger.error("代理服务器连接异常：" + str(e.args))
+            logger.error("Connect to Disney plus exception: " + str(e))
 
     @classmethod
     async def youtube(cls, host, headers, _item, port):
@@ -604,7 +604,7 @@ class SpeedTest(object):
                     else:
                         _item["Ytype"] = False
         except Exception as e:
-            logger.error("代理服务器连接异常：" + str(e.args))
+            logger.error("Connect to Youtube Premium exception: " + str(e))
 
     @classmethod
     async def abema(cls, host, headers, _item, port):
@@ -627,7 +627,7 @@ class SpeedTest(object):
                     else:
                         _item["Atype"] = False
         except Exception as e:
-            logger.error("代理服务器连接异常：" + str(e.args))
+            logger.error("Connect to Abema exception: " + str(e))
 
     @classmethod
     async def gamer(cls, host, headers, _item, port):
@@ -650,7 +650,7 @@ class SpeedTest(object):
                     else:
                         _item["Btype"] = False
         except Exception as e:
-            logger.error("代理服务器连接异常：" + str(e.args))
+            logger.error("Connect to Bahamut exception: " + str(e))
 
     @classmethod
     async def indazn(cls, host, headers, _item, port):
@@ -682,7 +682,7 @@ class SpeedTest(object):
                     else:
                         _item["Dztype"] = False
         except Exception as e:
-            logger.error("代理服务器连接异常：" + str(e.args))
+            logger.error("Connect to Dazn exception: " + str(e))
 
     @classmethod
     async def mytvsuper(cls, host, headers, _item, port):
@@ -704,7 +704,7 @@ class SpeedTest(object):
                     else:
                         _item["Ttype"] = False
         except Exception as e:
-            logger.error("代理服务器连接异常：" + str(e.args))
+            logger.error("Connect to TVB exception: " + str(e))
 
     @classmethod
     async def bilibili(cls, host, headers, _item, port):
@@ -764,4 +764,4 @@ class SpeedTest(object):
                                 else:
                                     _item["Bltype"] = "N/A"
         except Exception as e:
-            logger.error("代理服务器连接异常：" + str(e.args))
+            logger.error("Connect to Bilibili exception: " + str(e))

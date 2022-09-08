@@ -18,7 +18,7 @@ CLIENTS_DIR = KEY_PATH["clients"]
 
 
 class V2Ray(BaseClient):
-    def __init__(self, file):
+    def __init__(self, file: str):
         super(V2Ray, self).__init__()
         self.config_file: str = f"{file}.json"
 
@@ -27,64 +27,56 @@ class V2Ray(BaseClient):
         async with aiofiles.open(self.config_file, "w+", encoding="utf-8") as f:
             await f.write(json.dumps(self._config))
 
-        try:
-            if self._process is None:
+        if self._process is None:
 
-                if self._platform == "Windows":
-                    if logger.level == logging.DEBUG:
-                        self._process = subprocess.Popen(
-                            [
-                                f"{CLIENTS_DIR}v2ray-core/v2ray.exe",
-                                "--config",
-                                self.config_file,
-                            ]
-                        )
-                    else:
-                        self._process = subprocess.Popen(
-                            [
-                                f"{CLIENTS_DIR}v2ray-core/v2ray.exe",
-                                "--config",
-                                self.config_file,
-                            ],
-                            stdout=subprocess.DEVNULL,
-                            stderr=subprocess.DEVNULL,
-                        )
-                    logger.info(
-                        "Starting v2ray-core with server %s:%d"
-                        % (config["server"], config["server_port"])
+            if self._platform == "Windows":
+                if logger.level == logging.DEBUG:
+                    self._process = subprocess.Popen(
+                        [
+                            f"{CLIENTS_DIR}v2ray-core/v2ray.exe",
+                            "--config",
+                            self.config_file,
+                        ]
                     )
-
-                elif self._platform == "Linux" or self._platform == "MacOS":
-                    if logger.level == logging.DEBUG:
-                        self._process = subprocess.Popen(
-                            [
-                                f"{CLIENTS_DIR}v2ray-core/v2ray",
-                                "--config",
-                                self.config_file,
-                            ]
-                        )
-                    else:
-                        self._process = subprocess.Popen(
-                            [
-                                f"{CLIENTS_DIR}v2ray-core/v2ray",
-                                "--config",
-                                self.config_file,
-                            ],
-                            stdout=subprocess.DEVNULL,
-                            stderr=subprocess.DEVNULL,
-                        )
-                    logger.info(
-                        "Starting v2ray-core with server %s:%d"
-                        % (config["server"], config["server_port"])
-                    )
-
                 else:
-                    logger.critical(
-                        "Your system does not support it. Please contact the developer."
+                    self._process = subprocess.Popen(
+                        [
+                            f"{CLIENTS_DIR}v2ray-core/v2ray.exe",
+                            "--config",
+                            self.config_file,
+                        ],
+                        stdout=subprocess.DEVNULL,
+                        stderr=subprocess.DEVNULL,
                     )
-                    sys.exit(1)
+                logger.info(
+                    f'Starting v2ray-core with server {config["server"]}:{config["server_port"]}'
+                )
 
-        except FileNotFoundError:
-            #   logger.exception("")
-            logger.error("V2Ray Core Not Found!")
-            sys.exit(1)
+            elif self._platform == "Linux" or self._platform == "MacOS":
+                if logger.level == logging.DEBUG:
+                    self._process = subprocess.Popen(
+                        [
+                            f"{CLIENTS_DIR}v2ray-core/v2ray",
+                            "--config",
+                            self.config_file,
+                        ]
+                    )
+                else:
+                    self._process = subprocess.Popen(
+                        [
+                            f"{CLIENTS_DIR}v2ray-core/v2ray",
+                            "--config",
+                            self.config_file,
+                        ],
+                        stdout=subprocess.DEVNULL,
+                        stderr=subprocess.DEVNULL,
+                    )
+                logger.info(
+                    f'Starting v2ray-core with server {config["server"]}:{config["server_port"]}'
+                )
+
+            else:
+                logger.critical(
+                    "Your system does not support it. Please contact the developer."
+                )
+                sys.exit(1)

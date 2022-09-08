@@ -14,7 +14,7 @@ class ShadowsocksRParser(BaseParser):
         _config = self._get_shadowsocks_base_config()
         # 	print(self._baseShadowsocksConfig["remarks"])
         if link[:6] != "ssr://":
-            logger.error("Unsupported link : %s" % link)
+            logger.error(f"Unsupported link : {link}")
             return {}
 
         link = link[6:]

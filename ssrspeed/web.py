@@ -130,10 +130,10 @@ def read_file_config():
                 filename = secure_filename(ufile.filename)
                 tmp_filename = os.path.join(app.config["UPLOAD_FOLDER"], filename)
                 ufile.save(tmp_filename)
-                logger.info("Tmp config file saved as {}.".format(tmp_filename))
+                logger.info(f"Tmp config file saved as {tmp_filename}.")
                 return json.dumps(sc.web_read_config_file(tmp_filename))
             else:
-                logger.error("Disallowed file {}.".format(ufile.filename))
+                logger.error(f"Disallowed file {ufile.filename}.")
                 return FileNotAllowed.errMsg
         else:
             logger.error("File upload failed or unknown error.")
@@ -221,9 +221,7 @@ if __name__ == "__main__":
             item.addHandler(consoleHandler)
 
     logger.info(
-        "SSRSpeed {}, Web Api Version {}".format(
-            ssrconfig["VERSION"], ssrconfig["WEB_API_VERSION"]
-        )
+        f'SSRSpeed {ssrconfig["VERSION"]}, Web Api Version {ssrconfig["WEB_API_VERSION"]}'
     )
 
     if logger.level == logging.DEBUG:
@@ -238,6 +236,6 @@ if __name__ == "__main__":
     sc = SSRSpeedCore()
     sc.web_mode = True
     if not os.path.exists(upload_dir):
-        logger.warning("Upload folder {} not found, creating.".format(upload_dir))
+        logger.warning(f"Upload folder {upload_dir} not found, creating.")
         os.makedirs(upload_dir)
     app.run(host=args.listen, port=int(args.port), debug=DEBUG, threaded=True)

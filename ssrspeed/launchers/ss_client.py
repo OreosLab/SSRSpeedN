@@ -19,7 +19,7 @@ CLIENTS_DIR = KEY_PATH["clients"]
 
 
 class Shadowsocks(BaseClient):
-    def __init__(self, file):
+    def __init__(self, file: str):
         super(Shadowsocks, self).__init__()
         self.config_file: str = file
 
@@ -55,8 +55,7 @@ class Shadowsocks(BaseClient):
                         stderr=subprocess.DEVNULL,
                     )
                 logger.info(
-                    "Starting Shadowsocks-libev with server %s:%d"
-                    % (config["server"], config["server_port"])
+                    f'Starting shadowsocks-libev with server {config["server"]}:{config["server_port"]}'
                 )
 
             elif self._platform == "Linux" or self._platform == "MacOS":
@@ -82,8 +81,7 @@ class Shadowsocks(BaseClient):
                         stderr=subprocess.DEVNULL,
                     )
                 logger.info(
-                    "Starting Shadowsocks-libev with server %s:%d"
-                    % (config["server"], config["server_port"])
+                    f'Starting shadowsocks-libev with server {config["server"]}:{config["server_port"]}'
                 )
 
             else:
@@ -126,7 +124,7 @@ class Shadowsockss(BaseClient):
         ) as f:
             f.write(json.dumps(tmp_conf))
 
-        logger.info("Wait {} secs to start the client.".format(3))
+        logger.info("Wait 3 secs to start the client.")
         for _ in range(0, 6):
             time.sleep(0.5)
         self.start_client({}, True)
@@ -154,7 +152,6 @@ class Shadowsockss(BaseClient):
         ) as f:
             f.write(json.dumps(tmp_conf))
 
-    # fmt: off
     def start_client(self, config: Dict[str, Any], testing: bool = False):
         if self._process is None:
 
@@ -174,17 +171,25 @@ class Shadowsockss(BaseClient):
                     f.write(json.dumps(self._config))
                 if logger.level == logging.DEBUG:
                     self._process = subprocess.Popen(
-                        [f"{CLIENTS_DIR}shadowsocks-libev/ss-local", "-v", "-c", self.config_file]
+                        [
+                            f"{CLIENTS_DIR}shadowsocks-libev/ss-local",
+                            "-v",
+                            "-c",
+                            self.config_file,
+                        ]
                     )
                 else:
                     self._process = subprocess.Popen(
-                        [f"{CLIENTS_DIR}shadowsocks-libev/ss-local", "-c", self.config_file],
+                        [
+                            f"{CLIENTS_DIR}shadowsocks-libev/ss-local",
+                            "-c",
+                            self.config_file,
+                        ],
                         stdout=subprocess.DEVNULL,
                         stderr=subprocess.DEVNULL,
                     )
                 logger.info(
-                    "Starting Shadowsocks-libev with server %s:%d"
-                    % (config["server"], config["server_port"])
+                    f'Starting shadowsocks-libev with server {config["server"]}:{config["server_port"]}'
                 )
 
             else:
@@ -192,4 +197,3 @@ class Shadowsockss(BaseClient):
                     "Your system does not support it. Please contact the developer."
                 )
                 sys.exit(1)
-    # fmt: on

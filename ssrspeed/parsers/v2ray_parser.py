@@ -83,7 +83,7 @@ class V2RayParser(BaseParser):
     def _parse_link(self, link: str) -> dict:
 
         if link[:8] != "vmess://":
-            logger.error("Unsupported link : %s" % link)
+            logger.error(f"Unsupported link : {link}")
             return {}
         pv2rn = ParserV2RayN()
         cfg = pv2rn.parse_subs_config(link)
@@ -91,7 +91,7 @@ class V2RayParser(BaseParser):
             pq = ParserV2RayQuantumult()
             cfg = pq.parse_subs_config(link)
         if not cfg:
-            logger.error("Parse link {} failed.".format(link))
+            logger.error(f"Parse link {link} failed.")
             return {}
         return self.__generate_config(cfg)
 
@@ -117,7 +117,7 @@ class V2RayParser(BaseParser):
             pv2rc = ParserV2RayClash()
             for cfg in pv2rc.parse_subs_config(res):
                 self._config_list.append(self.__generate_config(cfg))
-        logger.info("Read %d node(s)." % len(self._config_list))
+        logger.info(f"Read {len(self._config_list)} node(s).")
 
     def read_gui_config(self, filename):
         pv2rc = ParserV2RayClash()
@@ -135,7 +135,7 @@ class V2RayParser(BaseParser):
             _cfg = self.__generate_config(_dict)
             # 	logger.debug(_cfg)
             self._config_list.append(_cfg)
-        logger.info("Read %d node(s)." % len(self._config_list))
+        logger.info(f"Read {len(self._config_list)} node(s).")
 
 
 # 	logger.critical("V2RayN configuration file will be support soon.")

@@ -39,21 +39,9 @@ class ParserV2RayClash(object):
             "ws-path", ""
         )  # Websocket path, http path, quic encrypt key
         logger.debug(
-            "Server : {}, Port : {}, tls-host : {}, Path : {}, Type : {}, UUID : {}, AlterId : {}, Network : {}, "
-            "Host : {}, TLS : {}, Remarks : {}, group={}".format(
-                server,
-                port,
-                tls_host,
-                path,
-                _type,
-                uuid,
-                aid,
-                net,
-                host,
-                tls,
-                remarks,
-                group,
-            )
+            f"Server : {server}, Port : {port}, tls-host : {tls_host}, Path : {path}, "
+            f"Type : {_type}, UUID : {uuid}, AlterId : {aid}, Network : {net}, "
+            f"Host : {host}, TLS : {tls}, Remarks : {remarks}, group={group}"
         )
         return {
             "remarks": remarks,
@@ -79,15 +67,8 @@ class ParserV2RayClash(object):
                 self.__clash_vmess_configs.append(cfg)
             else:
                 pass
-        # 	logger.info("Config {}, type {} not support.".format(
-        # 		cfg["name"],
-        # 		cfg["type"]
-        # 		)
-        # 	)
-        # 	logger.debug("Read {} configs.".format(
-        # 		len(self.__clashVmessConfigs)
-        # 		)
-        # 	)
+        # logger.info(f'Config {cfg["name"]}, type {cfg["type"]} not support.')
+        # logger.debug(f"Read {len(self.__clashVmessConfigs)} configs.")
         for cfg in self.__clash_vmess_configs:
             self.__decoded_configs.append(self.__clash_config_convert(cfg))
 
@@ -95,7 +76,7 @@ class ParserV2RayClash(object):
         try:
             clash_cfg = yaml.load(config, Loader=yaml.FullLoader)
         except:
-            logger.exception("Not Clash config.")
+            logger.error("Not Clash config.", exc_info=True)
             return []
         self.__parse_config(clash_cfg)
         return self.__decoded_configs
@@ -105,7 +86,7 @@ class ParserV2RayClash(object):
             try:
                 clash_cfg = yaml.load(f, Loader=yaml.FullLoader)
             except:
-                logger.exception("Not Clash config.")
+                logger.error("Not Clash config.", exc_info=True)
                 return []
         self.__parse_config(clash_cfg)
         return self.__decoded_configs

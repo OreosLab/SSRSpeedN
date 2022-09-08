@@ -14,7 +14,7 @@ TEST_PNG = KEY_PATH["tmp"] + "test.png"
 def push2server(filename: str) -> dict:
     result = {"status": -1, "code": -1}
     try:
-        logger.info("Pushing %s to server." % filename)
+        logger.info(f"Pushing {filename} to server.")
         files = {"file": open(filename, "rb")}
         param = {"token": UPLOAD_RESULT["apiToken"], "remark": UPLOAD_RESULT["remark"]}
         rep = requests.post(
@@ -29,7 +29,7 @@ def push2server(filename: str) -> dict:
         logger.error("Connect to server timeout.")
         return result
     except:
-        logger.exception("Pushing result to server error.")
+        logger.error("Pushing result to server error.", exc_info=True)
         return result
 
 

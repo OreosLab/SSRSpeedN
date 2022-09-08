@@ -96,9 +96,7 @@ if __name__ == "__main__":
             item.addHandler(consoleHandler)
 
     logger.info(
-        "SSRSpeed {}, Web Api Version {}".format(
-            ssrconfig["VERSION"], ssrconfig["WEB_API_VERSION"]
-        )
+        f'SSRSpeed {ssrconfig["VERSION"]}, Web Api Version {ssrconfig["WEB_API_VERSION"]}'
     )
 
     if logger.level == logging.DEBUG:
@@ -122,7 +120,7 @@ if __name__ == "__main__":
             PROXY_TYPE = "V2RAY"
         else:
             logger.warning(
-                "Unknown proxy type {}, using default ssr.".format(args.proxy_type)
+                f"Unknown proxy type {args.proxy_type}, using default ssr."
             )
     """
 
@@ -145,7 +143,7 @@ if __name__ == "__main__":
     elif args.test_mode == "wps":
         TEST_MODE = "WEB_PAGE_SIMULATION"
     else:
-        logger.critical("Invalid test mode : %s" % args.test_mode)
+        logger.critical(f"Invalid test mode : {args.test_mode}")
         sys.exit(1)
 
     if args.confirmation:
@@ -182,16 +180,12 @@ if __name__ == "__main__":
         EXCLUDE_REMARK_KEYWORD = args.erfilter
 
     logger.debug(
-        "\nFilter keyword : %s\nFilter group : %s\nFilter remark : %s\nExclude keyword : %s\nExclude group : "
-        "%s\nExclude remark : %s "
-        % (
-            str(FILTER_KEYWORD),
-            str(FILTER_GROUP_KEYWORD),
-            str(FILTER_REMARK_KEYWORD),
-            str(EXCLUDE_KEYWORD),
-            str(EXCLUDE_GROUP_KEYWORD),
-            str(EXCLUDE_REMARK_KEYWORD),
-        )
+        f"\nFilter keyword : {FILTER_KEYWORD}"
+        f"\nFilter group : {FILTER_GROUP_KEYWORD}"
+        f"\nFilter remark : {FILTER_REMARK_KEYWORD}"
+        f"\nExclude keyword : {EXCLUDE_KEYWORD}"
+        f"\nExclude group : {EXCLUDE_GROUP_KEYWORD}"
+        f"\nExclude remark : {EXCLUDE_REMARK_KEYWORD} "
     )
 
     """
@@ -211,7 +205,7 @@ if __name__ == "__main__":
         elif sm == "rping":
             SORT_METHOD = "REVERSE_PING"
         else:
-            logger.error("Sort method %s not support." % sm)
+            logger.error(f"Sort method {sm} not support.")
 
     sc = SSRSpeedCore()
 

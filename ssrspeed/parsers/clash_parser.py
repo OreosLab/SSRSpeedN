@@ -37,7 +37,7 @@ class ClashParser:
                     plugin = "obfs-local"
                 elif plugin == "v2ray-plugin":
                     logger.warning("V2Ray plugin not supported.")
-                    logger.info("Skip {} - {}".format(_dict["group"], _dict["remarks"]))
+                    logger.info(f'Skip {_dict["group"]} - {_dict["remarks"]}')
                     return {}
                 p_opts = cfg.get("plugin-opts", {})
             elif cfg.__contains__("obfs"):
@@ -52,27 +52,23 @@ class ClashParser:
                         p_opts["mode"] = "tls"
                         p_opts["host"] = cfg.get("obfs-host", "")
                     else:
-                        logger.warning("Plugin {} not supported.".format(raw_plugin))
-                        logger.info(
-                            "Skip {} - {}".format(_dict["group"], _dict["remarks"])
-                        )
+                        logger.warning(f"Plugin {raw_plugin} not supported.")
+                        logger.info(f'Skip {_dict["group"]} - {_dict["remarks"]}')
                         return {}
 
-            logger.debug("{} - {}".format(_dict["group"], _dict["remarks"]))
+            logger.debug(f'{_dict["group"]} - {_dict["remarks"]}')
             logger.debug(
-                "Plugin [{}], mode [{}], host [{}]".format(
-                    plugin, p_opts.get("mode", ""), p_opts.get("host", "")
-                )
+                f'Plugin [{plugin}], mode [{p_opts.get("mode", "")}], host [{p_opts.get("host", "")}]'
             )
             plugin_opts = ""
             if plugin:
                 plugin_opts += (
-                    "obfs={}".format(p_opts.get("mode", ""))
+                    f'obfs={p_opts.get("mode", "")}'
                     if p_opts.get("mode", "")
                     else ""
                 )
                 plugin_opts += (
-                    ";obfs-host={}".format(p_opts.get("host", ""))
+                    f';obfs-host={p_opts.get("host", "")}'
                     if p_opts.get("host", "")
                     else ""
                 )
@@ -108,21 +104,9 @@ class ClashParser:
         tls_host = host
         path = cfg.get("ws-path", "")  # Websocket path, http path, quic encrypt key
         logger.debug(
-            "Server : {}, Port : {}, tls-host : {}, Path : {}, Type : {}, UUID : {}, AlterId : {}, Network : {}, "
-            "Host : {}, TLS : {}, Remarks : {}, group={}".format(
-                server,
-                port,
-                tls_host,
-                path,
-                _type,
-                uuid,
-                aid,
-                net,
-                host,
-                tls,
-                remarks,
-                group,
-            )
+            f"Server : {server}, Port : {port}, tls-host : {tls_host}, Path : {path}, "
+            f"Type : {_type}, UUID : {uuid}, AlterId : {aid}, Network : {net}, "
+            f"Host : {host}, TLS : {tls}, Remarks : {remarks}, group={group}"
         )
         return {
             "remarks": remarks,
@@ -212,4 +196,4 @@ class ClashParser:
             try:
                 self.parse_config(f.read())
             except:
-                logger.exception("Not Clash config.")
+                logger.error("Not Clash config.", exc_info=True)

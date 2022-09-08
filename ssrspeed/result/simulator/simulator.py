@@ -42,4 +42,4 @@ class ExporterWps(object):
         index = index.replace(r"{{ $generatedTime }}", now_time)
         with open(index_filename, "w+", encoding="utf-8") as f:
             f.writelines(index)
-        logger.info("Web page simulation result exported as %s." % fileloc)
+        logger.info(f"Web page simulation result exported as {fileloc}.")

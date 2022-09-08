@@ -16,8 +16,8 @@ logger = logging.getLogger("Sub")
 try:
     check_port(ssrconfig["localPort"])
     print(
-        "Port {} already in use,".format(ssrconfig["localPort"])
-        + " please change the local port in ssrspeed.json or terminate the application."
+        f'Port {ssrconfig["localPort"]} already in use, '
+        f'please change the local port in ssrspeed.json or terminate the application.'
     )
     sys.exit(0)
 except (ConnectionRefusedError, socket.timeout):
@@ -172,7 +172,7 @@ class SSRSpeedCore(object):
             fk, fgk, frk, ek, egk, erk + ssrconfig["excludeRemarks"]
         )
         self.__parser.print_nodes()
-        logger.info("{} node(s) will be tested.".format(len(self.__parser.nodes)))
+        logger.info(f"{len(self.__parser.nodes)} node(s) will be tested.")
 
     def import_and_export(self, filename: str, split: int = 0):
         self.__results = import_result(filename)
