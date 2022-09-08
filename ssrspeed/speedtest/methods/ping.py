@@ -6,6 +6,7 @@ import time
 
 logger = logging.getLogger("Sub")
 
+
 async def tcp_ping_task(loop, _list, address, port):
     alt = fac = suc = 0
     try:
@@ -34,13 +35,10 @@ async def tcp_ping_task(loop, _list, address, port):
         logger.error("TCP Ping Exception:", exc_info=True)
         _list.append(0)
         fac += 1
-    return {
-        'alt': alt,
-        'fac': fac,
-        'suc': suc
-    }
+    return {"alt": alt, "fac": fac, "suc": suc}
 
-async def google_ping_task(loop,_list, address,port):
+
+async def google_ping_task(loop, _list, address, port):
     alt = fac = suc = 0
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -51,7 +49,10 @@ async def google_ping_task(loop,_list, address,port):
         await loop.sock_recv(sock, 2)
         await loop.sock_sendall(sock, b"\x05\x01\x00\x03\x0agoogle.com\x00\x50")
         await loop.sock_recv(sock, 10)
-        await loop.sock_sendall(sock, b"GET / HTTP/1.1\r\nHost: google.com\r\nUser-Agent: curl/11.45.14\r\n\r\n")
+        await loop.sock_sendall(
+            sock,
+            b"GET / HTTP/1.1\r\nHost: google.com\r\nUser-Agent: curl/11.45.14\r\n\r\n",
+        )
         await loop.sock_recv(sock, 1)
         sock.close()
         delta_time = time.time() - current_time
@@ -66,39 +67,41 @@ async def google_ping_task(loop,_list, address,port):
         logger.exception("Google Ping Exception:", exc_info=True)
         _list.append(0)
         fac += 1
-    finally:
-        return {
-            'alt': alt,
-            'fac': fac,
-            'suc': suc
-        }
+    return {"alt": alt, "fac": fac, "suc": suc}
+
 
 async def tcp_ping(address: str, port: int) -> tuple:
     alt = fac = suc = 0
     loop = asyncio.get_running_loop()
     _list = []
-    test_ping = [asyncio.create_task(tcp_ping_task(loop, _list, address, port)) for _ in range(3)]
+    test_ping = [
+        asyncio.create_task(tcp_ping_task(loop, _list, address, port)) for _ in range(3)
+    ]
     done, pending = await asyncio.wait(test_ping, timeout=5)
     for each in done:
         result = each.result()
-        alt += result['alt']
-        fac += result['fac']
-        suc += result['suc']
+        alt += result["alt"]
+        fac += result["fac"]
+        suc += result["suc"]
     if suc == 0:
         return 0, 0, _list
     return alt / suc, suc / (suc + fac), _list
+
 
 async def google_ping(address: str, port: int) -> tuple:
     alt = fac = suc = 0
     loop = asyncio.get_running_loop()
     _list = []
-    test_ping = [asyncio.create_task(google_ping_task(loop, _list, address, port)) for _ in range(3)]
+    test_ping = [
+        asyncio.create_task(google_ping_task(loop, _list, address, port))
+        for _ in range(3)
+    ]
     done, pending = await asyncio.wait(test_ping, timeout=5)
     for each in done:
         result = each.result()
-        alt += result['alt']
-        fac += result['fac']
-        suc += result['suc']
+        alt += result["alt"]
+        fac += result["fac"]
+        suc += result["suc"]
     if suc == 0:
         return 0, 0, _list
     return alt / suc, suc / (suc + fac), _list
