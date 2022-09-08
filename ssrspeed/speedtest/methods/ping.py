@@ -22,13 +22,13 @@ async def tcp_ping_task(loop, _list, address, port):
     except socket.timeout:
         fac += 1
         _list.append(0)
-        logger.error(f"TCP Ping ({address},{port}) Timeout {fac} times.", exc_info=True)
+        logger.error(f"TCP Ping ({address},{port}) Timeout {fac} times.")
     except ConnectionResetError:
-        logger.error("TCP Ping Reset:", exc_info=True)
+        logger.error("TCP Ping Reset")
         _list.append(0)
         fac += 1
     except ConnectionRefusedError:
-        logger.error("TCP Ping RefusedError:", exc_info=True)
+        logger.error("TCP Ping RefusedError")
         _list.append(0)
         fac += 1
     except Exception:
@@ -62,9 +62,9 @@ async def google_ping_task(loop, _list, address, port):
     except socket.timeout:
         fac += 1
         _list.append(0)
-        logger.error(f"Google Ping Timeout {fac} times.", exc_info=True)
+        logger.error(f"Google Ping Timeout {fac} times.")
     except Exception:
-        logger.exception("Google Ping Exception:", exc_info=True)
+        logger.error("Google Ping Exception:", exc_info=True)
         _list.append(0)
         fac += 1
     return {"alt": alt, "fac": fac, "suc": suc}
