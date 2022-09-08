@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# shellcheck disable=SC2015,2034
+# shellcheck disable=SC2015,2034,2089,2090
 
 # 当前脚本版本号和新增功能
 VERSION=1.0.1
@@ -92,7 +92,7 @@ select_language() {
 }
 
 help() {
-  if [ $L = C ] || ( [ $L != E ] && grep -q 'language=C' SSRSpeedN/data/setting ); then
+  if [ $L = C ] || ([ $L != E ] && grep -q 'language=C' SSRSpeedN/data/setting); then
     echo "
 用法: ssrspeed.sh [Option]
 
@@ -127,7 +127,10 @@ Options:
 check_operating_system() {
   UNAME=$(uname 2>/dev/null)
   case "$UNAME" in
-  Darwin) FILE=clients_darwin_64.zip; SED_MAC="''" ;;
+  Darwin)
+    FILE=clients_darwin_64.zip
+    SED_MAC="''"
+    ;;
   Linux)
     FILE=clients_linux_amd64.zip
     [ "$(uname -m)" != "x86_64" ] && error " $(text 21) "
@@ -169,13 +172,37 @@ input_url() {
 }
 
 mode() {
-  MAXCONNECTIONS=50; PING=true; GPING=true; PORT=true; SPEED=true; STSPEED=true; STREAM=true; MULTIPLEX=true
+  MAXCONNECTIONS=50
+  PING=true
+  GPING=true
+  PORT=true
+  SPEED=true
+  STSPEED=true
+  STREAM=true
+  MULTIPLEX=true
   [[ "$MODE_CHOICE" != [12] ]] && warning "\n $(text 29) \n" && reading " $(text 3) " MODE_CHOICE
   if [ "$MODE_CHOICE" = 2 ]; then
     warning "\n $(text 30) \n" && reading " $(text 3) " ITEM_CHOICE
     case "$ITEM_CHOICE" in
-      1 ) NETFLIX=false; STREAM=false; HBO=false; DISNEY=false; YOUTUBE=false; ABEMA=false; BAHAMUT=false; DAZN=false; TVB=false; BILIBILI=false ;;
-      2 ) PING=false; GPING=false; SPEED=false; STSPEED=false; PORT=false ;;
+    1)
+      NETFLIX=false
+      STREAM=false
+      HBO=false
+      DISNEY=false
+      YOUTUBE=false
+      ABEMA=false
+      BAHAMUT=false
+      DAZN=false
+      TVB=false
+      BILIBILI=false
+      ;;
+    2)
+      PING=false
+      GPING=false
+      SPEED=false
+      STSPEED=false
+      PORT=false
+      ;;
     esac
     reading "\n $(text 32) " MAXCONNECTIONS
     local i=0
@@ -206,21 +233,21 @@ mode() {
 check_dependencies_Darwin() {
   info "\n $(text 22) \n"
   ! type -p brew >/dev/null 2>&1 && warning " $(text 26) " && sudo /bin/zsh -c "$(curl -fsSL https://gitee.com/cunkai/HomebrewCN/raw/master/Homebrew.sh)"
-  for j in {" sudo"," wget"," git"," python3"," unzip"}; do ! type -p $j >/dev/null 2>&1 && DEPS+=$j; done
+  for j in {" sudo"," wget"," git"," python3"," unzip"}; do ! type -p "$j" >/dev/null 2>&1 && DEPS+=$j; done
   if [ -n "$DEPS" ]; then
     info "\n $(text 14) $DEPS \n"
-    brew install $DEPS
+    brew install "$DEPS"
   else
     info "\n $(text 17) \n"
   fi
 }
 
 check_dependencies_Linux() {
-  for j in {" sudo"," wget"," git"," python3"," unzip"}; do ! type -p $j >/dev/null 2>&1 && DEPS+=$j; done
+  for j in {" sudo"," wget"," git"," python3"," unzip"}; do ! type -p "$j" >/dev/null 2>&1 && DEPS+=$j; done
   if [ -n "$DEPS" ]; then
     info "\n $(text 14) $DEPS \n"
     ${PACKAGE_UPDATE[int]}
-    ${PACKAGE_INSTALL[int]} $DEPS
+    ${PACKAGE_INSTALL[int]} "$DEPS"
   else
     info "\n $(text 17) \n"
   fi
@@ -243,7 +270,7 @@ check_ssrspeedn() {
   if [[ ${GEOIP_LATEST//./} -gt $(grep 'GeoIP' data/setting | cut -d= -f2 | sed "s#[.]##g") ]]; then
     [ ! -d resources/databases ] && sudo mkdir -p resources/databases
     for a in {GeoLite2-ASN.mmdb,GeoLite2-City.mmdb}; do
-      sudo wget --no-check-certificate -O resources/databases/$a https://github.com/P3TERX/GeoLite.mmdb/releases/download/$GEOIP_LATEST/$a
+      sudo wget --no-check-certificate -O resources/databases/"$a" https://github.com/P3TERX/GeoLite.mmdb/releases/download/"$GEOIP_LATEST"/"$a"
     done
   fi
   echo -e "language=$L\nGeoIP=$GEOIP_LATEST" | sudo tee data/setting >/dev/null 2>&1
