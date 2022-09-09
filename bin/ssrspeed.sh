@@ -269,7 +269,7 @@ check_ssrspeedn() {
   cd SSRSpeedN || exit 1
   sudo git pull || sudo git fetch --all && sudo git reset --hard origin/main
   GEOIP_LATEST=$(sudo wget --no-check-certificate -qO- "https://api.github.com/repos/P3TERX/GeoLite.mmdb/releases/latest" | grep 'tag_name' | head -n 1 | cut -d\" -f4)
-  if [[ ${GEOIP_LATEST//./} -gt $(grep 'GeoIP' data/setting | cut -d= -f2 | sed "s#[.]##g") ]]; then
+  if [[ ${GEOIP_LATEST//./} -gt $(grep 'GeoIP' data/setting 2>/dev/null | cut -d= -f2 | sed "s#[.]##g") ]]; then
     [ ! -d resources/databases ] && sudo mkdir -p resources/databases
     for a in {GeoLite2-ASN.mmdb,GeoLite2-City.mmdb}; do
       sudo wget --no-check-certificate -O resources/databases/"$a" https://github.com/P3TERX/GeoLite.mmdb/releases/download/"$GEOIP_LATEST"/"$a"
