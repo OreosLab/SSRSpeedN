@@ -27,7 +27,7 @@ except (ConnectionRefusedError, socket.timeout):
 class SSRSpeedCore(object):
     def __init__(self):
 
-        self.test_method: str = "SOCKET"
+        self.test_method: str = "ST_ASYNC"
         self.proxy_type: str = "SSR"
         self.web_mode: bool = False
         self.colors: str = "origin"

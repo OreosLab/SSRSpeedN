@@ -19,7 +19,6 @@ from ssrspeed.speedtest.methods import (
 logger = logging.getLogger("Sub")
 
 LOCAL_ADDRESS = ssrconfig["localAddress"]
-LOCAL_PORT = ssrconfig["localPort"]
 DEFAULT_SOCKET = socket.socket
 METHOD = ssrconfig["method"]
 
@@ -28,20 +27,12 @@ class SpeedTestMethods(object):
     def __init__(self):
         self.__init_socket()
 
-    # 	self.__fileUrl = "http://speedtest.dallas.linode.com/100MB-dallas.bin" #100M File
-    # 	self.__proxy = {
-    # 		"http":"socks5://%s:%d" % (LOCAL_ADDRESS,LOCAL_PORT),
-    # 		"https":"socks5://%s:%d" % (LOCAL_ADDRESS,LOCAL_PORT)
-    # 	}
-    # 	self.__lock = threading.Lock()
-    # 	self.__sizeList = []
-
     @staticmethod
     def __init_socket():
         socket.socket = DEFAULT_SOCKET
 
-    async def start_test(self, port, method="ST_ASYNC"):
-        logger.info("Starting speed test with %s." % method)
+    async def start_test(self, port, download_semaphore, method="ST_ASYNC"):
+        logger.info(f"Starting speed test with {method}.")
         if method == "SPEED_TEST_NET":
             try:
                 socks.set_default_proxy(socks.SOCKS5, LOCAL_ADDRESS, port)
@@ -89,12 +80,13 @@ class SpeedTestMethods(object):
                 return 0, 0, [], 0
         elif method == "ST_ASYNC":
             try:
-                return st_asyncio.start(LOCAL_ADDRESS, port)
+                result = await st_asyncio.start(download_semaphore, LOCAL_ADDRESS, port)
+                return result
             except Exception:
                 logger.error("", exc_info=True)
                 return 0, 0, [], 0
         else:
-            raise ValueError("Invalid test method %s." % method)
+            raise ValueError(f"Invalid test method {method}.")
 
     @staticmethod
     def start_wps_test(port):

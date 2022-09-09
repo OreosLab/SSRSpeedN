@@ -2,14 +2,11 @@ import asyncio
 import copy
 import logging
 import os
-import re
 import socket
 
-import aiohttp
 import geoip2.database
 import pynat
 import socks
-from aiohttp_socks import ProxyConnector
 from geoip2.errors import AddressNotFoundError
 
 from ssrspeed.config import ssrconfig
@@ -21,6 +18,7 @@ from ssrspeed.launchers import (
 )
 from ssrspeed.paths import KEY_PATH
 from ssrspeed.speedtest.methodology import SpeedTestMethods
+from ssrspeed.speedtest.methods.st_stream import run_test_stream
 from ssrspeed.utils import check_port, domain2ip, ip_loc
 
 logger = logging.getLogger("Sub")
@@ -30,21 +28,64 @@ LOCAL_PORT = int(ssrconfig["localPort"])
 MAX_CONNECTIONS = int(ssrconfig["maxConnections"])
 PING_TEST = ssrconfig["ping"]
 GOOGLE_PING_TEST = ssrconfig["gping"]
-NETFLIX_TEST = ssrconfig["netflix"]
-HBO_TEST = ssrconfig["hbo"]
-DISNEY_TEST = ssrconfig["disney"]
-YOUTUBE_TEST = ssrconfig["youtube"]
-ABEMA_TEST = ssrconfig["abema"]
-BAHAMUT_TEST = ssrconfig["bahamut"]
-DAZN_TEST = ssrconfig["dazn"]
-TVB_TEST = ssrconfig["tvb"]
-BILIBILI_TEST = ssrconfig["bilibili"]
-# Netflix requestIpAddress regex compile
-nf_ip_re = re.compile(r'"requestIpAddress":"(.*)"')
 
 
 class SpeedTest(object):
-    def __init__(self, parser, method="SOCKET", use_ssr_cs=False):
+    __ans_data = None
+    __city_data = None
+    __STREAM_CFG = {
+        'NETFLIX_TEST': ssrconfig["netflix"],
+        'HBO_TEST': ssrconfig["hbo"],
+        'DISNEY_TEST': ssrconfig["disney"],
+        'YOUTUBE_TEST': ssrconfig["youtube"],
+        'ABEMA_TEST': ssrconfig["abema"],
+        'BAHAMUT_TEST': ssrconfig["bahamut"],
+        'DAZN_TEST': ssrconfig["dazn"],
+        'TVB_TEST': ssrconfig["tvb"],
+        'BILIBILI_TEST': ssrconfig["bilibili"]
+    }
+    __BASE_RESULT = {
+        "group": "N/A",
+        "remarks": "N/A",
+        "loss": 1,
+        "ping": 0,
+        "gPingLoss": 1,
+        "gPing": 0,
+        "dspeed": -1,
+        "maxDSpeed": -1,
+        "trafficUsed": 0,
+        "geoIP": {
+            "inbound": {"address": "N/A", "info": "N/A"},
+            "outbound": {"address": "N/A", "info": "N/A"},
+        },
+        "rawSocketSpeed": [],
+        "rawTcpPingStatus": [],
+        "rawGooglePingStatus": [],
+        "webPageSimulation": {"results": []},
+        "ntt": {
+            "type": "",
+            "internal_ip": "",
+            "internal_port": 0,
+            "public_ip": "",
+            "public_port": 0,
+        },
+        "Ntype": "None",
+        "Htype": False,
+        "Dtype": False,
+        "Ytype": False,
+        "Atype": False,
+        "Btype": False,
+        "Dztype": False,
+        "Ttype": False,
+        "Bltype": "N/A",
+        "InRes": "N/A",
+        "OutRes": "N/A",
+        "InIP": "N/A",
+        "OutIP": "N/A",
+        "port": 0,
+    }
+
+    def __init__(self, parser, method="ST_ASYNC", use_ssr_cs=False):
         self.__configs = parser.nodes
         self.__use_ssr_cs = use_ssr_cs
         self.__test_method = method
@@ -52,49 +93,10 @@ class SpeedTest(object):
         self.__current = {}
         self.__city_data = None
         self.__ans_data = None
-        self.__base_result = {
-            "group": "N/A",
-            "remarks": "N/A",
-            "loss": 1,
-            "ping": 0,
-            "gPingLoss": 1,
-            "gPing": 0,
-            "dspeed": -1,
-            "maxDSpeed": -1,
-            "trafficUsed": 0,
-            "geoIP": {
-                "inbound": {"address": "N/A", "info": "N/A"},
-                "outbound": {"address": "N/A", "info": "N/A"},
-            },
-            "rawSocketSpeed": [],
-            "rawTcpPingStatus": [],
-            "rawGooglePingStatus": [],
-            "webPageSimulation": {"results": []},
-            "ntt": {
-                "type": "",
-                "internal_ip": "",
-                "internal_port": 0,
-                "public_ip": "",
-                "public_port": 0,
-            },
-            "Ntype": "None",
-            "Htype": False,
-            "Dtype": False,
-            "Ytype": False,
-            "Atype": False,
-            "Btype": False,
-            "Dztype": False,
-            "Ttype": False,
-            "Bltype": "N/A",
-            "InRes": "N/A",
-            "OutRes": "N/A",
-            "InIP": "N/A",
-            "OutIP": "N/A",
-            "port": 0,
-        }
 
-    def __get_base_result(self):
-        return copy.deepcopy(self.__base_result)
+    @classmethod
+    def __get_base_result(cls):
+        return copy.deepcopy(cls.__BASE_RESULT)
 
     def __get_next_config(self):
         try:
@@ -126,22 +128,24 @@ class SpeedTest(object):
     def get_current(self):
         return self.__current
 
-    def load_geo_info(self):
-        self.__city_data = geoip2.database.Reader(
+    @classmethod
+    def load_geo_info(cls):
+        cls.__city_data = geoip2.database.Reader(
             f"{KEY_PATH['databases']}GeoLite2-City.mmdb"
         )
-        self.__ans_data = geoip2.database.Reader(
+        cls.__ans_data = geoip2.database.Reader(
             f"{KEY_PATH['databases']}GeoLite2-ASN.mmdb"
         )
 
-    def get_local_ip_info(self, ip):
+    @classmethod
+    def get_local_ip_info(cls, ip):
         country, country_code, city, organization = "N/A", "N/A", "Unknown City", "N/A"
         try:
-            country_info = self.__city_data.city(ip).country
+            country_info = cls.__city_data.city(ip).country
             country = country_info.names.get("en", "N/A")
             country_code = country_info.iso_code
-            city = self.__city_data.city(ip).city.names.get("en", "Unknown City")
-            organization = self.__ans_data.asn(ip).autonomous_system_organization
+            city = cls.__city_data.city(ip).city.names.get("en", "Unknown City")
+            organization = cls.__ans_data.asn(ip).autonomous_system_organization
         except ValueError as e:
             logger.error(e)
         except AddressNotFoundError as e:
@@ -155,7 +159,7 @@ class SpeedTest(object):
 
     async def __geo_ip_inbound(self, config):
         self.inboundGeoIP = domain2ip(config["server"])
-        inbound_info = self.get_local_ip_info(self.inboundGeoIP)
+        inbound_info = SpeedTest.get_local_ip_info(self.inboundGeoIP)
         inbound_geo = (
             f"{inbound_info.get('country', 'N/A')} {inbound_info.get('city', 'Unknown City')}, "
             f"{inbound_info.get('organization', 'N/A')}"
@@ -164,67 +168,13 @@ class SpeedTest(object):
         logger.info(f"Node inbound IP : {self.inboundGeoIP}, Geo : {inbound_geo}")
         return inbound_geo, inbound_info.get("country_code", "N/A")
 
-    async def __geo_ip_outbound(self, _item, port, semaphore):
-        host = "127.0.0.1"
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
-            "Chrome/64.0.3282.119 Safari/537.36 ",
-        }
-        test_list = []
-        netflix_task = None
-        get_outbound_info = await asyncio.create_task(
-            SpeedTest.async_get_outbound_info(_item, port, semaphore)
+    @classmethod
+    async def __geo_ip_outbound(cls, _item, port, semaphore):
+        get_outbound_info = await SpeedTest.async_get_outbound_info(
+            _item, port, semaphore
         )
         if get_outbound_info["outboundGeoIP"] != "N/A":
-            if HBO_TEST:
-                test_list.append(
-                    asyncio.create_task(SpeedTest.hbomax(host, headers, _item, port))
-                )
-            if DISNEY_TEST:
-                test_list.append(
-                    asyncio.create_task(
-                        SpeedTest.disneyplus(host, headers, _item, port)
-                    )
-                )
-            if YOUTUBE_TEST:
-                test_list.append(
-                    asyncio.create_task(SpeedTest.youtube(host, headers, _item, port))
-                )
-            if ABEMA_TEST:
-                test_list.append(
-                    asyncio.create_task(SpeedTest.abema(host, headers, _item, port))
-                )
-            if BAHAMUT_TEST:
-                test_list.append(
-                    asyncio.create_task(SpeedTest.gamer(host, headers, _item, port))
-                )
-            if DAZN_TEST:
-                test_list.append(
-                    asyncio.create_task(SpeedTest.indazn(host, headers, _item, port))
-                )
-            if TVB_TEST:
-                test_list.append(
-                    asyncio.create_task(SpeedTest.mytvsuper(host, headers, _item, port))
-                )
-            if BILIBILI_TEST:
-                test_list.append(
-                    asyncio.create_task(SpeedTest.bilibili(host, headers, _item, port))
-                )
-            if NETFLIX_TEST:
-                netflix_task = asyncio.create_task(
-                    SpeedTest.netflix(host, headers, _item, port)
-                )
-                test_list.append(netflix_task)
-            await asyncio.wait(test_list)
-            if netflix_task:
-                netflix_result = netflix_task.result()
-                if (
-                    netflix_result.get("netflix_ip", "")
-                    == get_outbound_info["outboundGeoIP"]
-                ):
-                    if Ntype := netflix_result.get("text", None):
-                        logger.info("Netflix test result: Full Native.")
-                        get_outbound_info["_item"]["Ntype"] = Ntype
+            await run_test_stream(_item, port, get_outbound_info, cls.__STREAM_CFG)
         return get_outbound_info
 
     @classmethod
@@ -250,12 +200,12 @@ class SpeedTest(object):
         latency_test = None
         st = SpeedTestMethods()
         res = {
-            "loss": self.__base_result["loss"],
-            "ping": self.__base_result["ping"],
-            "rawTcpPingStatus": self.__base_result["rawTcpPingStatus"],
-            "gPing": self.__base_result["gPing"],
-            "gPingLoss": self.__base_result["gPingLoss"],
-            "rawGooglePingStatus": self.__base_result["rawGooglePingStatus"],
+            "loss": SpeedTest.__BASE_RESULT["loss"],
+            "ping": SpeedTest.__BASE_RESULT["ping"],
+            "rawTcpPingStatus": SpeedTest.__BASE_RESULT["rawTcpPingStatus"],
+            "gPing": SpeedTest.__BASE_RESULT["gPing"],
+            "gPingLoss": SpeedTest.__BASE_RESULT["gPingLoss"],
+            "rawGooglePingStatus": SpeedTest.__BASE_RESULT["rawGooglePingStatus"],
         }
 
         if PING_TEST:
@@ -291,6 +241,9 @@ class SpeedTest(object):
                 sock=s,
             )
             return t, eip, eport, sip, sport
+        except socket.gaierror:
+            logger.error("", exc_info=True)
+            return None, None, None, None, None
         except Exception:
             logger.error("", exc_info=True)
             return None, None, None, None, None
@@ -298,7 +251,7 @@ class SpeedTest(object):
             s.close()
 
     async def __async__start_test(
-        self, node, dic, lock, port_queue, semaphore, test_mode
+        self, node, dic, lock, port_queue, geo_ip_semaphore, download_semaphore, test_mode
     ):
         port = await port_queue.get()
         cfg = node.config
@@ -314,7 +267,7 @@ class SpeedTest(object):
         if not client:
             logger.warning(f"Unknown Node Type: {node.node_type}.")
             return False
-        _item = self.__get_base_result()
+        _item = SpeedTest.__get_base_result()
         _item["group"] = cfg["group"]
         _item["remarks"] = cfg["remarks"]
         self.__current = _item
@@ -366,7 +319,7 @@ class SpeedTest(object):
         if isinstance(ping_result, dict):
             for k in ping_result.keys():
                 _item[k] = ping_result[k]
-        outbound_info = await self.__geo_ip_outbound(_item, port, semaphore)
+        outbound_info = await SpeedTest.__geo_ip_outbound(_item, port, geo_ip_semaphore)
         _item = outbound_info["_item"]
         if (
             (not GOOGLE_PING_TEST)
@@ -409,10 +362,10 @@ class SpeedTest(object):
                         f"{nat_info}"
                     )
                 elif test_mode == "FULL":
-                    test_res = await st.start_test(port, self.__test_method)
+                    test_res = await st.start_test(port, download_semaphore, self.__test_method)
                     if int(test_res[0]) == 0:
                         logger.warning("Re-testing node.")
-                        test_res = await st.start_test(port, self.__test_method)
+                        test_res = await st.start_test(port, download_semaphore, self.__test_method)
                     _item["dspeed"] = test_res[0]
                     _item["maxDSpeed"] = test_res[1]
                     _item["InRes"] = self.inboundGeoRES
@@ -447,7 +400,10 @@ class SpeedTest(object):
     async def __run(self, test_mode):
         task_list = []
         lock = asyncio.Lock()
-        semaphore = asyncio.Semaphore(1)
+        geo_ip_semaphore = asyncio.Semaphore(1)
+        download_semaphore = asyncio.Semaphore(
+            ssrconfig['fileDownload'].get('taskNum',1)
+        )
         port_queue = asyncio.Queue()
         dic = {"done_nodes": 0, "total_nodes": len(self.__configs)}
         for i in range(LOCAL_PORT, LOCAL_PORT + MAX_CONNECTIONS):
@@ -456,7 +412,7 @@ class SpeedTest(object):
             task_list.append(
                 asyncio.create_task(
                     self.__async__start_test(
-                        node, dic, lock, port_queue, semaphore, test_mode
+                        node, dic, lock, port_queue, geo_ip_semaphore, download_semaphore, test_mode
                     )
                 )
             )
@@ -464,7 +420,7 @@ class SpeedTest(object):
 
     def __start_test(self, test_mode="FULL"):
         self.__results = []
-        self.load_geo_info()
+        SpeedTest.load_geo_info()
         if os.name == "nt":
             asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
         loop = asyncio.get_event_loop()
@@ -485,283 +441,3 @@ class SpeedTest(object):
             f"Test mode : speed and tcp ping. Test method : {self.__test_method}"
         )
         self.__start_test()
-
-    @classmethod
-    async def netflix(cls, host, headers, _item, port):
-        logger.info(f"Performing netflix test LOCAL_PORT: {port}.")
-        try:
-            sum_ = 0
-            async with aiohttp.ClientSession(
-                headers=headers,
-                connector=ProxyConnector(host=host, port=port),
-                timeout=aiohttp.ClientTimeout(
-                    connect=10, sock_connect=10, sock_read=10
-                ),
-            ) as session:
-                async with session.get(
-                    url="https://www.netflix.com/title/70242311"
-                ) as response1:
-                    netflix_ip = "N/A"
-                    if response1.status == 200:
-                        sum_ += 1
-                        netflix_ip = nf_ip_re.findall(str(await response1.read()))[
-                            0
-                        ].split(",")[0]
-                        logger.info("Netflix IP : " + netflix_ip)
-                    async with session.get(
-                        url="https://www.netflix.com/title/70143836"
-                    ) as response2:
-                        rg = ""
-                        if response2.status == 200:
-                            sum_ += 1
-                            rg = (
-                                f"({str(response2.url).split('com/')[1].split('/')[0]})"
-                            )
-                        if rg == "(title)":
-                            rg = "(us)"
-                        # 测试连接状态
-                        if sum_ == 0:
-                            logger.info("Netflix test result: None.")
-                            _item["Ntype"] = "None"
-                        elif sum_ == 1:
-                            logger.info("Netflix test result: Only Original.")
-                            _item["Ntype"] = "Only Original"
-                        else:
-                            logger.info("Netflix test result: Full DNS.")
-                            _item["Ntype"] = "Full DNS" + rg
-                        return {"netflix_ip": netflix_ip, "text": f"Full Native{rg}"}
-        except Exception as e:
-            logger.error("Connect to Netflix exception: " + str(e))
-            return {}
-
-    @classmethod
-    async def hbomax(cls, host, headers, _item, port):
-        logger.info(f"Performing HBO max test LOCAL_PORT: {port}.")
-        try:
-            async with aiohttp.ClientSession(
-                headers=headers,
-                connector=ProxyConnector(host=host, port=port),
-                timeout=aiohttp.ClientTimeout(
-                    connect=10, sock_connect=10, sock_read=10
-                ),
-            ) as session:
-                async with session.get(
-                    url="https://www.hbomax.com/", allow_redirects=False
-                ) as response:
-                    if response.status == 200:
-                        _item["Htype"] = True
-                    else:
-                        _item["Htype"] = False
-        except Exception as e:
-            logger.error("Connect to HBO max exception: " + str(e))
-
-    @classmethod
-    async def disneyplus(cls, host, headers, _item, port):
-        logger.info(f"Performing Disney plus test LOCAL_PORT: {port}.")
-        try:
-            async with aiohttp.ClientSession(
-                headers=headers,
-                connector=ProxyConnector(host=host, port=port),
-                timeout=aiohttp.ClientTimeout(connect=5),
-            ) as session:
-                async with session.get(
-                    url="https://www.disneyplus.com/"
-                ) as response1, session.get(
-                    url="https://global.edge.bamgrid.com/token"
-                ) as response2:
-                    if response1.status == 200 and response2.status != 403:
-                        text = await response1.text()
-                        if text.find("Region", 0, 400) == -1:
-                            _item["Dtype"] = False
-                        elif response1.history:
-                            if 300 <= response1.history[0].status <= 399:
-                                _item["Dtype"] = False
-                        else:
-                            _item["Dtype"] = True
-                    else:
-                        _item["Dtype"] = False
-        except Exception as e:
-            logger.error("Connect to Disney plus exception: " + str(e))
-
-    @classmethod
-    async def youtube(cls, host, headers, _item, port):
-        logger.info(f"Performing Youtube Premium test LOCAL_PORT: {port}.")
-        try:
-            async with aiohttp.ClientSession(
-                headers=headers,
-                connector=ProxyConnector(host=host, port=port),
-                timeout=aiohttp.ClientTimeout(
-                    connect=10, sock_connect=10, sock_read=10
-                ),
-            ) as session:
-                async with session.get(
-                    url="https://music.youtube.com/", allow_redirects=False
-                ) as response:
-                    if "is not available" in await response.text():
-                        _item["Ytype"] = False
-                    elif response.status == 200:
-                        _item["Ytype"] = True
-                    else:
-                        _item["Ytype"] = False
-        except Exception as e:
-            logger.error("Connect to Youtube Premium exception: " + str(e))
-
-    @classmethod
-    async def abema(cls, host, headers, _item, port):
-        logger.info(f"Performing Abema test LOCAL_PORT: {port}.")
-        try:
-            async with aiohttp.ClientSession(
-                headers=headers,
-                connector=ProxyConnector(host=host, port=port),
-                timeout=aiohttp.ClientTimeout(
-                    connect=10, sock_connect=10, sock_read=10
-                ),
-            ) as session:
-                async with session.get(
-                    url="https://api.abema.io/v1/ip/check?device=android",
-                    allow_redirects=False,
-                ) as response:
-                    text = await response.text()
-                    if text.count("Country") > 0:
-                        _item["Atype"] = True
-                    else:
-                        _item["Atype"] = False
-        except Exception as e:
-            logger.error("Connect to Abema exception: " + str(e))
-
-    @classmethod
-    async def gamer(cls, host, headers, _item, port):
-        logger.info(f"Performing Bahamut test LOCAL_PORT: {port}.")
-        try:
-            async with aiohttp.ClientSession(
-                headers=headers,
-                connector=ProxyConnector(host=host, port=port),
-                timeout=aiohttp.ClientTimeout(
-                    connect=10, sock_connect=10, sock_read=10
-                ),
-            ) as session:
-                async with session.get(
-                    url="https://ani.gamer.com.tw/ajax/token.php?adID=89422&sn=14667",
-                    allow_redirects=False,
-                ) as response:
-                    text = await response.text()
-                    if text.count("animeSn") > 0:
-                        _item["Btype"] = True
-                    else:
-                        _item["Btype"] = False
-        except Exception as e:
-            logger.error("Connect to Bahamut exception: " + str(e))
-
-    @classmethod
-    async def indazn(cls, host, headers, _item, port):
-        logger.info(f"Performing Dazn test LOCAL_PORT: {port}.")
-        try:
-            async with aiohttp.ClientSession(
-                headers=headers,
-                connector=ProxyConnector(host=host, port=port, verify_ssl=False),
-                timeout=aiohttp.ClientTimeout(
-                    connect=10, sock_connect=10, sock_read=10
-                ),
-            ) as session:
-                payload = {
-                    "LandingPageKey": "generic",
-                    "Languages": "zh-CN,zh,en",
-                    "Platform": "web",
-                    "PlatformAttributes": {},
-                    "Manufacturer": "",
-                    "PromoCode": "",
-                    "Version": "2",
-                }
-                async with session.post(
-                    url="https://startup.core.indazn.com/misl/v5/Startup",
-                    json=payload,
-                    allow_redirects=False,
-                ) as response:
-                    if response.status == 200:
-                        _item["Dztype"] = True
-                    else:
-                        _item["Dztype"] = False
-        except Exception as e:
-            logger.error("Connect to Dazn exception: " + str(e))
-
-    @classmethod
-    async def mytvsuper(cls, host, headers, _item, port):
-        logger.info(f"Performing TVB test LOCAL_PORT: {port}.")
-        try:
-            async with aiohttp.ClientSession(
-                headers=headers,
-                connector=ProxyConnector(host=host, port=port),
-                timeout=aiohttp.ClientTimeout(
-                    connect=10, sock_connect=10, sock_read=10
-                ),
-            ) as session:
-                async with session.get(
-                    url="https://www.mytvsuper.com/iptest.php", allow_redirects=False
-                ) as response:
-                    text = await response.text()
-                    if text.count("HK") > 0:
-                        _item["Ttype"] = True
-                    else:
-                        _item["Ttype"] = False
-        except Exception as e:
-            logger.error("Connect to TVB exception: " + str(e))
-
-    @classmethod
-    async def bilibili(cls, host, headers, _item, port):
-        logger.info(f"Performing Bilibili test LOCAL_PORT: {port}.")
-        try:
-            async with aiohttp.ClientSession(
-                headers=headers,
-                connector=ProxyConnector(host=host, port=port),
-                timeout=aiohttp.ClientTimeout(
-                    connect=10, sock_connect=10, sock_read=10
-                ),
-            ) as session:
-                params = {
-                    "avid": 50762638,
-                    "cid": 100279344,
-                    "qn": 0,
-                    "type": "",
-                    "otype": "json",
-                    "ep_id": 268176,
-                    "fourk": 1,
-                    "fnver": 0,
-                    "fnval": 16,
-                    "module": "bangumi",
-                }
-                async with session.get(
-                    url="https://api.bilibili.com/pgc/player/web/playurl",
-                    params=params,
-                    allow_redirects=False,
-                ) as response:
-                    if response.status == 200:
-                        json_data = await response.json()
-                        if json_data["code"] == 0:
-                            _item["Bltype"] = "台湾"
-                        else:
-                            params = {
-                                "avid": 18281381,
-                                "cid": 29892777,
-                                "qn": 0,
-                                "type": "",
-                                "otype": "json",
-                                "ep_id": 183799,
-                                "fourk": 1,
-                                "fnver": 0,
-                                "fnval": 16,
-                                "module": "bangumi",
-                            }
-                            session.cookie_jar.clear()
-                            async with session.get(
-                                url="https://api.bilibili.com/pgc/player/web/playurl",
-                                params=params,
-                                allow_redirects=False,
-                            ) as response2:
-                                if response2.status == 200:
-                                    json_data2 = await response2.json()
-                                    if json_data2["code"] == 0:
-                                        _item["Bltype"] = "港澳台"
-                                else:
-                                    _item["Bltype"] = "N/A"
-        except Exception as e:
-            logger.error("Connect to Bilibili exception: " + str(e))
