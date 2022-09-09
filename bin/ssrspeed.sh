@@ -16,7 +16,7 @@ C[3]="请选择:"
 E[4]="! This cannot be empty !"
 C[4]="! 此处不能为空 !"
 E[5]="More than 5 errors have been entered, and the script exits."
-C[5]="输入错误超过5次, 脚本退出"
+C[5]="输入错误超过 5 次, 脚本退出"
 E[6]="Please input a subscription url or a single node supported by v2ray (VLESS is not supported):"
 C[6]="请输入订阅链接或者 v2ray 支持的单节点 (不支持 VLESS):"
 E[7]="If there are more than 2 filters below, you can separate the keywords by spaces."
@@ -52,7 +52,7 @@ C[21]="本脚本只支持 AMD64 架构"
 E[22]="Step 1/3: Detect and install brew, python3 and git."
 C[22]="进度 1/3: 检测并安装 brew, python3 和 git"
 E[23]="To uninstall the above dependencies, please press [y]. The default is not to uninstall:"
-C[23]="卸载以上依赖请按[y], 默认为不卸载:"
+C[23]="卸载以上依赖请按 [y], 默认为不卸载:"
 E[24]="Uninstallation of SSRSpeedN is complete."
 C[24]="卸载 SSRSpeedN 已完成"
 E[25]="The SSRSpeedN installation folder cannot be found in the current path. Please check if it is already installed or the installation path."
@@ -70,7 +70,7 @@ C[30]="测试项目:\n 1.只测 Ping\n 2.只测流媒体\n 3.以上全部 (默�
 E[31]="Multiplex:\n 1.On (default)\n 2.Off"
 C[31]="多路复用:\n 1.开启 (默认)\n 2.关闭"
 E[32]="Maximum number of concurrent connections. Input 1 if the airport does not support concurrency. ( Range: 1-999, default: 50):"
-C[32]="最大并发连接数, 如机场不支持并发, 请输入1 (数字范围: 1-999, 默认: 50):"
+C[32]="最大并发连接数, 如机场不支持并发, 请输入 1 (数字范围: 1-999, 默认: 50):"
 
 # 彩色 log 函数, read 函数, text 函数
 error() { echo -e "\033[31m\033[01m$1\033[0m" && exit 1; }
@@ -230,24 +230,26 @@ mode() {
   fi
 }
 
+# shellcheck disable=SC2086
 check_dependencies_Darwin() {
   info "\n $(text 22) \n"
   ! type -p brew >/dev/null 2>&1 && warning " $(text 26) " && sudo /bin/zsh -c "$(curl -fsSL https://gitee.com/cunkai/HomebrewCN/raw/master/Homebrew.sh)"
-  for j in {" sudo"," wget"," git"," python3"," unzip"}; do ! type -p "$j" >/dev/null 2>&1 && DEPS+=$j; done
+  for j in {" sudo"," wget"," git"," python3"," unzip"}; do ! type -p $j >/dev/null 2>&1 && DEPS+=$j; done
   if [ -n "$DEPS" ]; then
     info "\n $(text 14) $DEPS \n"
-    brew install "$DEPS"
+    brew install $DEPS
   else
     info "\n $(text 17) \n"
   fi
 }
 
+# shellcheck disable=SC2086
 check_dependencies_Linux() {
-  for j in {" sudo"," wget"," git"," python3"," unzip"}; do ! type -p "$j" >/dev/null 2>&1 && DEPS+=$j; done
+  for j in {" sudo"," wget"," git"," python3"," unzip"}; do ! type -p $j >/dev/null 2>&1 && DEPS+=$j; done
   if [ -n "$DEPS" ]; then
     info "\n $(text 14) $DEPS \n"
     ${PACKAGE_UPDATE[int]}
-    ${PACKAGE_INSTALL[int]} "$DEPS"
+    ${PACKAGE_INSTALL[int]} $DEPS
   else
     info "\n $(text 17) \n"
   fi
