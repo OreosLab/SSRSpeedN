@@ -21,13 +21,26 @@ Batch speed measuring tool based on Shadowsocks(R) and V2Ray
 * 因为需要依赖 Python 环境，且本项目仍在测试阶段，可能存在部分 bug ，可到 [tg 群组](https://t.me/+muGNhnaZglQ0N2Q1) 进行反馈。
 * Netflix 解锁测速结果说明:
 
-```text
-Full Native             原生全解锁
-Full Dns                DNS 全解锁
-Only original           仅解锁自制剧
-None                    未解锁
-其中原生解锁和 DNS 解锁只是解锁方式有区别，实际体验区别不大，在电视端使用时 DNS 解锁可能会提示使用代理。
-```
+  ```text
+  Full Native             原生全解锁
+  Full Dns                DNS 全解锁
+  Only original           仅解锁自制剧
+  None                    未解锁
+
+  其中原生解锁和 DNS 解锁只是解锁方式有区别，实际体验区别不大，在电视端使用时 DNS 解锁可能会提示使用代理。
+  ```
+
+* UDP NAT Type
+
+  ```text
+  Full-cone NAT                              全锥形 NAT
+  Symmetric NAT                              对称型 NAT
+  Restricted Cone NAT                        限制锥形 NAT (IP 受限)                                                                                                                       
+  Port-Restricted Cone NAT                   端口限制锥形 NAT (IP 和端口都受限)
+  Blocked                                    未开启UDP
+
+  其中全锥型的穿透性最好，而对称型的安全性最高，如果要使用代理打游戏，节点的 UDP NAT 类型最好为全锥型，其次为对称型，尽量不要用其他 NAT 类型的节点玩游戏
+  ```
 
 ## 主要特性
 
@@ -58,7 +71,7 @@ Linux 依赖
 
 1. Windows 10 x64
 
-放过要饭人士，MacOS 和 Linux 属实没钱测 / 懒得测，期待更多后浪反馈
+其他平台需要测试，欢迎反馈
 
 ### 理论支持平台
 
@@ -130,29 +143,80 @@ python -m ssrspeed -u "https://home.yoyu.dev/subscriptionlink" --include 香港 
 
 ## 自由配置
 
-* **自定义颜色**
+* **修改测速内容**
 
-  在 `ssrspeed.json` 文件下第 35 行，采用速度（MB/s）对应输出颜色 （RGB 256）方式
+  在 `ssrspeed.json` 文件下第 14 行至第 28 行，默认允许。
 
-* **自定义字体**
+  ```jsonc
+    "ntt": { "enabled": true, "internal_ip": "0.0.0.0", "internal_port": 54320 }, # UDP 类型测试
+    "ping": true,        # 是否测 ping
+    "gping": true,       # 是否测 Google ping
+    "speed": true,       # 是否测速
+    "method": "SOCKET",  # 测速方式，SOCKET / YOUTUBE / NETFLIX
+    "StSpeed": true,     # 是否同时测单线程/多线程
+    "netflix": true,     # 是否测 Netflix 解锁
+    "hbo": true,         # 是否测 HBO max 解锁
+    "disney": true,      # 是否测 Disney+ 解锁
+    "youtube": true,     # 是否测 YouTube premium 解锁
+    "abema": true,       # 是否测 Abema 解锁
+    "bahamut": true,     # 是否测 Bahamut (动画疯) 解锁
+    "dazn": true,        # 是否测 Dazn 解锁
+    "tvb": true,         # 是否测 My tvsuper 解锁
+    "bilibili": true,    # 是否测 Bilibili 解锁
+  ```
 
-  下载字体文件放入 `resources/custom/` 文件夹下，修改 `ssrspeed.json` 文件下第 34 行，本项目自带两个字体
+* **修改结果输出**
 
-* **自定义附加信息**
+  ```jsonc
+    "stream": true,     # 是否输出流媒体解锁
+    "geoip": true,      # 是否输出 Inbound & Outbound Geo
+    "port": true,       # 是否输出端口
+    "multiplex": true,  # 是否输出复用检测
+    "exportResult": {
+        "addition": "测速频道：@Cheap_Proxy",   # 自定义附加信息
+        "uploadResult": false,
+        "hide_max_speed": false,               # 是否隐藏最高速度
+        "font": "SourceHanSansCN-Medium.otf",  # 自定义字体，见下方说明
+        "colors": [                            # 自定义配色，见下方说明
+            {
+                "name": "origin",
+                "colors": {
+                    "4.0": [102, 255, 102],
+                    "8.0": [255, 255, 102],
+                    "16.0": [255, 178, 102],
+                    "24.0": [255, 102, 102],
+                    "32.0": [226, 140, 255],
+                    "40.0": [102, 204, 255],
+                    "50.0": [102, 102, 255]
+                }
+            },
+            {
+                "name": "poor",
+                "colors": {
+                    "4.0": [255, 215, 0],
+                    "8.0": [255, 178, 1],
+                    "16.0": [252, 105, 114],
+                    "24.0": [233, 130, 217],
+                    "32.0": [194, 108, 255],
+                    "40.0": [102, 192, 255],
+                    "50.0": [102, 111, 255]
+                }
+            }
+        ]
+    },
+  ```
 
-  修改 `ssrspeed.json` 文件下第 31 行为你自己的频道或群组等信息
+  * **自定义附加信息**
 
-* **修改测速项目**
+    修改为你自己的频道或群组等信息
 
-  在 `ssrspeed.json` 文件下第 12 行及第 19 行，可以设置是否进行 udp 类型及 Netflix 解锁测试，默认允许。在 13-14 行可以分别设置是否进行 ping / Google ping 测试，默认允许，若不进行测试，对应项在测速图上显示为 0
+  * **自定义字体**
 
-* **修改测速方式**
+    下载字体文件放入 `resources/custom/` 文件夹下，修改 `ssrspeed.json` 文件下第 37 行为字体文件名，本项目自带两个字体
 
-  在 `ssrspeed.json` 文件下第 18 行，可以设置采用单/多线程测速方式或均速/最高速测速方式，默认为前者
+  * **自定义颜色**
 
-## 详细使用
-
-* 参见 [SSRSpeed N 使用说明](https://gta5cloud.rip/index.php/2021/08/25/ssrspeedn-%e4%bd%bf%e7%94%a8%e8%af%b4%e6%98%8e/)
+    采用速度 (MB/s) 对应输出颜色 (RGB 256) 方式
 
 ## 项目结构
 
@@ -212,7 +276,7 @@ SSRSpeedN
 │   ├── launchers
 │   │   ├── __init__.py
 │   │   ├── base_client.py
-│   │   ├── ss_cilent.py
+│   │   ├── ss_client.py
 │   │   ├── ssr_client.py
 │   │   ├── trojan_client.py
 │   │   └── v2ray_client.py

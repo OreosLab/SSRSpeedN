@@ -10,6 +10,7 @@
         "username": null,
         "password": null
     },
+    "web": { "listen": "127.0.0.1", "port": 10870, "token": "" },
     "ntt": { "enabled": true, "internal_ip": "0.0.0.0", "internal_port": 54320 },
     "ping": true,
     "gping": true,
@@ -29,7 +30,6 @@
     "geoip": true,
     "port": true,
     "multiplex": true,
-    "web": { "listen": "127.0.0.1", "port": 10870, "token": "" },
     "exportResult": {
         "addition": "测速频道：@Cheap_Proxy",
         "uploadResult": false,
