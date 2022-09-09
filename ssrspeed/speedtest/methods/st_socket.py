@@ -12,7 +12,7 @@ from ssrspeed.utils import ip_loc
 from ssrspeed.utils.rules import DownloadRuleMatch
 
 logger = logging.getLogger("Sub")
-MAX_THREAD = ssrconfig["fileDownload"]["maxWorkers"]
+MAX_THREAD = ssrconfig["fileDownload"]["workers"]
 DEFAULT_SOCKET = socket.socket
 MAX_FILE_SIZE = 100 * 1024 * 1024
 BUFFER = ssrconfig["fileDownload"]["buffer"]
