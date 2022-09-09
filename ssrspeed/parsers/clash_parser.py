@@ -130,7 +130,7 @@ class ClashParser:
         server = cfg["server"]
         remarks = cfg.get("name", server)
         group = cfg.get("peer", "N/A")
-        sni = cfg["sni"]
+        sni = cfg.get("sni", "")
         port = int(cfg["port"])
         allow_insecure = True if (cfg.get("skip-cert-verify", False)) else False
         _type = cfg.get("type", "none")  # Obfs type
