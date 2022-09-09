@@ -24,7 +24,7 @@ async def start_web_page_simulation_test(local_host, local_port):
     while len(results):
         results.pop()
     task_list = []
-    semaphore = asyncio.Semaphore(w_config.get('maxWorkers',4))
+    semaphore = asyncio.Semaphore(w_config.get("maxWorkers", 4))
     logger.info("Start web page simulation test.")
     logger.info(f"Proxy {local_host}:local_port{local_port}")
     ip_loc = await parse_location(local_port)
@@ -35,7 +35,9 @@ async def start_web_page_simulation_test(local_host, local_port):
     logger.info("Read {} url(s).".format(len(urls)))
     for url in urls:
         task_list.append(
-            asyncio.create_task(execute(url=url, host=local_host, port=local_port, semaphore=semaphore))
+            asyncio.create_task(
+                execute(url=url, host=local_host, port=local_port, semaphore=semaphore)
+            )
         )
     await asyncio.wait(task_list)
     return copy.deepcopy(results)
@@ -67,31 +69,3 @@ async def execute(url, host, port, semaphore):
         logger.error(f"Unknown Error on : {url}", exc_info=True)
     finally:
         results.append(res)
-
-
-"""
-def wps_thread(url, proxies):
-    logger.debug(
-        "Thread {} started. Url: {}".format(threading.current_thread().ident, url)
-    )
-    res = {"url": url, "retCode": 0, "time": 0}
-    try:
-        start_time = time.time()
-        rep = requests.get(url, proxies=proxies, timeout=10)
-        res["retCode"] = rep.status_code
-        stop_time = time.time()
-        res["time"] = stop_time - start_time
-        logger.info(
-            "Url: {}, time used: {} ms, code: {}.".format(
-                url, res["time"], res["retCode"]
-            )
-        )
-    except requests.exceptions.Timeout:
-        logger.error("Url: {} timeout.".format(url))
-    except Exception:
-        logger.error("", exc_info=True)
-    finally:
-        resLock.acquire()
-        results.append(res)
-        resLock.release()
-"""

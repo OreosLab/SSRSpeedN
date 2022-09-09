@@ -34,15 +34,15 @@ class SpeedTest(object):
     __ans_data = None
     __city_data = None
     __STREAM_CFG = {
-        'NETFLIX_TEST': ssrconfig["netflix"],
-        'HBO_TEST': ssrconfig["hbo"],
-        'DISNEY_TEST': ssrconfig["disney"],
-        'YOUTUBE_TEST': ssrconfig["youtube"],
-        'ABEMA_TEST': ssrconfig["abema"],
-        'BAHAMUT_TEST': ssrconfig["bahamut"],
-        'DAZN_TEST': ssrconfig["dazn"],
-        'TVB_TEST': ssrconfig["tvb"],
-        'BILIBILI_TEST': ssrconfig["bilibili"]
+        "NETFLIX_TEST": ssrconfig["netflix"],
+        "HBO_TEST": ssrconfig["hbo"],
+        "DISNEY_TEST": ssrconfig["disney"],
+        "YOUTUBE_TEST": ssrconfig["youtube"],
+        "ABEMA_TEST": ssrconfig["abema"],
+        "BAHAMUT_TEST": ssrconfig["bahamut"],
+        "DAZN_TEST": ssrconfig["dazn"],
+        "TVB_TEST": ssrconfig["tvb"],
+        "BILIBILI_TEST": ssrconfig["bilibili"],
     }
     __BASE_RESULT = {
         "group": "N/A",
@@ -251,7 +251,14 @@ class SpeedTest(object):
             s.close()
 
     async def __async__start_test(
-        self, node, dic, lock, port_queue, geo_ip_semaphore, download_semaphore, test_mode
+        self,
+        node,
+        dic,
+        lock,
+        port_queue,
+        geo_ip_semaphore,
+        download_semaphore,
+        test_mode,
     ):
         port = await port_queue.get()
         cfg = node.config
@@ -362,10 +369,14 @@ class SpeedTest(object):
                         f"{nat_info}"
                     )
                 elif test_mode == "FULL":
-                    test_res = await st.start_test(port, download_semaphore, self.__test_method)
+                    test_res = await st.start_test(
+                        port, download_semaphore, self.__test_method
+                    )
                     if int(test_res[0]) == 0:
                         logger.warning("Re-testing node.")
-                        test_res = await st.start_test(port, download_semaphore, self.__test_method)
+                        test_res = await st.start_test(
+                            port, download_semaphore, self.__test_method
+                        )
                     _item["dspeed"] = test_res[0]
                     _item["maxDSpeed"] = test_res[1]
                     _item["InRes"] = self.inboundGeoRES
@@ -402,7 +413,7 @@ class SpeedTest(object):
         lock = asyncio.Lock()
         geo_ip_semaphore = asyncio.Semaphore(1)
         download_semaphore = asyncio.Semaphore(
-            ssrconfig['fileDownload'].get('taskNum',1)
+            ssrconfig["fileDownload"].get("taskNum", 1)
         )
         port_queue = asyncio.Queue()
         dic = {"done_nodes": 0, "total_nodes": len(self.__configs)}
@@ -412,7 +423,13 @@ class SpeedTest(object):
             task_list.append(
                 asyncio.create_task(
                     self.__async__start_test(
-                        node, dic, lock, port_queue, geo_ip_semaphore, download_semaphore, test_mode
+                        node,
+                        dic,
+                        lock,
+                        port_queue,
+                        geo_ip_semaphore,
+                        download_semaphore,
+                        test_mode,
                     )
                 )
             )

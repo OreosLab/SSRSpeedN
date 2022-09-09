@@ -79,7 +79,9 @@ class Statistics:
         print(
             "\r["
             + "=" * self._count
-            + "] [{:.2f} MB/s]".format(mb_red / self._time_used if self._time_used != 0 else 0)
+            + "] [{:.2f} MB/s]".format(
+                mb_red / self._time_used if self._time_used != 0 else 0
+            )
         )
         logger.info(f"Fetched {mb_red:.2f} MB in {self._time_used:.2f}s.")
 
@@ -96,9 +98,9 @@ async def _fetch(url: str, sta: Statistics, host: str = "127.0.0.1", port: int =
     try:
         logger.info(f"Fetching {url} via {host}:{port}.")
         async with aiohttp.ClientSession(
-                headers={"User-Agent": "curl/11.45.14"},
-                connector=ProxyConnector(host=host, port=port),
-                timeout=aiohttp.ClientTimeout(connect=10),
+            headers={"User-Agent": "curl/11.45.14"},
+            connector=ProxyConnector(host=host, port=port),
+            timeout=aiohttp.ClientTimeout(connect=10),
         ) as session:
             logger.debug("Session created.")
             async with session.get(url) as response:
@@ -114,7 +116,10 @@ async def _fetch(url: str, sta: Statistics, host: str = "127.0.0.1", port: int =
 
 
 async def start(
-    download_semaphore, proxy_host: str = "127.0.0.1", proxy_port: int = 10870, workers: int = WORKERS
+    download_semaphore,
+    proxy_host: str = "127.0.0.1",
+    proxy_port: int = 10870,
+    workers: int = WORKERS,
 ) -> tuple:
     async with download_semaphore:
         dlrm = DownloadRuleMatch()
@@ -125,9 +130,7 @@ async def start(
         logger.info(f"Running st_async, workers: {workers}.")
         _sta = Statistics()
         tasks = [
-            asyncio.create_task(
-                _fetch(url, _sta, proxy_host, proxy_port)
-            )
+            asyncio.create_task(_fetch(url, _sta, proxy_host, proxy_port))
             for _ in range(workers)
         ]
         await asyncio.wait(tasks)

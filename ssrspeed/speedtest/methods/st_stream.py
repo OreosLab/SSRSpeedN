@@ -10,6 +10,7 @@ logger = logging.getLogger("Sub")
 # Netflix requestIpAddress regex compile
 nf_ip_re = re.compile(r'"requestIpAddress":"(.*)"')
 
+
 class StreamTest:
     @classmethod
     async def netflix(cls, host, headers, _item, port):
@@ -284,39 +285,39 @@ async def run_test_stream(_item, port, get_outbound_info, stream_cfg):
     }
     test_list = []
     netflix_task = None
-    if stream_cfg['HBO_TEST']:
+    if stream_cfg["HBO_TEST"]:
         test_list.append(
             asyncio.create_task(StreamTest.hbomax(host, headers, _item, port))
         )
-    if stream_cfg['DISNEY_TEST']:
+    if stream_cfg["DISNEY_TEST"]:
         test_list.append(
             asyncio.create_task(StreamTest.disneyplus(host, headers, _item, port))
         )
-    if stream_cfg['YOUTUBE_TEST']:
+    if stream_cfg["YOUTUBE_TEST"]:
         test_list.append(
             asyncio.create_task(StreamTest.youtube(host, headers, _item, port))
         )
-    if stream_cfg['ABEMA_TEST']:
+    if stream_cfg["ABEMA_TEST"]:
         test_list.append(
             asyncio.create_task(StreamTest.abema(host, headers, _item, port))
         )
-    if stream_cfg['BAHAMUT_TEST']:
+    if stream_cfg["BAHAMUT_TEST"]:
         test_list.append(
             asyncio.create_task(StreamTest.bahamut(host, headers, _item, port))
         )
-    if stream_cfg['DAZN_TEST']:
+    if stream_cfg["DAZN_TEST"]:
         test_list.append(
             asyncio.create_task(StreamTest.indazn(host, headers, _item, port))
         )
-    if stream_cfg['TVB_TEST']:
+    if stream_cfg["TVB_TEST"]:
         test_list.append(
             asyncio.create_task(StreamTest.mytvsuper(host, headers, _item, port))
         )
-    if stream_cfg['BILIBILI_TEST']:
+    if stream_cfg["BILIBILI_TEST"]:
         test_list.append(
             asyncio.create_task(StreamTest.bilibili(host, headers, _item, port))
         )
-    if stream_cfg['NETFLIX_TEST']:
+    if stream_cfg["NETFLIX_TEST"]:
         netflix_task = asyncio.create_task(
             StreamTest.netflix(host, headers, _item, port)
         )
