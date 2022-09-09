@@ -15,7 +15,7 @@
     "ping": true,
     "gping": true,
     "speed": true,
-    "method": "SOCKET",
+    "method": "ST_ASYNC",
     "StSpeed": true,
     "netflix": true,
     "hbo": true,
@@ -64,7 +64,8 @@
     },
     "uploadResult": { "apiToken": "", "server": "", "remark": "Example Remark." },
     "fileDownload": {
-        "maxWorkers": 4,
+        "taskNum": 1,
+        "workers": 4,
         "buffer": 4096,
         "skipRuleMatch": false,
         "rules": [
@@ -86,7 +87,7 @@
         ]
     },
     "webPageSimulation": {
-        "maxThread": 4,
+        "maxWorkers": 4,
         "urls": ["https://www.google.com.hk", "https://www.youtube.com", "https://www.bing.com", "https://www.github.com", "https://www.microsoft.com"],
         "cnUrls": ["https://www.baidu.com", "https://www.weibo.com", "https://www.qq.com"]
     }
