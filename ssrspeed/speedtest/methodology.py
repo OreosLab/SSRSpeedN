@@ -48,7 +48,6 @@ class SpeedTestMethods(object):
                     self.__init_socket()
                     return result["download"] / 8, 0, [], 0  # bits to bytes
                 else:
-                    logger.error("", exc_info=True)
                     return 0, 0, [], 0
             except Exception:
                 logger.error("", exc_info=True)
