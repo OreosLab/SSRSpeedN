@@ -39,13 +39,16 @@ class SpeedTestMethods(object):
                 socket.socket = socks.socksocket
                 logger.info("Initializing...")
                 s = speedtestnet.Speedtest()
-                logger.info("Selecting Best Server...")
-                logger.info(s.get_best_server())
-                logger.info("Testing Download...")
-                s.download()
-                result = s.results.dict()
-                self.__init_socket()
-                return result["download"] / 8, 0, [], 0  # bits to bytes
+                if s.is_exist_config:
+                    logger.info("Selecting Best Server...")
+                    logger.info(s.get_best_server())
+                    logger.info("Testing Download...")
+                    s.download()
+                    result = s.results.dict()
+                    self.__init_socket()
+                    return result["download"] / 8, 0, [], 0  # bits to bytes
+                else:
+                    return 0, 0, [], 0
             except Exception:
                 logger.error("", exc_info=True)
                 return 0, 0, [], 0
