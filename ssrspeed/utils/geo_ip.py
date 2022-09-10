@@ -90,7 +90,7 @@ async def ip_loc(port):
     except aiohttp.ClientOSError:
         logger.error("Geo IP ClientOSError")
         return {}
-    except python_socks.ProxyTimeoutError:
+    except python_socks._errors.ProxyTimeoutError:
         logger.error("Geo IP Proxy Timeout.")
         return {}
     except asyncio.TimeoutError:
