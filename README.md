@@ -145,12 +145,14 @@ python -m ssrspeed -u "https://home.yoyu.dev/subscriptionlink" --include 香港 
 
 * **修改测速内容**
 
-  在 `ssrspeed.json` 文件下第 14 行至第 28 行，默认允许。
+  在 `ssrspeed.json` 文件下第 14 行至第 30 行，默认允许。
 
   ```jsonc
     "ntt": { "enabled": true, "internal_ip": "0.0.0.0", "internal_port": 54320 }, # UDP 类型测试
+    "geoip": true,       # 是否测 GeoIP, 包括 Inbound & Outbound
     "ping": true,        # 是否测 ping
     "gping": true,       # 是否测 Google ping
+    "stream": true,      # 是否测流媒体解锁
     "speed": true,       # 是否测速
     "method": "SOCKET",  # 测速方式，SOCKET / YOUTUBE / NETFLIX
     "StSpeed": true,     # 是否同时测单线程/多线程
@@ -168,8 +170,6 @@ python -m ssrspeed -u "https://home.yoyu.dev/subscriptionlink" --include 香港 
 * **修改结果输出**
 
   ```jsonc
-    "stream": true,     # 是否输出流媒体解锁
-    "geoip": true,      # 是否输出 Inbound & Outbound Geo
     "port": true,       # 是否输出端口
     "multiplex": true,  # 是否输出复用检测
     "exportResult": {
@@ -212,7 +212,7 @@ python -m ssrspeed -u "https://home.yoyu.dev/subscriptionlink" --include 香港 
 
   * **自定义字体**
 
-    下载字体文件放入 `resources/custom/` 文件夹下，修改 `ssrspeed.json` 文件下第 37 行为字体文件名，本项目自带两个字体
+    下载字体文件放入 `resources/custom/` 文件夹下，修改 `ssrspeed.json` 文件下第 43 行为字体文件名，本项目自带两个字体
 
   * **自定义颜色**
 

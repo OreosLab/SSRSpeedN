@@ -308,9 +308,11 @@ class SpeedTest:
             )
 
             _item["geoIP"]["inbound"]["address"] = inbound_ip
+            _item["InIP"] = inbound_ip
             _item["InRes"] = inbound_geo_res
             _item["geoIP"]["inbound"]["info"] = inbound_info
             _item["geoIP"]["outbound"]["address"] = outbound_ip
+            _item["OutIP"] = outbound_ip
             _item["OutRes"] = outbound_geo_res
             _item["geoIP"]["outbound"]["info"] = outbound_info
 
