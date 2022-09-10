@@ -1,5 +1,6 @@
 import logging
 import os
+import shutil
 import sys
 import time
 
@@ -65,17 +66,7 @@ if __name__ == "__main__":
     args = cli_cfg.init(VERSION)
 
     if args.paolu:
-        for root, dirs, files in os.walk(ROOT_PATH, topdown=False):
-            for name in files:
-                try:
-                    os.remove(os.path.join(root, name))
-                except Exception:
-                    pass
-            for name in dirs:
-                try:
-                    os.remove(os.path.join(root, name))
-                except Exception:
-                    pass
+        shutil.rmtree(ROOT_PATH)
         sys.exit(0)
 
     # print("********* Important Tip 重要提示 *********")

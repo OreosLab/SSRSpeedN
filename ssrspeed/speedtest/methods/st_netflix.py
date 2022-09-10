@@ -23,7 +23,7 @@ def speed_test_netflix(port: int) -> Tuple[float, float, List[float], float]:
     try:
         chrome_options = Options()
         chrome_options.add_argument("--headless")
-        chrome_options.add_argument("--proxy-server=socks5://127.0.0.1:%d" % port)
+        chrome_options.add_argument(f"--proxy-server=socks5://127.0.0.1:{port}")
         driver = webdriver.Chrome(
             service=ChromeService(ChromeDriverManager().install()),
             options=chrome_options,
@@ -33,7 +33,7 @@ def speed_test_netflix(port: int) -> Tuple[float, float, List[float], float]:
         current_speed: Union[int, float] = 0
         max_speed: Union[int, float] = 0
         total_received: Union[int, float] = 0
-        speed_list = []
+        speed_list: list = []
         for i in range(0, 60):
             time.sleep(0.5)
             current_speed = float(
@@ -51,7 +51,7 @@ def speed_test_netflix(port: int) -> Tuple[float, float, List[float], float]:
             print(
                 "\r["
                 + "=" * i
-                + "> CurrentInternetSpeed: [%.2f MB/s]" % (current_speed / 8),
+                + f"> CurrentInternetSpeed: [{current_speed / 8:.2f} MB/s]",
                 end="",
             )
             done = len(driver.find_element(value="your-speed-message").text)
@@ -59,12 +59,11 @@ def speed_test_netflix(port: int) -> Tuple[float, float, List[float], float]:
                 break
 
         logger.info(
-            "\nNetflix test: EndSpeed {:.2f} MB/s, MaxSpeed {:.2f} MB/s.".format(
-                current_speed / 8, max_speed / 8
-            )
+            "\nNetflix test: "
+            f"EndSpeed {current_speed / 8:.2f} MB/s, "
+            f"MaxSpeed {max_speed / 8:.2f} MB/s."
         )
         driver.close()
-        os.system("taskkill /im chromedriver.exe /F")
         return (
             current_speed * 128 * 1024,
             max_speed * 128 * 1024,
@@ -73,7 +72,12 @@ def speed_test_netflix(port: int) -> Tuple[float, float, List[float], float]:
         )
 
     except Exception as e:
-        driver.close()
-        os.system("taskkill /im chromedriver.exe /F")
         logger.error("Netflix speedtest ERROR : Re-test node " + str(e.args))
         return 0, 0, [], 0
+
+    finally:
+        os.system("taskkill /im chromedriver.exe /F")
+
+
+if __name__ == "__main__":
+    print(speed_test_netflix(7890))

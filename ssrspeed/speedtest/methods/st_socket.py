@@ -12,6 +12,9 @@ from ssrspeed.utils import ip_loc
 from ssrspeed.utils.rules import DownloadRuleMatch
 
 logger = logging.getLogger("Sub")
+
+SPEED_TEST = ssrconfig["speed"]
+STSPEED_TEST = ssrconfig["StSpeed"]
 MAX_THREAD = ssrconfig["fileDownload"]["workers"]
 DEFAULT_SOCKET = socket.socket
 MAX_FILE_SIZE = 100 * 1024 * 1024
@@ -21,8 +24,6 @@ LOCAL_PORT = 1080
 LOCK = threading.Lock()
 TOTAL_RECEIVED = 0
 MAX_TIME = 0
-SPEED_TEST = ssrconfig["speed"]
-STSPEED_TEST = ssrconfig["StSpeed"]
 
 
 def set_proxy_port(port: int):
@@ -36,20 +37,20 @@ def restore_socket():
 
 def speed_test_thread(link: str) -> Optional[int]:
     global TOTAL_RECEIVED, MAX_TIME
-    logger.debug("Thread {} started.".format(threading.current_thread().ident))
+    logger.debug(f"Thread {threading.current_thread().ident} started.")
     link = link.replace("https://", "").replace("http://", "")
     host = link[: link.find("/")]
     request_uri = link[link.find("/") :]
-    logger.debug("\nLink: %s\nHost: %s\nRequestUri: %s" % (link, host, request_uri))
-    # print(link, MAX_FILE_SIZE)
+    logger.debug(f"\nLink: {link}\nHost: {host}\nRequestUri: {request_uri}")
+
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.settimeout(12)
         try:
             s.connect((host, 80))
-            logger.debug("Connected to %s" % host)
+            logger.debug(f"Connected to {host}")
         except Exception:
-            logger.error("Connect to %s error." % host)
+            logger.error(f"Connect to {host} error.")
             LOCK.acquire()
             TOTAL_RECEIVED += 0
             LOCK.release()

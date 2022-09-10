@@ -13,7 +13,7 @@ nf_ip_re = re.compile(r'"requestIpAddress":"(.*)"')
 
 class StreamTest:
     @classmethod
-    async def netflix(cls, host, headers, _item, port):
+    async def netflix(cls, host, headers, inner_dict, port):
         logger.info(f"Performing netflix test LOCAL_PORT: {port}.")
         try:
             sum_ = 0
@@ -46,20 +46,20 @@ class StreamTest:
                         # 测试连接状态
                         if sum_ == 0:
                             logger.info("Netflix test result: None.")
-                            _item["Ntype"] = "None"
+                            inner_dict["Ntype"] = "None"
                         elif sum_ == 1:
                             logger.info("Netflix test result: Only Original.")
-                            _item["Ntype"] = "Only Original"
+                            inner_dict["Ntype"] = "Only Original"
                         else:
                             logger.info("Netflix test result: Full DNS.")
-                            _item["Ntype"] = "Full DNS" + rg
+                            inner_dict["Ntype"] = "Full DNS" + rg
                         return {"netflix_ip": netflix_ip, "text": f"Full Native{rg}"}
         except Exception as e:
             logger.error("Connect to Netflix exception: " + str(e))
             return {}
 
     @classmethod
-    async def hbomax(cls, host, headers, _item, port):
+    async def hbomax(cls, host, headers, inner_dict, port):
         logger.info(f"Performing HBO max test LOCAL_PORT: {port}.")
         try:
             async with aiohttp.ClientSession(
@@ -71,14 +71,14 @@ class StreamTest:
                     url="https://www.hbomax.com/", allow_redirects=False
                 ) as response:
                     if response.status == 200:
-                        _item["Htype"] = True
+                        inner_dict["Htype"] = True
                     else:
-                        _item["Htype"] = False
+                        inner_dict["Htype"] = False
         except Exception as e:
             logger.error("Connect to HBO max exception: " + str(e))
 
     @classmethod
-    async def disneyplus(cls, host, headers, _item, port):
+    async def disneyplus(cls, host, headers, inner_dict, port):
         logger.info(f"Performing Disney plus test LOCAL_PORT: {port}.")
         try:
             async with aiohttp.ClientSession(
@@ -94,19 +94,19 @@ class StreamTest:
                     if response1.status == 200 and response2.status != 403:
                         text = await response1.text()
                         if text.find("Region", 0, 400) == -1:
-                            _item["Dtype"] = False
+                            inner_dict["Dtype"] = False
                         elif response1.history:
                             if 300 <= response1.history[0].status <= 399:
-                                _item["Dtype"] = False
+                                inner_dict["Dtype"] = False
                         else:
-                            _item["Dtype"] = True
+                            inner_dict["Dtype"] = True
                     else:
-                        _item["Dtype"] = False
+                        inner_dict["Dtype"] = False
         except Exception as e:
             logger.error("Connect to Disney plus exception: " + str(e))
 
     @classmethod
-    async def youtube(cls, host, headers, _item, port):
+    async def youtube(cls, host, headers, inner_dict, port):
         logger.info(f"Performing Youtube Premium test LOCAL_PORT: {port}.")
         try:
             async with aiohttp.ClientSession(
@@ -118,16 +118,16 @@ class StreamTest:
                     url="https://music.youtube.com/", allow_redirects=False
                 ) as response:
                     if "is not available" in await response.text():
-                        _item["Ytype"] = False
+                        inner_dict["Ytype"] = False
                     elif response.status == 200:
-                        _item["Ytype"] = True
+                        inner_dict["Ytype"] = True
                     else:
-                        _item["Ytype"] = False
+                        inner_dict["Ytype"] = False
         except Exception as e:
             logger.error("Connect to Youtube Premium exception: " + str(e))
 
     @classmethod
-    async def abema(cls, host, headers, _item, port):
+    async def abema(cls, host, headers, inner_dict, port):
         logger.info(f"Performing Abema test LOCAL_PORT: {port}.")
         try:
             async with aiohttp.ClientSession(
@@ -141,14 +141,14 @@ class StreamTest:
                 ) as response:
                     text = await response.text()
                     if text.count("Country") > 0:
-                        _item["Atype"] = True
+                        inner_dict["Atype"] = True
                     else:
-                        _item["Atype"] = False
+                        inner_dict["Atype"] = False
         except Exception as e:
             logger.error("Connect to Abema exception: " + str(e))
 
     @classmethod
-    async def bahamut(cls, host, headers, _item, port):
+    async def bahamut(cls, host, headers, inner_dict, port):
         logger.info(f"Performing Bahamut test LOCAL_PORT: {port}.")
         try:
             async with aiohttp.ClientSession(
@@ -162,14 +162,14 @@ class StreamTest:
                 ) as response:
                     text = await response.text()
                     if text.count("animeSn") > 0:
-                        _item["Btype"] = True
+                        inner_dict["Btype"] = True
                     else:
-                        _item["Btype"] = False
+                        inner_dict["Btype"] = False
         except Exception as e:
             logger.error("Connect to Bahamut exception: " + str(e))
 
     @classmethod
-    async def indazn(cls, host, headers, _item, port):
+    async def indazn(cls, host, headers, inner_dict, port):
         logger.info(f"Performing Dazn test LOCAL_PORT: {port}.")
         try:
             async with aiohttp.ClientSession(
@@ -192,14 +192,14 @@ class StreamTest:
                     allow_redirects=False,
                 ) as response:
                     if response.status == 200:
-                        _item["Dztype"] = True
+                        inner_dict["Dztype"] = True
                     else:
-                        _item["Dztype"] = False
+                        inner_dict["Dztype"] = False
         except Exception as e:
             logger.error("Connect to Dazn exception: " + str(e))
 
     @classmethod
-    async def mytvsuper(cls, host, headers, _item, port):
+    async def mytvsuper(cls, host, headers, inner_dict, port):
         logger.info(f"Performing TVB test LOCAL_PORT: {port}.")
         try:
             async with aiohttp.ClientSession(
@@ -212,14 +212,14 @@ class StreamTest:
                 ) as response:
                     text = await response.text()
                     if text.count("HK") > 0:
-                        _item["Ttype"] = True
+                        inner_dict["Ttype"] = True
                     else:
-                        _item["Ttype"] = False
+                        inner_dict["Ttype"] = False
         except Exception as e:
             logger.error("Connect to TVB exception: " + str(e))
 
     @classmethod
-    async def bilibili(cls, host, headers, _item, port):
+    async def bilibili(cls, host, headers, inner_dict, port):
         logger.info(f"Performing Bilibili test LOCAL_PORT: {port}.")
         try:
             async with aiohttp.ClientSession(
@@ -247,7 +247,7 @@ class StreamTest:
                     if response.status == 200:
                         json_data = await response.json()
                         if json_data["code"] == 0:
-                            _item["Bltype"] = "台湾"
+                            inner_dict["Bltype"] = "台湾"
                         else:
                             params = {
                                 "avid": 18281381,
@@ -270,14 +270,14 @@ class StreamTest:
                                 if response2.status == 200:
                                     json_data2 = await response2.json()
                                     if json_data2["code"] == 0:
-                                        _item["Bltype"] = "港澳台"
+                                        inner_dict["Bltype"] = "港澳台"
                                 else:
-                                    _item["Bltype"] = "N/A"
+                                    inner_dict["Bltype"] = "N/A"
         except Exception as e:
             logger.error("Connect to Bilibili exception: " + str(e))
 
 
-async def run_test_stream(_item, port, get_outbound_info, stream_cfg):
+async def start_stream_test(port, stream_cfg, outbound_ip):
     host = "127.0.0.1"
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
@@ -285,47 +285,59 @@ async def run_test_stream(_item, port, get_outbound_info, stream_cfg):
     }
     test_list = []
     netflix_task = None
+    inner_dict = {
+        "Ntype": "None",
+        "Htype": False,
+        "Dtype": False,
+        "Ytype": False,
+        "Atype": False,
+        "Btype": False,
+        "Dztype": False,
+        "Ttype": False,
+        "Bltype": "N/A",
+    }
     if stream_cfg["HBO_TEST"]:
         test_list.append(
-            asyncio.create_task(StreamTest.hbomax(host, headers, _item, port))
+            asyncio.create_task(StreamTest.hbomax(host, headers, inner_dict, port))
         )
     if stream_cfg["DISNEY_TEST"]:
         test_list.append(
-            asyncio.create_task(StreamTest.disneyplus(host, headers, _item, port))
+            asyncio.create_task(StreamTest.disneyplus(host, headers, inner_dict, port))
         )
     if stream_cfg["YOUTUBE_TEST"]:
         test_list.append(
-            asyncio.create_task(StreamTest.youtube(host, headers, _item, port))
+            asyncio.create_task(StreamTest.youtube(host, headers, inner_dict, port))
         )
     if stream_cfg["ABEMA_TEST"]:
         test_list.append(
-            asyncio.create_task(StreamTest.abema(host, headers, _item, port))
+            asyncio.create_task(StreamTest.abema(host, headers, inner_dict, port))
         )
     if stream_cfg["BAHAMUT_TEST"]:
         test_list.append(
-            asyncio.create_task(StreamTest.bahamut(host, headers, _item, port))
+            asyncio.create_task(StreamTest.bahamut(host, headers, inner_dict, port))
         )
     if stream_cfg["DAZN_TEST"]:
         test_list.append(
-            asyncio.create_task(StreamTest.indazn(host, headers, _item, port))
+            asyncio.create_task(StreamTest.indazn(host, headers, inner_dict, port))
         )
     if stream_cfg["TVB_TEST"]:
         test_list.append(
-            asyncio.create_task(StreamTest.mytvsuper(host, headers, _item, port))
+            asyncio.create_task(StreamTest.mytvsuper(host, headers, inner_dict, port))
         )
     if stream_cfg["BILIBILI_TEST"]:
         test_list.append(
-            asyncio.create_task(StreamTest.bilibili(host, headers, _item, port))
+            asyncio.create_task(StreamTest.bilibili(host, headers, inner_dict, port))
         )
     if stream_cfg["NETFLIX_TEST"]:
         netflix_task = asyncio.create_task(
-            StreamTest.netflix(host, headers, _item, port)
+            StreamTest.netflix(host, headers, inner_dict, port)
         )
         test_list.append(netflix_task)
     await asyncio.wait(test_list)
-    if netflix_task:
+    if netflix_task and outbound_ip:
         netflix_result = netflix_task.result()
-        if netflix_result.get("netflix_ip", "") == get_outbound_info["outboundGeoIP"]:
+        if netflix_result.get("netflix_ip", "") == outbound_ip:
             if Ntype := netflix_result.get("text", None):
                 logger.info("Netflix test result: Full Native.")
-                get_outbound_info["_item"]["Ntype"] = Ntype
+                inner_dict["Ntype"] = Ntype
+    return inner_dict

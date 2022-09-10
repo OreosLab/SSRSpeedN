@@ -1,7 +1,7 @@
 import logging
 import os
 import time
-from typing import List, Tuple
+from typing import List, Tuple, Union
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -25,7 +25,7 @@ def speed_test_ytb(port: int) -> Tuple[int, int, List[int], int]:
     try:
         chrome_options = Options()
         chrome_options.add_argument("--headless")
-        chrome_options.add_argument("--proxy-server=socks5://127.0.0.1:%d" % port)
+        chrome_options.add_argument(f"--proxy-server=socks5://127.0.0.1:{port}")
         chrome_options.add_argument(
             "user-agent=Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
             "Chrome/83.0.4103.116 Safari/537.36 "
@@ -56,24 +56,15 @@ def speed_test_ytb(port: int) -> Tuple[int, int, List[int], int]:
         ActionChains(driver).context_click(t).perform()
         time.sleep(0.5)
         driver.find_elements(By.CLASS_NAME, "ytp-menuitem-label")[-1].click()
-        """
-        driver.find_element(By.XPATH, "//div[contains(text(),'详细统计信息')]").click()
-        t = driver.find_element(By.CLASS_NAME, "ytp-scrubber-container")
-        ac = ActionChains(driver)
-        ac.click_and_hold(t)
-        ac.move_by_offset(300, 0)
-        ac.release()
-        ac.perform()
-        """
         logger.info(
             "Youtube view frame : "
             + driver.find_element(By.XPATH, "//span[contains(text(),'@60')]").text
         )
 
-        st_speed = 0
-        max_speed = 0
-        total_received = 0
-        speed_list = []
+        st_speed: Union[int, float] = 0
+        max_speed: Union[int, float] = 0
+        total_received: Union[int, float] = 0
+        speed_list: list = []
         for i in range(0, 20):
             time.sleep(1)
             s1 = driver.find_element(By.XPATH, "//*[contains(text(),'Kbps')]").text
@@ -87,22 +78,24 @@ def speed_test_ytb(port: int) -> Tuple[int, int, List[int], int]:
             print(
                 "\r["
                 + "=" * i
-                + "> [%d%%/100%%] [%.2f MB/s]"
-                % (int(i * 5 + 5), current_speed / 8 / 1024),
+                + f"> [{i * 5 + 5}%/100%] [{current_speed / 8 / 1024:.2f} MB/s]",
                 end="",
             )
 
-        driver.close()
-        os.system("taskkill /im chromedriver.exe /F")
         logger.info(
-            "\nYoutube test: StartSpeed {:.2f} MB/s, MaxSpeed {:.2f} MB/s.".format(
-                st_speed / 1024 / 8, max_speed / 8 / 1024
-            )
+            "\nYoutube test: "
+            f"StartSpeed {st_speed / 1024 / 8:.2f} MB/s, "
+            f"MaxSpeed {max_speed / 8 / 1024:.2f} MB/s."
         )
         return st_speed * 128, max_speed * 128, speed_list, total_received
 
     except Exception as e:
-        driver.close()
-        os.system("taskkill /im chromedriver.exe /F")
         logger.error("Youtube test ERROR : Re-testing node " + str(e.args))
         return 0, 0, [], 0
+
+    finally:
+        os.system("taskkill /im chromedriver.exe /F")
+
+
+if __name__ == "__main__":
+    print(speed_test_ytb(7890))

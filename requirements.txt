@@ -10,5 +10,5 @@ pynat
 PySocks
 PyYAML
 requests
-selenium
+selenium==4.4.3
 webdriver-manager

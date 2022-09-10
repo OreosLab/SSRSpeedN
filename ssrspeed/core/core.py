@@ -1,6 +1,4 @@
 import logging
-import socket
-import sys
 import time
 from typing import Optional
 
@@ -9,19 +7,11 @@ from ssrspeed.parsers import UniversalParser
 from ssrspeed.result import ExportResult
 from ssrspeed.result.importer import import_result
 from ssrspeed.speedtest import SpeedTest
-from ssrspeed.utils import check_port
+from ssrspeed.utils import sync_check_port
 
 logger = logging.getLogger("Sub")
 
-try:
-    check_port(ssrconfig["localPort"])
-    print(
-        f'Port {ssrconfig["localPort"]} already in use, '
-        f"please change the local port in ssrspeed.json or terminate the application."
-    )
-    sys.exit(0)
-except (ConnectionRefusedError, socket.timeout):
-    pass
+sync_check_port(ssrconfig["LOCAL_PORT"])
 
 
 class SSRSpeedCore(object):
@@ -111,7 +101,7 @@ class SSRSpeedCore(object):
         self.__stc = SpeedTest(self.__parser, self.test_method, use_ssr_csharp)
         self.__status = "running"
         if self.test_mode == "TCP_PING":
-            self.__stc.tcping_only()
+            self.__stc.ping_only()
         elif self.test_mode == "ALL":
             self.__stc.full_test()
         elif self.test_mode == "WEB_PAGE_SIMULATION":

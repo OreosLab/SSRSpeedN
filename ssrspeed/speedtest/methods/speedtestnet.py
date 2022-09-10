@@ -55,12 +55,10 @@ PY32PLUS = sys.version_info[:2] >= (3, 2)
 
 # Begin import game to handle Python 2 and Python 3
 import json
-
 import xml.etree.ElementTree as ET
-from xml.dom import minidom as DOM
-from xml.parsers.expat import ExpatError
-
-
+from http.client import BadStatusLine, HTTPConnection, HTTPSConnection
+from queue import Queue
+from urllib.parse import urlparse
 from urllib.request import (
     AbstractHTTPHandler,
     HTTPDefaultErrorHandler,
@@ -71,35 +69,28 @@ from urllib.request import (
     Request,
     urlopen,
 )
-
-from http.client import BadStatusLine, HTTPConnection
-
-from http.client import HTTPSConnection
-
-from queue import Queue
-
-from urllib.parse import urlparse
+from xml.dom import minidom as DOM
+from xml.parsers.expat import ExpatError
 
 try:
     from urllib.parse import parse_qs
 except ImportError:
     from cgi import parse_qs
 
-from hashlib import md5
-
 from argparse import SUPPRESS as ARG_SUPPRESS
 from argparse import ArgumentParser as ArgParser
+from hashlib import md5
 
 PARSER_TYPE_INT = int
 PARSER_TYPE_STR = str
 PARSER_TYPE_FLOAT = float
 
 
-from io import BytesIO, StringIO
-
 # import builtins start
 import builtins
-from io import FileIO, TextIOWrapper
+from io import BytesIO, FileIO, StringIO, TextIOWrapper
+
+
 class _Py3Utf8Output(TextIOWrapper):
     """UTF-8 encoded wrapper around stdout for py3, to override
     ASCII stdout
@@ -113,6 +104,7 @@ class _Py3Utf8Output(TextIOWrapper):
         super(_Py3Utf8Output, self).write(s)
         self.flush()
 
+
 _py3_print = getattr(builtins, "print")
 try:
     _py3_utf8_stdout = _Py3Utf8Output(sys.stdout)
@@ -123,9 +115,11 @@ except OSError:
     _py3_utf8_stdout = sys.stdout
     _py3_utf8_stderr = sys.stderr
 
+
 def to_utf8(v):
     """No-op encode to utf-8 for py3"""
     return v
+
 
 def print_(*args, **kwargs):
     """Wrapper function for py3 to print, with a utf-8 encoded stdout"""
@@ -135,8 +129,8 @@ def print_(*args, **kwargs):
         kwargs["file"] = kwargs.get("file", _py3_utf8_stdout)
     _py3_print(*args, **kwargs)
 
-# import builtins end
 
+# import builtins end
 
 
 etree_iter = ET.Element.iter
@@ -275,7 +269,6 @@ class SpeedtestHTTPConnection(HTTPConnection):
         source_address = kwargs.pop("source_address", None)
         timeout = kwargs.pop("timeout", 10)
 
-
         HTTPConnection.__init__(self, *args, **kwargs)
 
         self.source_address = source_address
@@ -293,7 +286,6 @@ class SpeedtestHTTPConnection(HTTPConnection):
             )
 
 
-
 if HTTPSConnection:
 
     class SpeedtestHTTPSConnection(HTTPSConnection):
@@ -306,7 +298,6 @@ if HTTPSConnection:
         def __init__(self, *args, **kwargs):
             source_address = kwargs.pop("source_address", None)
             timeout = kwargs.pop("timeout", 10)
-
 
             HTTPSConnection.__init__(self, *args, **kwargs)
 
@@ -323,7 +314,6 @@ if HTTPSConnection:
                 self.sock = create_connection(
                     (self.host, self.port), self.timeout, self.source_address
                 )
-
 
             if ssl:
                 try:

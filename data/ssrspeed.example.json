@@ -12,8 +12,10 @@
     },
     "web": { "listen": "127.0.0.1", "port": 10870, "token": "" },
     "ntt": { "enabled": true, "internal_ip": "0.0.0.0", "internal_port": 54320 },
+    "geoip": true,
     "ping": true,
     "gping": true,
+    "stream": true,
     "speed": true,
     "method": "ST_ASYNC",
     "StSpeed": true,
@@ -26,10 +28,14 @@
     "dazn": true,
     "tvb": true,
     "bilibili": true,
-    "stream": true,
-    "geoip": true,
     "port": true,
     "multiplex": true,
+    "webPageSimulation": {
+        "enabled": true,
+        "maxWorkers": 4,
+        "urls": ["https://www.google.com.hk", "https://www.youtube.com", "https://www.bing.com", "https://www.github.com", "https://www.microsoft.com"],
+        "cnUrls": ["https://www.baidu.com", "https://www.weibo.com", "https://www.qq.com"]
+    },
     "exportResult": {
         "addition": "测速频道：@Cheap_Proxy",
         "uploadResult": false,
@@ -85,10 +91,5 @@
                 "tag": "Google"
             }
         ]
-    },
-    "webPageSimulation": {
-        "maxWorkers": 4,
-        "urls": ["https://www.google.com.hk", "https://www.youtube.com", "https://www.bing.com", "https://www.github.com", "https://www.microsoft.com"],
-        "cnUrls": ["https://www.baidu.com", "https://www.weibo.com", "https://www.qq.com"]
     }
 }
