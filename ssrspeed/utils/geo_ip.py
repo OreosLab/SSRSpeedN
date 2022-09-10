@@ -93,6 +93,9 @@ async def ip_loc(port):
     except python_socks._errors.ProxyTimeoutError:
         logger.error("Geo IP Proxy Timeout.")
         return {}
+    except python_socks._errors.ProxyConnectionError:
+        logger.error("Geo IP Proxy Connection Error.")
+        return {}
     except asyncio.TimeoutError:
         logger.error("Geo IP Timeout.")
         return {}
