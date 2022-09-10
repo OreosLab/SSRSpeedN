@@ -7,11 +7,8 @@ from ssrspeed.parsers import UniversalParser
 from ssrspeed.result import ExportResult
 from ssrspeed.result.importer import import_result
 from ssrspeed.speedtest import SpeedTest
-from ssrspeed.utils import sync_check_port
 
 logger = logging.getLogger("Sub")
-
-sync_check_port(ssrconfig["LOCAL_PORT"])
 
 
 class SSRSpeedCore(object):
@@ -65,7 +62,7 @@ class SSRSpeedCore(object):
         return []
 
     def web_setup(self, **kwargs):
-        self.test_method = kwargs.get("testMethod", "SOCKET")
+        self.test_method = kwargs.get("testMethod", "ST_ASYNC")
         self.colors = kwargs.get("colors", "origin")
         self.sort_method = kwargs.get("sortMethod", "")
         self.test_mode = kwargs.get("testMode", "TCP_PING")
