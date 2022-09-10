@@ -27,7 +27,7 @@ def set_opts(parser: ArgumentParser):
         "--method",
         action="store",
         dest="test_method",
-        default="socket",
+        default="stasync",
         help="Select test method in [speedtestnet, fast, socket, stasync].",
     )
     parser.add_argument(
