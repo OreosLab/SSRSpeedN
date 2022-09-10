@@ -276,12 +276,12 @@ class SpeedTest:
 
         # Check port
         result = await async_check_port(port)
-        logger.info(result[1])
-        if not result[0]:
+        logger.info(result)
+        if not result:
             for _ in range(3):
                 result = await async_check_port(port)
-                logger.error(result[1])
-                if result[0]:
+                logger.error(result)
+                if result:
                     break
             else:
                 logger.error(f"Port {port} closed.")
