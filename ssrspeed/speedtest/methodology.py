@@ -69,9 +69,11 @@ class SpeedTestMethods:
                     result = await stSocket.speed_test_socket(port)
                     return result
                 if METHOD == "YOUTUBE":
-                    return stYtb.speed_test_ytb(port)
+                    result = stYtb.speed_test_ytb(port)
+                    return result
                 if METHOD == "NETFLIX":
-                    return stNF.speed_test_netflix(port)
+                    result = stNF.speed_test_netflix(port)
+                    return result
             except Exception:
                 logger.error("", exc_info=True)
                 return 0, 0, [], 0
