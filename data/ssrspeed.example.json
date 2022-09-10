@@ -17,7 +17,7 @@
     "gping": true,
     "stream": true,
     "speed": true,
-    "method": "ST_ASYNC",
+    "method": "SOCKET",
     "StSpeed": true,
     "netflix": true,
     "hbo": true,
