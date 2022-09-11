@@ -330,8 +330,10 @@ async def start_stream_test(port, stream_cfg, outbound_ip):
             asyncio.create_task(StreamTest.bilibili(host, headers, inner_dict, port))
         )
     if stream_cfg["NETFLIX_TEST"]:
-        test_list.append(asyncio.create_task(
-            StreamTest.netflix(host, headers, inner_dict, port, outbound_ip)
-        ))
+        test_list.append(
+            asyncio.create_task(
+                StreamTest.netflix(host, headers, inner_dict, port, outbound_ip)
+            )
+        )
     await asyncio.wait(test_list)
     return inner_dict

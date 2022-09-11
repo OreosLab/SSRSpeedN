@@ -637,7 +637,6 @@ class SpeedTest:
     def full_test(self):
         logger.info(f"Test mode : All. Test method : {self.__test_method}")
         self.__start_test(
-            mode=True,
             geoip_test=True,
             stream_test=True,
             ping_test=True,

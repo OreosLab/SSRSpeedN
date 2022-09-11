@@ -29,36 +29,33 @@ urllib.request.install_opener(opener)
 """
 
 
-def gethtmlresult(url, result, index):
+def get_html_result(url, result, index):
     """
-    get the stuff from url in chuncks of size CHUNK, and keep writing the number of bytes retrieved into result[index]
+    get the stuff from url in chunks of size CHUNK, and keep writing the number of bytes retrieved into result[index]
     """
     try:
         req = urllib.request.urlopen(url)
     except urllib.error.URLError:
         result[index] = 0
         return
-
-    chunk = 100 * 1024
+    CHUNK = 100 * 1024
     i = 1
     while True:
-        chunk = req.read(chunk)
+        chunk = req.read(CHUNK)
         if not chunk:
             break
-        result[index] = i * chunk
+        result[index] = i * CHUNK
         i += 1
 
 
 def application_bytes_to_networkbits(bytes_):
     # convert bytes (at application layer) to bits (at network layer)
     return bytes_ * 8 * 1.0415
+    # 8 for bits versus bytes
+    # 1.0416 for application versus network layers
 
 
-# 8 for bits versus bytes
-# 1.0416 for application versus network layers
-
-
-def findipv4(fqdn):
+def find_ipv4(fqdn):
     """
     find IPv4 address of fqdn
     """
@@ -68,7 +65,7 @@ def findipv4(fqdn):
     return ipv4
 
 
-def findipv6(fqdn):
+def find_ipv6(fqdn):
     """
     find IPv6 address of fqdn
     """
@@ -78,26 +75,26 @@ def findipv6(fqdn):
     return ipv6
 
 
-def fast_com(verbose=False, maxtime=15, forceipv4=False, forceipv6=False):
+def fast_com(verbose=False, max_time=15, force_ipv4=False, force_ipv6=False):
     """
     verbose: print debug output
-    maxtime: max time in seconds to monitor speedtest
-    forceipv4: force speed test over IPv4
-    forceipv6: force speed test over IPv6
+    max_time: max time in seconds to monitor speedtest
+    force_ipv4: force speed test over IPv4
+    force_ipv6: force speed test over IPv6
     """
     # go to fast.com to get the javascript file
     url = "https://fast.com/"
     try:
-        urlresult = urllib.request.urlopen(url)
+        url_result = urllib.request.urlopen(url)
     except Exception:
         logger.error("No connection at all", exc_info=True)
         # no connection at all?
         return 0
-    response = urlresult.read().decode().strip()
+    response = url_result.read().decode().strip()
     for line in response.split("\n"):
         # We're looking for a line like
         #           <script ssrspeed="/app-40647a.js"></script>
-        if line.find("script ssrspeed") >= 0:
+        if line.find("script src") >= 0:
             jsname = line.split('"')[1]  # At time of writing: '/app-40647a.js'
 
     # From that javascript file, get the token:
@@ -105,13 +102,18 @@ def fast_com(verbose=False, maxtime=15, forceipv4=False, forceipv6=False):
     if verbose:
         logger.debug("javascript url is" + url)
     try:
-        urlresult = urllib.request.urlopen(url)
+        url_result = urllib.request.urlopen(url)
     except Exception:
         # connection is broken
         return 0
     all_js_stuff = (
-        urlresult.read().decode().strip()
+        url_result.read().decode().strip()
     )  # this is an obfuscated Javascript file
+
+    """
+    We're searching for the "token:" in this string:
+    .dummy,DEFAULT_PARAMS={https:!0,token:"YXNkZmFzZGxmbnNkYWZoYXNkZmhrYWxm",urlCount:3,e
+    """
     for line in all_js_stuff.split(","):
         if line.find("token:") >= 0:
             if verbose:
@@ -124,15 +126,15 @@ def fast_com(verbose=False, maxtime=15, forceipv4=False, forceipv6=False):
 
     # With the token, get the (3) speed-test-URLS from api.fast.com (which will be in JSON format):
     baseurl = "https://api.fast.com/"
-    if forceipv4:
+    if force_ipv4:
         # force IPv4 by connecting to an IPv4 address of api.fast.com (over ... HTTP)
-        ipv4 = findipv4("api.fast.com")
+        ipv4 = find_ipv4("api.fast.com")
         baseurl = (
             "http://" + ipv4 + "/"
         )  # HTTPS does not work IPv4 addresses, thus use HTTP
-    elif forceipv6:
+    elif force_ipv6:
         # force IPv6
-        ipv6 = findipv6("api.fast.com")
+        ipv6 = find_ipv6("api.fast.com")
         baseurl = "http://[" + ipv6 + "]/"
 
     url = (
@@ -141,7 +143,7 @@ def fast_com(verbose=False, maxtime=15, forceipv4=False, forceipv6=False):
     if verbose:
         logger.debug("API url is" + url)
     try:
-        urlresult = urllib.request.urlopen(url=url, timeout=2)  # 2 second time-out
+        url_result = urllib.request.urlopen(url=url, timeout=2)  # 2 second time-out
     except Exception:
         # not good
         if verbose:
@@ -150,21 +152,21 @@ def fast_com(verbose=False, maxtime=15, forceipv4=False, forceipv6=False):
             )  # probably IPv6, or just no network
         return 0  # no connection, thus no speed
 
-    jsonresult = urlresult.read().decode().strip()
-    parsedjson = json.loads(jsonresult)
+    json_result = url_result.read().decode().strip()
+    parsed_json = json.loads(json_result)
 
     # Prepare for getting those URLs in a threaded way:
-    amount = len(parsedjson)
+    amount = len(parsed_json)
     if verbose:
         logger.debug("Number of URLs:" + str(amount))
     threads = [None] * amount
     results = [0] * amount
     urls = [None] * amount
     i = 0
-    for jsonelement in parsedjson:
-        urls[i] = jsonelement["url"]  # fill out speed test url from the json format
+    for json_element in parsed_json:
+        urls[i] = json_element["url"]  # fill out speed test url from the json format
         if verbose:
-            logger.debug(jsonelement["url"])
+            logger.debug(json_element["url"])
         i += 1
 
     # Let's check whether it's IPv6:
@@ -179,25 +181,24 @@ def fast_com(verbose=False, maxtime=15, forceipv4=False, forceipv6=False):
 
     # Now start the threads
     for i in range(len(threads)):
-        # print "Thread: i is", i
-        threads[i] = Thread(target=gethtmlresult, args=(urls[i], results, i))
+        # print("Thread: i is", i)
+        threads[i] = Thread(target=get_html_result, args=(urls[i], results, i))
         threads[i].daemon = True
         threads[i].start()
 
     # Monitor the amount of bytes (and speed) of the threads
     time.sleep(1)
-    sleepseconds = 3  # 3 seconds sleep
-    lasttotal = 0
-    mbps = 0
-    maxdownload = 60  # MB
-    nrloops = int(maxtime / sleepseconds)
-    for loop in range(nrloops):
+    sleep_secs = 3  # 3 seconds sleep
+    last_total = 0
+    highest_speed_kbps = 0
+    nr_loops = int(max_time / sleep_secs)
+    for loop in range(nr_loops):
         total = 0
         for i in range(len(threads)):
-            # print i, results[i]
+            # print(i, results[i])
             total += results[i]
-        delta = total - lasttotal
-        speed_kbps = (delta / sleepseconds) / 1024
+        delta = total - last_total
+        speed_kbps = (delta / sleep_secs) / 1024
         if verbose:
             """
             logger.info(
@@ -220,31 +221,31 @@ def fast_com(verbose=False, maxtime=15, forceipv4=False, forceipv6=False):
                     application_bytes_to_networkbits(speed_kbps) / 1024,
                 )
             )
-        lasttotal = total
-        if speed_kbps > highestspeed_kbps:
-            highestspeed_kbps = speed_kbps
-        time.sleep(sleepseconds)
+        last_total = total
+        if speed_kbps > highest_speed_kbps:
+            highest_speed_kbps = speed_kbps
+        time.sleep(sleep_secs)
 
-    mbps = application_bytes_to_networkbits(highestspeed_kbps) / 1024
+    mbps = application_bytes_to_networkbits(highest_speed_kbps) / 1024
     mbps = float("%.1f" % mbps)
     if verbose:
         logger.info(
-            "Highest Speed (kB/s):" + str(highestspeed_kbps) + "aka Mbps " + str(mbps)
+            "Highest Speed (kB/s):" + str(highest_speed_kbps) + "aka Mbps " + str(mbps)
         )
 
-    return highestspeed_kbps * 1024
+    return mbps
 
 
 if __name__ == "__main__":
     # 	print("let's speed test:")
-    # 	print("\nSpeed test, without logger:")
+    # 	print("\nSpeed test, without logging:")
     # 	print(fast_com())
-    # 	print("\nSpeed test, with logger:")
+    # 	print("\nSpeed test, with logging:")
     print(fast_com(verbose=True))
-# 	print("\nSpeed test, IPv4, with verbose logger:")
-# 	print(fast_com(verbose=True, maxtime=18, forceipv4=True))
-# 	print("\nSpeed test, IPv6:")
-# 	print(fast_com(maxtime=12, forceipv6=True))
-# 	fast_com(verbose=True, maxtime=25)
+    # 	print("\nSpeed test, IPv4, with verbose logging:")
+    # 	print(fast_com(verbose=True, max_time=18, force_ipv4=True))
+    # 	print("\nSpeed test, IPv6:")
+    # 	print(fast_com(max_time=12, force_ipv6=True))
+    # 	fast_com(verbose=True, max_time=25)
 
-# 	print("\ndone")
+    # 	print("\ndone")
