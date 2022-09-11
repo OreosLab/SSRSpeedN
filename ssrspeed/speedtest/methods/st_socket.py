@@ -89,9 +89,7 @@ def speed_test_thread(link: str) -> Optional[int]:
             delta_time = 11
         s.close()
         logger.debug(
-            "Thread {} done,time : {}".format(
-                threading.current_thread().ident, delta_time
-            )
+            f"Thread {threading.current_thread().ident} done,time : {delta_time}"
         )
         LOCK.acquire()
         # 	TOTAL_RECEIVED += received
@@ -139,16 +137,13 @@ async def speed_test_socket(port):
             print(
                 "\r["
                 + "=" * i
-                + "> [%d%%/100%%] [%.2f MB/s]"
-                % (int(i * 10), current_speed / 1024 / 1024),
+                + f"> [{i * 10}%/100%] [{current_speed / 1024 / 1024:.2f} MB/s]",
                 end="",
             )
             if EXIT_FLAG:
                 break
         print(
-            "\r["
-            + "=" * i
-            + "] [100%%/100%%] [%.2f MB/s]" % (current_speed / 1024 / 1024)
+            "\r[" + "=" * i + f"] [100%/100%] [{current_speed / 1024 / 1024:.2f} MB/s]"
         )
         EXIT_FLAG = True
         for i in range(0, 10):
@@ -169,9 +164,7 @@ async def speed_test_socket(port):
         else:
             max_speed = current_speed
         logger.info(
-            "SingleThread: Fetched {:.2f} KB in {:.2f} s.".format(
-                TOTAL_RECEIVED / 1024, MAX_TIME
-            )
+            f"SingleThread: Fetched {TOTAL_RECEIVED / 1024:.2f} KB in {MAX_TIME:.2f} s."
         )
 
         avg_st_speed = TOTAL_RECEIVED / MAX_TIME
@@ -200,14 +193,12 @@ async def speed_test_socket(port):
         print(
             "\r["
             + "=" * i
-            + "> [%d%%/100%%] [%.2f MB/s]" % (int(i * 10), current_speed / 1024 / 1024),
+            + f"> [{i * 10}%/100%] [{current_speed / 1024 / 1024:.2f} MB/s]",
             end="",
         )
         if EXIT_FLAG:
             break
-    print(
-        "\r[" + "=" * i + "] [100%%/100%%] [%.2f MB/s]" % (current_speed / 1024 / 1024)
-    )
+    print("\r[" + "=" * i + f"] [100%/100%] [{current_speed / 1024 / 1024:.2f} MB/s]")
     EXIT_FLAG = True
     for i in range(0, 10):
         time.sleep(0.1)
@@ -228,9 +219,7 @@ async def speed_test_socket(port):
     else:
         max_speed = current_speed
     logger.info(
-        "MultiThread: Fetched {:.2f} KB in {:.2f} s.".format(
-            TOTAL_RECEIVED / 1024, MAX_TIME
-        )
+        f"MultiThread: Fetched {TOTAL_RECEIVED / 1024:.2f} KB in {MAX_TIME:.2f} s."
     )
     avg_speed = TOTAL_RECEIVED / MAX_TIME
 

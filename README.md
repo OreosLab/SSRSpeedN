@@ -145,39 +145,40 @@ python -m ssrspeed -u "https://home.yoyu.dev/subscriptionlink" --include 香港 
 
 * **修改测速内容**
 
-  在 `ssrspeed.json` 文件下第 14 行至第 30 行，默认允许。
+  在 `ssrspeed.json` 文件下第 15 行至第 31 行，默认允许。
 
   ```jsonc
-    "ntt": { "enabled": true, "internal_ip": "0.0.0.0", "internal_port": 54320 }, # UDP 类型测试
-    "geoip": true,       # 是否测 GeoIP, 包括 Inbound & Outbound
-    "ping": true,        # 是否测 ping
-    "gping": true,       # 是否测 Google ping
-    "stream": true,      # 是否测流媒体解锁
-    "speed": true,       # 是否测速
-    "method": "SOCKET",  # 测速方式，SOCKET / YOUTUBE / NETFLIX
-    "StSpeed": true,     # 是否同时测单线程/多线程
-    "netflix": true,     # 是否测 Netflix 解锁
-    "hbo": true,         # 是否测 HBO max 解锁
-    "disney": true,      # 是否测 Disney+ 解锁
-    "youtube": true,     # 是否测 YouTube premium 解锁
-    "abema": true,       # 是否测 Abema 解锁
-    "bahamut": true,     # 是否测 Bahamut (动画疯) 解锁
-    "dazn": true,        # 是否测 Dazn 解锁
-    "tvb": true,         # 是否测 My tvsuper 解锁
-    "bilibili": true,    # 是否测 Bilibili 解锁
+    "fastSpeed": false,  // 是否开启快速测速
+    "ntt": { "enabled": true, "internal_ip": "0.0.0.0", "internal_port": 54320 }, // UDP 类型测试
+    "geoip": true,       // 是否测 GeoIP, 包括 Inbound & Outbound
+    "ping": true,        // 是否测 ping
+    "gping": true,       // 是否测 Google ping
+    "stream": true,      // 是否测流媒体解锁
+    "speed": true,       // 是否测速
+    "method": "SOCKET",  // 测速方式，SOCKET / YOUTUBE / NETFLIX
+    "StSpeed": true,     // 是否同时测单线程/多线程
+    "netflix": true,     // 是否测 Netflix 解锁
+    "hbo": true,         // 是否测 HBO max 解锁
+    "disney": true,      // 是否测 Disney+ 解锁
+    "youtube": true,     // 是否测 YouTube premium 解锁
+    "abema": true,       // 是否测 Abema 解锁
+    "bahamut": true,     // 是否测 Bahamut (动画疯) 解锁
+    "dazn": true,        // 是否测 Dazn 解锁
+    "tvb": true,         // 是否测 My tvsuper 解锁
+    "bilibili": true,    // 是否测 Bilibili 解锁
   ```
 
 * **修改结果输出**
 
   ```jsonc
-    "port": true,       # 是否输出端口
-    "multiplex": true,  # 是否输出复用检测
+    "port": true,       // 是否输出端口
+    "multiplex": true,  // 是否输出复用检测
     "exportResult": {
-        "addition": "测速频道：@Cheap_Proxy",   # 自定义附加信息
+        "addition": "测速频道：@Cheap_Proxy",   // 自定义附加信息
         "uploadResult": false,
-        "hide_max_speed": false,               # 是否隐藏最高速度
-        "font": "SourceHanSansCN-Medium.otf",  # 自定义字体，见下方说明
-        "colors": [                            # 自定义配色，见下方说明
+        "hide_max_speed": false,               // 是否隐藏最高速度
+        "font": "SourceHanSansCN-Medium.otf",  // 自定义字体，见下方说明
+        "colors": [                            // 自定义配色，见下方说明
             {
                 "name": "origin",
                 "colors": {
@@ -212,7 +213,7 @@ python -m ssrspeed -u "https://home.yoyu.dev/subscriptionlink" --include 香港 
 
   * **自定义字体**
 
-    下载字体文件放入 `resources/custom/` 文件夹下，修改 `ssrspeed.json` 文件下第 43 行为字体文件名，本项目自带两个字体
+    下载字体文件放入 `resources/custom/` 文件夹下，修改 `ssrspeed.json` 文件下第 44 行为字体文件名，本项目自带两个字体
 
   * **自定义颜色**
 

@@ -35,8 +35,8 @@ def set_opts(parser: ArgumentParser):
         "--mode",
         action="store",
         dest="test_mode",
-        default="all",
-        help="Select test mode in [all, wps, pingonly].",
+        default="default",
+        help="Select test mode in [default, pingonly, stream, all, wps].",
     )
     parser.add_argument(
         "--include",
