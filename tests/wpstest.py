@@ -26,7 +26,7 @@ logger_config = {
         {
             "sink": sys.stdout,
             "level": "INFO",
-            "format": "[<green>{time:YYYY-MM-DD HH:mm:ss}</green>][<level>{level}</level>][<yellow>{file}</yellow>:<cyan>{line}</cyan>]: <level>{message}</level>",
+            "format": "[<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green>][<level>{level}</level>][<yellow>{file}</yellow>:<cyan>{line}</cyan>]: <level>{message}</level>",
             "colorize": True,  # 自定义配色
             "serialize": False,  # 以 JSON 数据格式打印
             "backtrace": True,  # 是否显示完整的异常堆栈跟踪
@@ -37,7 +37,7 @@ logger_config = {
         {
             "sink": LOG_FILE,
             "level": "INFO",
-            "format": "[{time:YYYY-MM-DD HH:mm:ss}][{level}][{file}:{line}]: {message}",
+            "format": "[{time:YYYY-MM-DD HH:mm:ss.SSS}][{level}][{file}:{line}]: {message}",
             "serialize": False,
             "backtrace": True,
             "diagnose": True,
