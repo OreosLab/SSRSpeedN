@@ -13,7 +13,7 @@ nf_ip_re = re.compile(r'"requestIpAddress":"(.*)"')
 
 class StreamTest:
     @classmethod
-    async def netflix(cls, host, headers, inner_dict, port):
+    async def netflix(cls, host, headers, inner_dict, port, outbound_ip):
         logger.info(f"Performing netflix test LOCAL_PORT: {port}.")
         try:
             sum_ = 0
@@ -50,10 +50,12 @@ class StreamTest:
                         elif sum_ == 1:
                             logger.info("Netflix test result: Only Original.")
                             inner_dict["Ntype"] = "Only Original"
+                        elif outbound_ip == netflix_ip:
+                            logger.info("Netflix test result: Full Native.")
+                            inner_dict["Ntype"] = "Full Native" + rg
                         else:
                             logger.info("Netflix test result: Full DNS.")
                             inner_dict["Ntype"] = "Full DNS" + rg
-                        return {"netflix_ip": netflix_ip, "text": f"Full Native{rg}"}
         except Exception as e:
             logger.error("Connect to Netflix exception: " + str(e))
             return {}
@@ -284,7 +286,6 @@ async def start_stream_test(port, stream_cfg, outbound_ip):
         "Chrome/64.0.3282.119 Safari/537.36 ",
     }
     test_list = []
-    netflix_task = None
     inner_dict = {
         "Ntype": "None",
         "Htype": False,
@@ -329,15 +330,8 @@ async def start_stream_test(port, stream_cfg, outbound_ip):
             asyncio.create_task(StreamTest.bilibili(host, headers, inner_dict, port))
         )
     if stream_cfg["NETFLIX_TEST"]:
-        netflix_task = asyncio.create_task(
-            StreamTest.netflix(host, headers, inner_dict, port)
-        )
-        test_list.append(netflix_task)
+        test_list.append(asyncio.create_task(
+            StreamTest.netflix(host, headers, inner_dict, port, outbound_ip)
+        ))
     await asyncio.wait(test_list)
-    if netflix_task and outbound_ip:
-        netflix_result = netflix_task.result()
-        if netflix_result.get("netflix_ip", "") == outbound_ip:
-            if Ntype := netflix_result.get("text", None):
-                logger.info("Netflix test result: Full Native.")
-                inner_dict["Ntype"] = Ntype
     return inner_dict
