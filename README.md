@@ -97,14 +97,22 @@ pip install -r requirements.txt
 python -m ssrspeed
 Usage: ssrspeed [options] arg1 arg2...
 
-附加选项:
-  --version             输出版本号并退出
+可选参数:
   -h, --help            输出帮助信息并退出
+  --version             输出版本号并退出
   -c GUICONFIG, --config=GUICONFIG
 
                         通过节点配置文件加载节点信息.
 
   -u URL, --url=URL     通过节点订阅链接加载节点信息.
+  -m TEST_METHOD, --method TEST_METHOD
+
+                        在 [speedtestnet, fast, socket, stasync] 中选择测试方法.
+
+  -M TEST_MODE, --mode TEST_MODE
+
+                        在 [default, pingonly, stream, all, wps] 中选择测试模式.  
+                        
   --include             通过节点标识和组名筛选节点.
   --include-remark      通过节点标识筛选节点.
   --include-group       通过组名筛选节点.
@@ -132,12 +140,13 @@ Usage: ssrspeed [options] arg1 arg2...
                         跳过确认.
 
   --debug               采用 debug 模式.
+  --paolu               删除项目所有文件.
 ```
 
 使用样例 :
 
 ```powershell
-python -m ssrspeed -c gui-config.json --include 韩国 --include-remark Azure --include-group YoYu
+python -m ssrspeed -c gui-config.json -M stream --include 韩国 --include-remark Azure --include-group YoYu
 python -m ssrspeed -u "https://home.yoyu.dev/subscriptionlink" --include 香港 Azure --include-group YoYu --exclude Azure
 ```
 
