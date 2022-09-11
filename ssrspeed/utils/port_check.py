@@ -13,7 +13,7 @@ async def async_check_port(port: int):
         sock.settimeout(3)
         await loop.sock_connect(sock, ("127.0.0.1", port))
         sock.shutdown(2)
-        logging.info("Port Available")
+        logger.info("Port Available")
         return True
     except socket.timeout:
         logger.error(f"Port {port} timeout.")

@@ -545,7 +545,7 @@ class SpeedTest:
                 if client.check_alive():
                     break
             else:
-                logger.error("Failed to start clients.", exc_info=True)
+                logger.error("Failed to start clients.")
                 return False
         logger.info("Client started.")
 
