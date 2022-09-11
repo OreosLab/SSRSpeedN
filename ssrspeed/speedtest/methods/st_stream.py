@@ -337,3 +337,18 @@ async def start_stream_test(port, stream_cfg, outbound_ip):
         )
     await asyncio.wait(test_list)
     return inner_dict
+
+if __name__ == "__main__":
+    STREAM_CFG = {
+        "NETFLIX_TEST": True,
+        "HBO_TEST": True,
+        "DISNEY_TEST": True,
+        "YOUTUBE_TEST": True,
+        "ABEMA_TEST": True,
+        "BAHAMUT_TEST": True,
+        "DAZN_TEST": True,
+        "TVB_TEST": True,
+        "BILIBILI_TEST": True,
+    }
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+    print(asyncio.run(start_stream_test(7890, STREAM_CFG, "N/A")))

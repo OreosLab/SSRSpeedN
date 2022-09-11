@@ -69,3 +69,7 @@ async def execute(url, host, port, semaphore):
         logger.error(f"Unknown Error on : {url}", exc_info=True)
     finally:
         results.append(res)
+
+if __name__ == "__main__":
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+    print(asyncio.run(start_web_page_simulation_test("127.0.0.1", 7890)))
