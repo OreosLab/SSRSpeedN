@@ -127,8 +127,12 @@ if __name__ == "__main__":
     else:
         TEST_METHOD = "ST_ASYNC"
 
-    if args.test_mode == "pingonly":
+    if args.test_mode == "default":
+        TEST_MODE = "DEFAULT"
+    elif args.test_mode == "pingonly":
         TEST_MODE = "TCP_PING"
+    elif args.test_mode == "stream":
+        TEST_MODE = "STREAM"
     elif args.test_mode == "all":
         TEST_MODE = "ALL"
     elif args.test_mode == "wps":

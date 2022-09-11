@@ -19,7 +19,7 @@ class SSRSpeedCore(object):
         self.web_mode: bool = False
         self.colors: str = "origin"
         self.sort_method: str = ""
-        self.test_mode: str = "TCP_PING"
+        self.test_mode: str = "DEFAULT"
 
         self.__time_stamp_start: float = -1
         self.__time_stamp_stop: float = -1
@@ -97,8 +97,12 @@ class SSRSpeedCore(object):
         self.__time_stamp_start = time.time()
         self.__stc = SpeedTest(self.__parser, self.test_method, use_ssr_csharp)
         self.__status = "running"
+        if self.test_mode == "DEFAULT":
+            self.__stc.default_test()
         if self.test_mode == "TCP_PING":
             self.__stc.ping_only()
+        if self.test_mode == "STREAM":
+            self.__stc.stream_only()
         elif self.test_mode == "ALL":
             self.__stc.full_test()
         elif self.test_mode == "WEB_PAGE_SIMULATION":

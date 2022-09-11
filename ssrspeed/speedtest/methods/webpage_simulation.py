@@ -32,7 +32,7 @@ async def start_web_page_simulation_test(local_host, local_port):
     if ip_loc[0]:
         if ip_loc[1] == "CN":
             urls = copy.deepcopy(w_config.get("cnUrls", []))
-    logger.info("Read {} url(s).".format(len(urls)))
+    logger.info(f"Read {len(urls)} url(s).")
     for url in urls:
         task_list.append(
             asyncio.create_task(
@@ -45,7 +45,7 @@ async def start_web_page_simulation_test(local_host, local_port):
 
 async def execute(url, host, port, semaphore):
     logger.debug(f"{asyncio.current_task().get_name()} started. Url: {url}")
-    logger.info("Testing Url : {}".format(url))
+    logger.info(f"Testing Url : {url}")
     res = {"url": url, "retCode": 0, "time": 0}
     try:
         start_time = time.time()

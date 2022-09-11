@@ -25,6 +25,7 @@ logger = logging.getLogger("Sub")
 LOCAL_ADDRESS = ssrconfig["localAddress"]
 LOCAL_PORT = int(ssrconfig["localPort"])
 MAX_CONNECTIONS = int(ssrconfig["maxConnections"])
+FAST_SPEED = ssrconfig["fastSpeed"]
 GEOIP_TEST = ssrconfig["geoip"]
 STREAM_TEST = ssrconfig["stream"]
 PING_TEST = ssrconfig["ping"]
@@ -153,7 +154,7 @@ class SpeedTest:
             "organization": organization,
         }
 
-    async def __geo_ip_inbound(self, config):
+    def __geo_ip_inbound(self, config):
         inbound_ip = domain2ip(config["server"])
         inbound_geo = self.query_geo_local(inbound_ip)
         inbound_geo_res = f"{inbound_geo.get('city', 'Unknown City')}, {inbound_geo.get('organization', 'N/A')}"
@@ -231,12 +232,286 @@ class SpeedTest:
         finally:
             s.close()
 
+    async def __fast_start_test(
+        self,
+        _item,
+        cfg,
+        port,
+        geo_ip_semaphore,
+        download_semaphore,
+        **kwargs,
+    ):
+        node_info = f"[{_item['group']}] - [{_item['remarks']}] "
+        geoip_log = ""
+        tcp_ping_log = ""
+        google_ping_log = ""
+        nat_info = ""
+        wps_log = ""
+        speed_log = ""
+        outbound_ip = None
+        stream_task = None
+        pint_task = None
+        wps_task = None
+        speed_task = None
+        st = SpeedTestMethods()
+        task_list = []
+
+        if (
+            kwargs.get("default", False)
+            and GEOIP_TEST
+            or kwargs.get("geoip_test", False)
+        ):
+            inbound_ip, inbound_geo_res, inbound_info = self.__geo_ip_inbound(cfg)
+            outbound_ip, outbound_geo_res, outbound_info = await self.__geo_ip_outbound(
+                port, geo_ip_semaphore
+            )
+
+            geoip_log = (
+                f"Inbound IP : {inbound_ip}, Geo : {inbound_info}\n"
+                f"Outbound IP : {outbound_ip}, Geo : {outbound_info}"
+            )
+
+            _item["geoIP"]["inbound"]["address"] = inbound_ip
+            _item["InIP"] = inbound_ip
+            _item["InRes"] = inbound_geo_res
+            _item["geoIP"]["inbound"]["info"] = inbound_info
+            _item["geoIP"]["outbound"]["address"] = outbound_ip
+            _item["OutIP"] = outbound_ip
+            _item["OutRes"] = outbound_geo_res
+            _item["geoIP"]["outbound"]["info"] = outbound_info
+
+        if (
+            kwargs.get("default", False)
+            and STREAM_TEST
+            or kwargs.get("stream_test", False)
+        ):
+            stream_task = asyncio.create_task(
+                st.start_stream_test(port, self.__stream_cfg, outbound_ip)
+            )
+            task_list.append(stream_task)
+
+        if kwargs.get("default", False) and PING_TEST or kwargs.get("ping_test", False):
+            pint_task = asyncio.create_task(
+                self.__ping(cfg["server"], cfg["server_port"], port)
+            )
+            task_list.append(pint_task)
+
+        if kwargs.get("default", False) and WPS_TEST or kwargs.get("wps_test", False):
+            wps_task = asyncio.create_task(st.start_wps_test(port))
+            task_list.append(wps_task)
+
+        if (
+            kwargs.get("default", False)
+            and SPEED_TEST
+            or kwargs.get("speed_test", False)
+        ):
+            speed_task = asyncio.create_task(
+                st.start_test(port, download_semaphore, self.__test_method)
+            )
+            task_list.append(speed_task)
+
+        if kwargs.get("default", False) and NTT_TEST or kwargs.get("ntt_test", False):
+            t, eip, eport, sip, sport = self.__nat_type_test(port)
+            _item["ntt"]["type"] = t
+            _item["ntt"]["internal_ip"] = sip
+            _item["ntt"]["internal_port"] = sport
+            _item["ntt"]["public_ip"] = eip
+            _item["ntt"]["public_port"] = eport
+            if t:
+                nat_info += " - NAT Type: " + t
+                if t != pynat.BLOCKED:
+                    nat_info += f" - Internal End: {sip}:{sport}"
+                    nat_info += f" - Public End: {eip}:{eport}"
+
+        await asyncio.wait(task_list)
+
+        if stream_task:
+            result = stream_task.result()
+            _item.update(result)
+
+        if pint_task:
+            ping_res = pint_task.result()
+            tcp_ping_log = (
+                f"- Loss: [{ping_res['loss'] * 100:.2f}%] "
+                f"- TCP Ping: [{ping_res['ping'] * 1000:.2f}] "
+            )
+            google_ping_log = (
+                f"- Loss: [{ping_res['gPingLoss'] * 100:.2f}%] "
+                f"- Google Ping: [{ping_res['gPing'] * 1000:.2f}] "
+            )
+            _item["ping"] = ping_res["ping"]
+            _item["loss"] = ping_res["loss"]
+            _item["rawTcpPingStatus"] = ping_res["rawTcpPingStatus"]
+            _item["gPing"] = ping_res["gPing"]
+            _item["gPingLoss"] = ping_res["gPingLoss"]
+            _item["rawGooglePingStatus"] = ping_res["rawGooglePingStatus"]
+
+        if wps_task:
+            res = wps_task.result()
+            wps_log = "[WebPageSimulation]"
+            _item["webPageSimulation"]["results"] = res
+
+        if speed_task:
+            test_res = speed_task.result()
+            if int(test_res[0]) == 0:
+                logger.warning("Re-testing node.")
+                test_res = await st.start_test(
+                    port, download_semaphore, self.__test_method
+                )
+
+            speed_log = (
+                f"- AvgStSpeed: [{test_res[0] / 1024 / 1024:.2f}MB/s] "
+                f"- AvgMtSpeed: [{test_res[1] / 1024 / 1024:.2f}MB/s]"
+            )
+
+            _item["dspeed"] = test_res[0]
+            _item["maxDSpeed"] = test_res[1]
+            try:
+                _item["trafficUsed"] = test_res[3]
+                _item["rawSocketSpeed"] = test_res[2]
+            except Exception:
+                pass
+
+        logger.info(
+            node_info
+            + geoip_log
+            + tcp_ping_log
+            + google_ping_log
+            + nat_info
+            + wps_log
+            + speed_log
+        )
+
+    async def __base_start_test(
+        self,
+        _item,
+        cfg,
+        port,
+        geo_ip_semaphore,
+        download_semaphore,
+        **kwargs,
+    ):
+        node_info = f"[{_item['group']}] - [{_item['remarks']}] "
+        geoip_log = ""
+        tcp_ping_log = ""
+        google_ping_log = ""
+        nat_info = ""
+        wps_log = ""
+        speed_log = ""
+        outbound_ip = None
+        st = SpeedTestMethods()
+
+        if (
+            kwargs.get("default", False)
+            and GEOIP_TEST
+            or kwargs.get("geoip_test", False)
+        ):
+            inbound_ip, inbound_geo_res, inbound_info = self.__geo_ip_inbound(cfg)
+            outbound_ip, outbound_geo_res, outbound_info = await self.__geo_ip_outbound(
+                port, geo_ip_semaphore
+            )
+
+            geoip_log = (
+                f"Inbound IP : {inbound_ip}, Geo : {inbound_info}\n"
+                f"Outbound IP : {outbound_ip}, Geo : {outbound_info}"
+            )
+
+            _item["geoIP"]["inbound"]["address"] = inbound_ip
+            _item["InIP"] = inbound_ip
+            _item["InRes"] = inbound_geo_res
+            _item["geoIP"]["inbound"]["info"] = inbound_info
+            _item["geoIP"]["outbound"]["address"] = outbound_ip
+            _item["OutIP"] = outbound_ip
+            _item["OutRes"] = outbound_geo_res
+            _item["geoIP"]["outbound"]["info"] = outbound_info
+
+        if (
+            kwargs.get("default", False)
+            and STREAM_TEST
+            or kwargs.get("stream_test", False)
+        ):
+            result = await st.start_stream_test(port, self.__stream_cfg, outbound_ip)
+            _item.update(result)
+
+        if kwargs.get("default", False) and PING_TEST or kwargs.get("ping_test", False):
+            ping_res = await self.__ping(cfg["server"], cfg["server_port"], port)
+
+            tcp_ping_log = (
+                f"- Loss: [{ping_res['loss'] * 100:.2f}%] "
+                f"- TCP Ping: [{ping_res['ping'] * 1000:.2f}] "
+            )
+            google_ping_log = (
+                f"- Loss: [{ping_res['gPingLoss'] * 100:.2f}%] "
+                f"- Google Ping: [{ping_res['gPing'] * 1000:.2f}] "
+            )
+
+            _item["ping"] = ping_res["ping"]
+            _item["loss"] = ping_res["loss"]
+            _item["rawTcpPingStatus"] = ping_res["rawTcpPingStatus"]
+            _item["gPing"] = ping_res["gPing"]
+            _item["gPingLoss"] = ping_res["gPingLoss"]
+            _item["rawGooglePingStatus"] = ping_res["rawGooglePingStatus"]
+
+        if kwargs.get("default", False) and WPS_TEST or kwargs.get("wps_test", False):
+            res = await st.start_wps_test(port)
+            wps_log = "[WebPageSimulation]"
+            _item["webPageSimulation"]["results"] = res
+
+        if (
+            kwargs.get("default", False)
+            and SPEED_TEST
+            or kwargs.get("speed_test", False)
+        ):
+            test_res = await st.start_test(port, download_semaphore, self.__test_method)
+            if int(test_res[0]) == 0:
+                logger.warning("Re-testing node.")
+                test_res = await st.start_test(
+                    port, download_semaphore, self.__test_method
+                )
+
+            speed_log = (
+                f"- AvgStSpeed: [{test_res[0] / 1024 / 1024:.2f}MB/s] "
+                f"- AvgMtSpeed: [{test_res[1] / 1024 / 1024:.2f}MB/s]"
+            )
+
+            _item["dspeed"] = test_res[0]
+            _item["maxDSpeed"] = test_res[1]
+            try:
+                _item["trafficUsed"] = test_res[3]
+                _item["rawSocketSpeed"] = test_res[2]
+            except Exception:
+                pass
+
+        if kwargs.get("default", False) and NTT_TEST or kwargs.get("ntt_test", False):
+            t, eip, eport, sip, sport = self.__nat_type_test(port)
+            _item["ntt"]["type"] = t
+            _item["ntt"]["internal_ip"] = sip
+            _item["ntt"]["internal_port"] = sport
+            _item["ntt"]["public_ip"] = eip
+            _item["ntt"]["public_port"] = eport
+            if t:
+                nat_info += " - NAT Type: " + t
+                if t != pynat.BLOCKED:
+                    nat_info += f" - Internal End: {sip}:{sport}"
+                    nat_info += f" - Public End: {eip}:{eport}"
+
+        logger.info(
+            node_info
+            + geoip_log
+            + tcp_ping_log
+            + google_ping_log
+            + nat_info
+            + wps_log
+            + speed_log
+        )
+
     async def __async__start_test(
         self,
         node,
         dic,
         lock,
         port_queue,
+        inner_method,
         geo_ip_semaphore,
         download_semaphore,
         **kwargs,
@@ -270,7 +545,7 @@ class SpeedTest:
                 if client.check_alive():
                     break
             else:
-                logger.error("Failed to start clients.", exc_info=True)
+                logger.error("Failed to start clients.")
                 return False
         logger.info("Client started.")
 
@@ -287,101 +562,8 @@ class SpeedTest:
                 logger.error(f"Port {port} closed.")
                 return False
 
-        geoip_log = ""
-        tcp_ping_log = ""
-        google_ping_log = ""
-        nat_info = ""
-        wps_log = ""
-        speed_log = ""
-        outbound_ip = None
-        st = SpeedTestMethods()
-
-        if GEOIP_TEST or kwargs.get("geoip_test", False):
-            inbound_ip, inbound_geo_res, inbound_info = await self.__geo_ip_inbound(cfg)
-            outbound_ip, outbound_geo_res, outbound_info = await self.__geo_ip_outbound(
-                port, geo_ip_semaphore
-            )
-
-            geoip_log = (
-                f"Inbound IP : {inbound_ip}, Geo : {inbound_info}\n"
-                f"Outbound IP : {outbound_ip}, Geo : {outbound_info}"
-            )
-
-            _item["geoIP"]["inbound"]["address"] = inbound_ip
-            _item["InIP"] = inbound_ip
-            _item["InRes"] = inbound_geo_res
-            _item["geoIP"]["inbound"]["info"] = inbound_info
-            _item["geoIP"]["outbound"]["address"] = outbound_ip
-            _item["OutIP"] = outbound_ip
-            _item["OutRes"] = outbound_geo_res
-            _item["geoIP"]["outbound"]["info"] = outbound_info
-
-        if STREAM_TEST or kwargs.get("stream_test", False):
-            result = await st.start_stream_test(port, self.__stream_cfg, outbound_ip)
-            _item.update(result)
-
-        if PING_TEST or kwargs.get("ping_test", False):
-            ping_res = await self.__ping(cfg["server"], cfg["server_port"], port)
-
-            tcp_ping_log = (
-                f"- Loss: [{ping_res['loss'] * 100:.2f}%] "
-                f"- TCP Ping: [{ping_res['ping'] * 1000:.2f}] "
-            )
-            google_ping_log = (
-                f"- Loss: [{ping_res['gPingLoss'] * 100:.2f}%] "
-                f"- Google Ping: [{ping_res['gPing'] * 1000:.2f}] "
-            )
-
-            _item["ping"] = ping_res["ping"]
-            _item["loss"] = ping_res["loss"]
-            _item["rawTcpPingStatus"] = ping_res["rawTcpPingStatus"]
-            _item["gPing"] = ping_res["gPing"]
-            _item["gPingLoss"] = ping_res["gPingLoss"]
-            _item["rawGooglePingStatus"] = ping_res["rawGooglePingStatus"]
-
-        if NTT_TEST or kwargs.get("ntt_test", False):
-            t, eip, eport, sip, sport = self.__nat_type_test(port)
-            _item["ntt"]["type"] = t
-            _item["ntt"]["internal_ip"] = sip
-            _item["ntt"]["internal_port"] = sport
-            _item["ntt"]["public_ip"] = eip
-            _item["ntt"]["public_port"] = eport
-            if t:
-                nat_info += " - NAT Type: " + t
-                if t != pynat.BLOCKED:
-                    nat_info += f" - Internal End: {sip}:{sport}"
-                    nat_info += f" - Public End: {eip}:{eport}"
-
-        if WPS_TEST or kwargs.get("wps_test", False):
-            res = await st.start_wps_test(port)
-
-            wps_log = "[WebPageSimulation]"
-
-            _item["webPageSimulation"]["results"] = res
-
-        if SPEED_TEST or kwargs.get("speed_test", False):
-            test_res = await st.start_test(port, download_semaphore, self.__test_method)
-            if int(test_res[0]) == 0:
-                logger.warning("Re-testing node.")
-                test_res = await st.start_test(
-                    port, download_semaphore, self.__test_method
-                )
-
-            speed_log = (
-                f"- AvgStSpeed: [{test_res[0] / 1024 / 1024:.2f}MB/s] "
-                f"- AvgMtSpeed: [{test_res[1] / 1024 / 1024:.2f}MB/s]"
-            )
-
-            _item["dspeed"] = test_res[0]
-            _item["maxDSpeed"] = test_res[1]
-            try:
-                _item["trafficUsed"] = test_res[3]
-                _item["rawSocketSpeed"] = test_res[2]
-            except Exception:
-                pass
-
-        logger.info(
-            geoip_log + tcp_ping_log + google_ping_log + nat_info + wps_log + speed_log
+        await inner_method(
+            _item, cfg, port, geo_ip_semaphore, download_semaphore, **kwargs
         )
 
         self.__results.append(_item)
@@ -400,8 +582,15 @@ class SpeedTest:
         )
         port_queue = asyncio.Queue()
         dic = {"done_nodes": 0, "total_nodes": len(self.__configs)}
+        # 根据配置文件是否选择极速模式
+        if FAST_SPEED:
+            fast_method = self.__fast_start_test
+        else:
+            fast_method = self.__base_start_test
+        # 初始化端口范围
         for i in range(LOCAL_PORT, LOCAL_PORT + MAX_CONNECTIONS):
             port_queue.put_nowait(i)
+        # 布置异步任务
         for node in self.__configs:
             task_list.append(
                 asyncio.create_task(
@@ -410,6 +599,7 @@ class SpeedTest:
                         dic,
                         lock,
                         port_queue,
+                        fast_method,
                         geo_ip_semaphore,
                         download_semaphore,
                         **kwargs,
@@ -428,6 +618,10 @@ class SpeedTest:
         loop.close()
         self.__current = {}
 
+    def default_test(self):
+        logger.info("Test Default")
+        self.__start_test(default=True)
+
     def web_page_simulation(self):
         logger.info("Test mode : Web Page Simulation")
         self.__start_test(geoip_test=True, ping_test=True, wps_test=True)
@@ -436,13 +630,17 @@ class SpeedTest:
         logger.info("Test mode : ping only")
         self.__start_test(ping_test=True)
 
+    def stream_only(self):
+        logger.info("Test mode : stream only")
+        self.__start_test(stream_test=True)
+
     def full_test(self):
         logger.info(f"Test mode : All. Test method : {self.__test_method}")
         self.__start_test(
+            mode=True,
             geoip_test=True,
             stream_test=True,
             ping_test=True,
             ntt_test=True,
-            wps_test=True,
             speed_test=True,
         )

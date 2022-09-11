@@ -11,6 +11,7 @@
         "password": null
     },
     "web": { "listen": "127.0.0.1", "port": 10870, "token": "" },
+    "fastSpeed": false,
     "ntt": { "enabled": true, "internal_ip": "0.0.0.0", "internal_port": 54320 },
     "geoip": true,
     "ping": true,
@@ -31,7 +32,7 @@
     "port": true,
     "multiplex": true,
     "webPageSimulation": {
-        "enabled": true,
+        "enabled": false,
         "maxWorkers": 4,
         "urls": ["https://www.google.com.hk", "https://www.youtube.com", "https://www.bing.com", "https://www.github.com", "https://www.microsoft.com"],
         "cnUrls": ["https://www.baidu.com", "https://www.weibo.com", "https://www.qq.com"]
