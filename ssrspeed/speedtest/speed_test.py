@@ -248,7 +248,7 @@ class SpeedTest:
         nat_info = ""
         wps_log = ""
         speed_log = ""
-        outbound_ip = None
+        outbound_ip = "N/A"
         stream_task = None
         pint_task = None
         wps_task = None
@@ -398,7 +398,7 @@ class SpeedTest:
         nat_info = ""
         wps_log = ""
         speed_log = ""
-        outbound_ip = None
+        outbound_ip = "N/A"
         st = SpeedTestMethods()
 
         if (
