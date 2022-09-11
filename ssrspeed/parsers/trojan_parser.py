@@ -1,10 +1,9 @@
-import logging
 import re
 from urllib.parse import unquote
 
-from ssrspeed.parsers import BaseParser
+from loguru import logger
 
-logger = logging.getLogger("Sub")
+from ssrspeed.parsers import BaseParser
 
 
 class TrojanParser(BaseParser):

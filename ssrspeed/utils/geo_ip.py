@@ -1,13 +1,11 @@
 import asyncio.exceptions
-import logging
 import re
 import socket
 
 import aiohttp
 import python_socks
 from aiohttp_socks import ProxyConnector
-
-logger = logging.getLogger("Sub")
+from loguru import logger
 
 
 async def parse_location(port):

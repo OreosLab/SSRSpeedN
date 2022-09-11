@@ -1,17 +1,15 @@
 import copy
-import logging
 import socket
 import threading
 import time
 from typing import Optional
 
 import socks
+from loguru import logger
 
 from ssrspeed.config import ssrconfig
 from ssrspeed.utils import ip_loc
 from ssrspeed.utils.rules import DownloadRuleMatch
-
-logger = logging.getLogger("Sub")
 
 SPEED_TEST = ssrconfig["speed"]
 STSPEED_TEST = ssrconfig["StSpeed"]

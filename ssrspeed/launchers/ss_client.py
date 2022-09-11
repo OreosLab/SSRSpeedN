@@ -1,16 +1,14 @@
 import json
-import logging
 import subprocess
 import sys
 import time
 from typing import Any, Dict, Optional
 
 import aiofiles
+from loguru import logger
 
 from ssrspeed.launchers import BaseClient
 from ssrspeed.paths import KEY_PATH
-
-logger = logging.getLogger("Sub")
 
 CLIENTS_DIR = KEY_PATH["clients"]
 
@@ -23,7 +21,7 @@ class Shadowsocks(BaseClient):
         super(Shadowsocks, self).__init__()
         self.config_file: str = file
 
-    async def start_client(self, config: Dict[str, Any]):
+    async def start_client(self, config: Dict[str, Any], debug=False):
 
         self._config = config
         #   self._config["server_port"] = int(self._config["server_port"])
@@ -33,7 +31,7 @@ class Shadowsocks(BaseClient):
         if self._process is None:
 
             if self._platform == "Windows":
-                if logger.level == logging.DEBUG:
+                if debug:
                     self._process = subprocess.Popen(
                         [
                             f"{CLIENTS_DIR}shadowsocks-libev/ss-local.exe",
@@ -59,7 +57,7 @@ class Shadowsocks(BaseClient):
                 )
 
             elif self._platform == "Linux" or self._platform == "MacOS":
-                if logger.level == logging.DEBUG:
+                if debug:
                     self._process = subprocess.Popen(
                         [
                             f"{CLIENTS_DIR}shadowsocks-libev/ss-local",
@@ -152,7 +150,7 @@ class Shadowsockss(BaseClient):
         ) as f:
             f.write(json.dumps(tmp_conf))
 
-    def start_client(self, config: Dict[str, Any], testing: bool = False):
+    def start_client(self, config: Dict[str, Any], testing: bool = False, debug=False):
         if self._process is None:
 
             platform = self._check_platform()
@@ -169,7 +167,7 @@ class Shadowsockss(BaseClient):
                 self._config["server_port"] = int(self._config["server_port"])
                 with open(self.config_file, "w+", encoding="utf-8") as f:
                     f.write(json.dumps(self._config))
-                if logger.level == logging.DEBUG:
+                if debug:
                     self._process = subprocess.Popen(
                         [
                             f"{CLIENTS_DIR}shadowsocks-libev/ss-local",

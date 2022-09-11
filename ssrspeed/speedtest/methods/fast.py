@@ -3,7 +3,6 @@ Python CLI-tool (without need for a GUI) to measure Internet speed with fast.com
 """
 
 import json
-import logging
 import socket
 import time
 import urllib.error
@@ -12,8 +11,7 @@ import urllib.request
 from threading import Thread
 
 import socks
-
-logger = logging.getLogger("Sub")
+from loguru import logger
 
 
 def set_proxy(local_address, local_port):

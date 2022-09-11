@@ -1,13 +1,12 @@
-import logging
 import os
 import subprocess
 import sys
 from typing import Dict, Optional
 
+from loguru import logger
+
 from ssrspeed.paths import KEY_PATH
 from ssrspeed.utils import check_platform
-
-logger = logging.getLogger("Sub")
 
 CLIENTS_DIR = KEY_PATH["clients"]
 DATABASES_DIR = KEY_PATH["databases"]

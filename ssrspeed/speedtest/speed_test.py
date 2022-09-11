@@ -1,6 +1,5 @@
 import asyncio
 import copy
-import logging
 import os
 import socket
 
@@ -8,6 +7,7 @@ import geoip2.database
 import pynat
 import socks
 from geoip2.errors import AddressNotFoundError
+from loguru import logger
 
 from ssrspeed.config import ssrconfig
 from ssrspeed.launchers import (
@@ -19,8 +19,6 @@ from ssrspeed.launchers import (
 from ssrspeed.paths import KEY_PATH
 from ssrspeed.speedtest.methodology import SpeedTestMethods
 from ssrspeed.utils import async_check_port, domain2ip, ip_loc
-
-logger = logging.getLogger("Sub")
 
 LOCAL_ADDRESS = ssrconfig["localAddress"]
 LOCAL_PORT = int(ssrconfig["localPort"])
@@ -36,9 +34,10 @@ SPEED_TEST = ssrconfig["speed"]
 
 
 class SpeedTest:
-    def __init__(self, parser, method="ST_ASYNC", use_ssr_cs=False):
+    def __init__(self, parser, method="ST_ASYNC", use_ssr_cs=False, debug=False):
         self.__configs = parser.nodes
         self.__use_ssr_cs = use_ssr_cs
+        self.__debug = debug
         self.__test_method = method
         self.__results = []
         self.__current = {}
@@ -536,12 +535,12 @@ class SpeedTest:
         self.__current = _item
         cfg["server_port"] = int(cfg["server_port"])
         _item["port"] = cfg["server_port"]
-        await client.start_client(cfg)
+        await client.start_client(cfg, self.__debug)
 
         # Check clients started
         if not client.check_alive():
             for _ in range(3):
-                await client.start_client(cfg)
+                await client.start_client(cfg, self.__debug)
                 if client.check_alive():
                     break
             else:

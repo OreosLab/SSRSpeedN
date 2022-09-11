@@ -1,9 +1,7 @@
 import copy
-import logging
 
 import yaml
-
-logger = logging.getLogger("Sub")
+from loguru import logger
 
 
 class ParserShadowsocksClash(object):

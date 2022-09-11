@@ -1,11 +1,9 @@
 import asyncio
-import logging
 import re
 
 import aiohttp
 from aiohttp_socks import ProxyConnector
-
-logger = logging.getLogger("Sub")
+from loguru import logger
 
 # Netflix requestIpAddress regex compile
 nf_ip_re = re.compile(r'"requestIpAddress":"(.*)"')
@@ -337,6 +335,7 @@ async def start_stream_test(port, stream_cfg, outbound_ip):
         )
     await asyncio.wait(test_list)
     return inner_dict
+
 
 if __name__ == "__main__":
     STREAM_CFG = {

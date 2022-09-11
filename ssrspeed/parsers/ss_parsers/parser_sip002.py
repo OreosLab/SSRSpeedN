@@ -1,11 +1,10 @@
 import copy
-import logging
 import urllib.parse
 from typing import Optional
 
-from ssrspeed.utils import b64plus
+from loguru import logger
 
-logger = logging.getLogger("Sub")
+from ssrspeed.utils import b64plus
 
 
 class ParserShadowsocksSIP002:

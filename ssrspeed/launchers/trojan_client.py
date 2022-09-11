@@ -1,15 +1,13 @@
 import json
-import logging
 import subprocess
 import sys
 from typing import Any, Dict
 
 import aiofiles
+from loguru import logger
 
 from ssrspeed.launchers.base_client import BaseClient
 from ssrspeed.paths import KEY_PATH
-
-logger = logging.getLogger("Sub")
 
 CLIENTS_DIR = KEY_PATH["clients"]
 
@@ -22,7 +20,7 @@ class Trojan(BaseClient):
         super(Trojan, self).__init__()
         self.config_file: str = f"{file}.json"
 
-    async def start_client(self, config: Dict[str, Any]):
+    async def start_client(self, config: Dict[str, Any], debug=False):
         self._config = config
         async with aiofiles.open(self.config_file, "w+", encoding="utf-8") as f:
             await f.write(json.dumps(self._config))
@@ -30,7 +28,7 @@ class Trojan(BaseClient):
         if self._process is None:
 
             if self._platform == "Windows":
-                if logger.level == logging.DEBUG:
+                if debug:
                     self._process = subprocess.Popen(
                         [
                             f"{CLIENTS_DIR}trojan/trojan.exe",
@@ -53,7 +51,7 @@ class Trojan(BaseClient):
                 )
 
             elif self._platform == "Linux" or self._platform == "MacOS":
-                if logger.level == logging.DEBUG:
+                if debug:
                     self._process = subprocess.Popen(
                         [
                             f"{CLIENTS_DIR}trojan/trojan",

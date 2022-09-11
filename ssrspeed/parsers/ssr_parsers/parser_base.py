@@ -1,10 +1,9 @@
 import copy
-import logging
 from typing import List, Optional
 
-from ssrspeed.utils import b64plus
+from loguru import logger
 
-logger = logging.getLogger("Sub")
+from ssrspeed.utils import b64plus
 
 
 class ParserShadowsocksR:

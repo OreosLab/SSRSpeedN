@@ -1,9 +1,7 @@
-import logging
 from copy import deepcopy
 
 import yaml
-
-logger = logging.getLogger("Sub")
+from loguru import logger
 
 
 class ClashParser:

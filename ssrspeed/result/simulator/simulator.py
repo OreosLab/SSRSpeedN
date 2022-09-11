@@ -1,12 +1,11 @@
 import json
-import logging
 import os
 import shutil
 import time
 
-from ssrspeed.paths import KEY_PATH
+from loguru import logger
 
-logger = logging.getLogger("Sub")
+from ssrspeed.paths import KEY_PATH
 
 RESULTS_DIR = KEY_PATH["results"]
 TEMPLATES_DIR = KEY_PATH["templates"]

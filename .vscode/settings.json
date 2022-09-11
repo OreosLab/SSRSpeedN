@@ -94,6 +94,7 @@
         "levelno",
         "libev",
         "libsodium",
+        "loguru",
         "Martz",
         "maxchunkcount",
         "maxdownload",

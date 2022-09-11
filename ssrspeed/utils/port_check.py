@@ -1,9 +1,8 @@
 import asyncio
-import logging
 import socket
 import sys
 
-logger = logging.getLogger("Sub")
+from loguru import logger
 
 
 async def async_check_port(port: int):

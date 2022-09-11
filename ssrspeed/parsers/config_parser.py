@@ -1,10 +1,10 @@
 import json
-import logging
 import os
 from copy import deepcopy
 from typing import List, Optional, Union
 
 import requests
+from loguru import logger
 
 from ssrspeed.config import ssrconfig
 from ssrspeed.parsers import ClashParser, TrojanParser
@@ -26,7 +26,6 @@ LOCAL_ADDRESS = ssrconfig["localAddress"]
 LOCAL_PORT = ssrconfig["localPort"]
 TIMEOUT = 10
 
-logger = logging.getLogger("Sub")
 
 TMP_DIR = KEY_PATH["tmp"]
 if not os.path.exists(TMP_DIR):

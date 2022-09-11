@@ -1,9 +1,8 @@
-import logging
 from argparse import ArgumentParser, Namespace
 
-from ssrspeed.config import ssrconfig
+from loguru import logger
 
-logger = logging.getLogger("Sub")
+from ssrspeed.config import ssrconfig
 
 
 def set_opts(parser: ArgumentParser):

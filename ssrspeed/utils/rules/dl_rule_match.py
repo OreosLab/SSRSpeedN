@@ -1,9 +1,8 @@
-import logging
 from copy import deepcopy
 
-from ssrspeed.config import ssrconfig
+from loguru import logger
 
-logger = logging.getLogger("Sub")
+from ssrspeed.config import ssrconfig
 
 
 class DownloadRuleMatch:

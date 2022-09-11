@@ -1,11 +1,10 @@
-import logging
 import signal
 from typing import Any, Dict, List
 
+from loguru import logger
+
 from ssrspeed.config import ssrconfig
 from ssrspeed.utils import check_platform
-
-logger = logging.getLogger("Sub")
 
 
 class BaseClient(object):

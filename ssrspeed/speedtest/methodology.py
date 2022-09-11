@@ -1,7 +1,7 @@
-import logging
 import socket
 
 import socks
+from loguru import logger
 
 from ssrspeed.config import ssrconfig
 from ssrspeed.speedtest.methods import (
@@ -16,8 +16,6 @@ from ssrspeed.speedtest.methods import (
     tcp_ping,
     webpage_simulation,
 )
-
-logger = logging.getLogger("Sub")
 
 LOCAL_ADDRESS = ssrconfig["localAddress"]
 DEFAULT_SOCKET = socket.socket

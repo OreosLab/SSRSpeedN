@@ -1,15 +1,13 @@
 import copy
 import json
-import logging
 from typing import Optional, Tuple
 
 import requests
+from loguru import logger
 
 from ssrspeed.config import ssrconfig
 from ssrspeed.parsers.base_configs import shadowsocks_get_config
 from ssrspeed.utils import b64plus
-
-logger = logging.getLogger("Sub")
 
 LOCAL_ADDRESS = ssrconfig["localAddress"]
 LOCAL_PORT = ssrconfig["localPort"]

@@ -5,6 +5,7 @@ aiohttp-socks
 beautifulsoup4
 Flask-Cors
 geoip2
+loguru
 Pillow
 pynat
 PySocks

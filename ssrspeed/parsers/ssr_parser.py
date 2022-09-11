@@ -1,9 +1,7 @@
-import logging
+from loguru import logger
 
 from ssrspeed.parsers import BaseParser
 from ssrspeed.utils import b64plus
-
-logger = logging.getLogger("Sub")
 
 
 class ShadowsocksRParser(BaseParser):

@@ -1,13 +1,14 @@
 # coding:utf-8
-
 import asyncio
-import logging
 import os
+import sys
 import time
 
 from tests import root
 
 root()
+
+from loguru import logger
 
 from ssrspeed.paths import KEY_PATH
 
@@ -19,29 +20,37 @@ if not os.path.exists(LOGS_DIR):
 if not os.path.exists(RESULTS_DIR):
     os.mkdir(RESULTS_DIR)
 
-loggerList = []
-loggerSub = logging.getLogger("Sub")
-logger = logging.getLogger(__name__)
-loggerList.append(loggerSub)
-loggerList.append(logger)
-
-formatter = logging.Formatter(
-    "[%(asctime)s][%(levelname)s][%(thread)d][%(filename)s:%(lineno)d]%(message)s"
-)
-fileHandler = logging.FileHandler(
-    LOGS_DIR + time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime()) + ".log",
-    encoding="utf-8",
-)
-fileHandler.setFormatter(formatter)
-consoleHandler = logging.StreamHandler()
-consoleHandler.setFormatter(formatter)
+LOG_FILE = f"{LOGS_DIR}{time.strftime('%Y-%m-%d-%H-%M-%S', time.localtime())}.log"
+logger_config = {
+    "handlers": [
+        {
+            "sink": sys.stdout,
+            "level": "INFO",
+            "format": "[<green>{time:YYYY-MM-DD HH:mm:ss}</green>][<level>{level}</level>][<yellow>{file}</yellow>:<cyan>{line}</cyan>]: <level>{message}</level>",
+            "colorize": True,  # 自定义配色
+            "serialize": False,  # 以 JSON 数据格式打印
+            "backtrace": True,  # 是否显示完整的异常堆栈跟踪
+            "diagnose": True,  # 异常跟踪是否显示触发异常的方法或语句所使用的变量，生产环境设为 False
+            "enqueue": True,  # 默认线程安全。若想实现协程安全 或 进程安全，该参数设为 True
+            "catch": True,  # 捕获异常
+        },
+        {
+            "sink": LOG_FILE,
+            "level": "INFO",
+            "format": "[{time:YYYY-MM-DD HH:mm:ss}][{level}][{file}:{line}]: {message}",
+            "serialize": False,
+            "backtrace": True,
+            "diagnose": True,
+            "enqueue": True,
+            "catch": True,
+        },
+    ]
+}
 
 from ssrspeed.speedtest.methods import webpage_simulation as webPageSimulation
 
-for item in loggerList:
-    item.setLevel(logging.DEBUG)
-    item.addHandler(fileHandler)
-    item.addHandler(consoleHandler)
+logger.configure(**logger_config)
+logger.enable("__main__")
 
 
 async def main():

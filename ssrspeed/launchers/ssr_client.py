@@ -1,5 +1,4 @@
 import json
-import logging
 import socket
 import subprocess
 import sys
@@ -7,11 +6,10 @@ from typing import Any, Dict, Union
 
 import aiofiles
 import requests
+from loguru import logger
 
 from ssrspeed.launchers import BaseClient
 from ssrspeed.paths import KEY_PATH
-
-logger = logging.getLogger("Sub")
 
 CLIENTS_DIR = KEY_PATH["clients"]
 
@@ -48,7 +46,7 @@ class ShadowsocksR(BaseClient):
         ) as f:
             f.write(json.dumps(tmp_conf))
 
-    async def start_client(self, config: Dict[str, Any]):
+    async def start_client(self, config: Dict[str, Any], debug=False):
         self._config = config
         # 	self._config["server_port"] = int(self._config["server_port"])
         async with aiofiles.open(self.config_file, "w+", encoding="utf-8") as f:
@@ -64,7 +62,7 @@ class ShadowsocksR(BaseClient):
                     )
                     logger.info("shadowsocksr-C# started.")
                     return
-                if logger.level == logging.DEBUG:
+                if debug:
                     self._process = subprocess.Popen(
                         [
                             f"{CLIENTS_DIR}shadowsocksr-libev/ssr-local.exe",
@@ -93,7 +91,7 @@ class ShadowsocksR(BaseClient):
                     )
 
             elif self._platform == "Linux" or self._platform == "MacOS":
-                if logger.level == logging.DEBUG:
+                if debug:
                     self._process = subprocess.Popen(
                         [
                             "python3",
@@ -222,7 +220,7 @@ class ShadowsocksRR(BaseClient):
         else:
             return True
 
-    def start_client(self, config: Dict[str, Any]):
+    def start_client(self, config: Dict[str, Any], debug=False):
         if self._process is None:
 
             if self._platform == "Windows":
@@ -237,7 +235,7 @@ class ShadowsocksRR(BaseClient):
                 self._config["server_port"] = int(self._config["server_port"])
                 with open(self.config_file, "w+", encoding="utf-8") as f:
                     f.write(json.dumps(self._config))
-                if logger.level == logging.DEBUG:
+                if debug:
                     self._process = subprocess.Popen(
                         [
                             "python3",

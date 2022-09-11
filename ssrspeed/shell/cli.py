@@ -1,8 +1,5 @@
-import logging
 import sys
 from argparse import ArgumentParser, Namespace
-
-logger = logging.getLogger("Sub")
 
 
 def set_opts(parser: ArgumentParser):
@@ -28,6 +25,7 @@ def set_opts(parser: ArgumentParser):
         action="store",
         dest="test_method",
         default="stasync",
+        choices=["speedtestnet", "fast", "socket", "stasync"],
         help="Select test method in [speedtestnet, fast, socket, stasync].",
     )
     parser.add_argument(
@@ -36,6 +34,7 @@ def set_opts(parser: ArgumentParser):
         action="store",
         dest="test_mode",
         default="default",
+        choices=["default", "pingonly", "stream", "all", "wps"],
         help="Select test mode in [default, pingonly, stream, all, wps].",
     )
     parser.add_argument(
@@ -139,6 +138,7 @@ def set_opts(parser: ArgumentParser):
         action="store",
         dest="sort_method",
         default="",
+        choices=["speed", "rspeed", "ping", "rping"],
         help="Select sort method in [speed, rspeed, ping, rping], default not sorted.",
     )
     parser.add_argument(

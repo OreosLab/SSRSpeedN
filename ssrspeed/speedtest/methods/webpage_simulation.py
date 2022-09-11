@@ -1,15 +1,13 @@
 import asyncio
 import copy
-import logging
 import time
 
 import aiohttp
 from aiohttp_socks import ProxyConnector
+from loguru import logger
 
 from ssrspeed.config import ssrconfig
 from ssrspeed.utils import parse_location
-
-logger = logging.getLogger("Sub")
 
 w_config: dict = {}
 try:
@@ -69,6 +67,7 @@ async def execute(url, host, port, semaphore):
         logger.error(f"Unknown Error on : {url}", exc_info=True)
     finally:
         results.append(res)
+
 
 if __name__ == "__main__":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())

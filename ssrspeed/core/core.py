@@ -1,14 +1,13 @@
-import logging
 import time
 from typing import Optional
+
+from loguru import logger
 
 from ssrspeed.config import ssrconfig
 from ssrspeed.parsers import UniversalParser
 from ssrspeed.result import ExportResult
 from ssrspeed.result.importer import import_result
 from ssrspeed.speedtest import SpeedTest
-
-logger = logging.getLogger("Sub")
 
 
 class SSRSpeedCore(object):
@@ -93,15 +92,15 @@ class SSRSpeedCore(object):
             else:
                 raise ValueError("Subscription URL or configuration file must be set!")
 
-    def start_test(self, use_ssr_csharp: bool = False):
+    def start_test(self, use_ssr_csharp: bool = False, debug: bool = False):
         self.__time_stamp_start = time.time()
-        self.__stc = SpeedTest(self.__parser, self.test_method, use_ssr_csharp)
+        self.__stc = SpeedTest(self.__parser, self.test_method, use_ssr_csharp, debug)
         self.__status = "running"
         if self.test_mode == "DEFAULT":
             self.__stc.default_test()
-        if self.test_mode == "TCP_PING":
+        elif self.test_mode == "TCP_PING":
             self.__stc.ping_only()
-        if self.test_mode == "STREAM":
+        elif self.test_mode == "STREAM":
             self.__stc.stream_only()
         elif self.test_mode == "ALL":
             self.__stc.full_test()

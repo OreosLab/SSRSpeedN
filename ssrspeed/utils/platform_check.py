@@ -1,7 +1,6 @@
-import logging
 import platform
 
-logger = logging.getLogger("Sub")
+from loguru import logger
 
 
 def check_platform() -> str:

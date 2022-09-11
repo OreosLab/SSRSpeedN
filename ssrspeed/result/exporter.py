@@ -1,9 +1,9 @@
 import json
-import logging
 import os
 import time
 
 import requests
+from loguru import logger
 from PIL import Image, ImageDraw, ImageFont
 
 from ssrspeed.config import ssrconfig
@@ -11,8 +11,6 @@ from ssrspeed.paths import KEY_PATH
 from ssrspeed.result.pusher import push2server
 from ssrspeed.result.simulator import ExporterWps
 from ssrspeed.result.sorter import Sorter
-
-logger = logging.getLogger("Sub")
 
 TMP_DIR = KEY_PATH["tmp"]
 if not os.path.exists(TMP_DIR):

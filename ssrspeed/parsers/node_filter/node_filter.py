@@ -1,8 +1,7 @@
-import logging
 from copy import deepcopy
 from typing import Optional
 
-logger = logging.getLogger("Sub")
+from loguru import logger
 
 
 class NodeFilter:

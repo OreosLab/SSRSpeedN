@@ -1,12 +1,11 @@
 import binascii
 import copy
 import json
-import logging
 from typing import Optional
 
-from ssrspeed.utils import b64plus
+from loguru import logger
 
-logger = logging.getLogger("Sub")
+from ssrspeed.utils import b64plus
 
 
 class ParserShadowsocksBasic(object):

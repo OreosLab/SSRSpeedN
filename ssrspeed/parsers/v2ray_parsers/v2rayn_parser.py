@@ -1,10 +1,9 @@
 import json
-import logging
 from typing import Optional, Union
 
-from ssrspeed.utils import b64plus
+from loguru import logger
 
-logger = logging.getLogger("Sub")
+from ssrspeed.utils import b64plus
 
 
 class ParserV2RayN(object):

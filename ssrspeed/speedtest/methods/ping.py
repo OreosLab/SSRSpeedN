@@ -1,10 +1,9 @@
 # Author: ranwen NyanChan
 import asyncio
-import logging
 import socket
 import time
 
-logger = logging.getLogger("Sub")
+from loguru import logger
 
 
 async def tcp_ping_task(loop, _list, address, port):

@@ -1,8 +1,7 @@
 import copy
 import json
-import logging
 
-logger = logging.getLogger("Sub")
+from loguru import logger
 
 
 class ParserShadowsocksD(object):

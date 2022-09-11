@@ -1,6 +1,5 @@
-import logging
-
 import requests
+from loguru import logger
 
 from ssrspeed.parsers import BaseParser
 from ssrspeed.parsers.base_configs import V2RayBaseConfigs
@@ -10,8 +9,6 @@ from ssrspeed.parsers.v2ray_parsers import (
     ParserV2RayQuantumult,
 )
 from ssrspeed.utils import b64plus
-
-logger = logging.getLogger("Sub")
 
 
 class V2RayParser(BaseParser):

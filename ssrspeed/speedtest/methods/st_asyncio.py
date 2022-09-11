@@ -1,17 +1,15 @@
 import asyncio
 import copy
-import logging
 import time
 from typing import Union
 
 import aiohttp
 from aiohttp_socks import ProxyConnector
+from loguru import logger
 
 from ssrspeed.config import ssrconfig
 from ssrspeed.utils import ip_loc
 from ssrspeed.utils.rules import DownloadRuleMatch
-
-logger = logging.getLogger("Sub")
 
 WORKERS = ssrconfig["fileDownload"]["workers"]
 BUFFER = ssrconfig["fileDownload"]["buffer"]

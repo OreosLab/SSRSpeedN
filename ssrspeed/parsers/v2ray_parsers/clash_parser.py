@@ -1,10 +1,7 @@
-import logging
-
 import yaml
+from loguru import logger
 
 from ssrspeed.paths import KEY_PATH
-
-logger = logging.getLogger("Sub")
 
 
 class ParserV2RayClash(object):

@@ -1,11 +1,8 @@
-import logging
-
 import requests
+from loguru import logger
 
 from ssrspeed.config import ssrconfig
 from ssrspeed.paths import KEY_PATH
-
-logger = logging.getLogger("Sub")
 
 UPLOAD_RESULT = ssrconfig["uploadResult"]
 TEST_PNG = KEY_PATH["tmp"] + "test.png"
