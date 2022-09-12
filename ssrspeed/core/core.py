@@ -92,9 +92,9 @@ class SSRSpeedCore:
             else:
                 raise ValueError("Subscription URL or configuration file must be set!")
 
-    def start_test(self, use_ssr_csharp: bool = False, debug: bool = False):
+    def start_test(self, args):
         self.__time_stamp_start = time.time()
-        self.__stc = SpeedTest(self.__parser, self.test_method, use_ssr_csharp, debug)
+        self.__stc = SpeedTest(args, self.__parser, self.test_method)
         self.__status = "running"
         if self.test_mode == "DEFAULT":
             self.__stc.default_test()

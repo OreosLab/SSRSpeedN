@@ -34,10 +34,11 @@ SPEED_TEST = ssrconfig["speed"]
 
 
 class SpeedTest:
-    def __init__(self, parser, method="ST_ASYNC", use_ssr_cs=False, debug=False):
+    def __init__(self, args, parser, method="ST_ASYNC"):
         self.__configs = parser.nodes
-        self.__use_ssr_cs = use_ssr_cs
-        self.__debug = debug
+        self.__use_ssr_cs = args.use_ssr_cs
+        self.__debug = args.debug
+        self.__connection = args.max_connections or MAX_CONNECTIONS
         self.__test_method = method
         self.__results = []
         self.__current = {}
@@ -587,7 +588,8 @@ class SpeedTest:
         else:
             fast_method = self.__base_start_test
         # 初始化端口范围
-        for i in range(LOCAL_PORT, LOCAL_PORT + MAX_CONNECTIONS):
+
+        for i in range(LOCAL_PORT, LOCAL_PORT + self.__connection):
             port_queue.put_nowait(i)
         # 布置异步任务
         for node in self.__configs:
