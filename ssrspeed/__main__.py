@@ -53,7 +53,6 @@ if __name__ == "__main__":
         logger.critical("Your system is not supported. Please contact the developer.")
         sys.exit(1)
 
-    DEBUG = False
     CONFIG_LOAD_MODE = 0  # 0 for import result, 1 for guiconfig, 2 for subscription url
     CONFIG_FILENAME = ""
     CONFIG_URL = ""
@@ -84,7 +83,6 @@ if __name__ == "__main__":
     # input("Press ENTER to continue or Ctrl+C to exit.")
 
     if args.debug:
-        DEBUG = args.debug
         for each in handlers:
             each.update({"level": "DEBUG"})
         logger.debug("Program running in debug mode.")
@@ -251,4 +249,4 @@ if __name__ == "__main__":
         else:
             sys.exit(0)
 
-    sc.start_test(args.use_ssr_cs, DEBUG)
+    sc.start_test(args)
