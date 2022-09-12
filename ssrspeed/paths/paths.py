@@ -2,10 +2,10 @@ import os
 import sys
 
 _ = os.sep
-ABS_PATH = os.path.abspath(__file__).split(_)
-ROOT_PATH = _.join(ABS_PATH[0:-3]) + _
+FILE_PATH = os.path.realpath(__file__).split(_)
+ROOT_PATH = _.join(FILE_PATH[0:-3]) + _
 KEY_PATH = {
-    "data": f"{ROOT_PATH}data",
+    "data": f"{ROOT_PATH}data{_}",
     "logs": f"{ROOT_PATH}data{_}logs{_}",
     "results": f"{ROOT_PATH}data{_}results{_}",
     "tmp": f"{ROOT_PATH}data{_}tmp{_}",

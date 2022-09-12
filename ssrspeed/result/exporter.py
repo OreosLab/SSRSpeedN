@@ -9,7 +9,7 @@ from PIL import Image, ImageDraw, ImageFont
 from ssrspeed.config import ssrconfig
 from ssrspeed.paths import KEY_PATH
 from ssrspeed.result.pusher import push2server
-from ssrspeed.result.simulator import ExporterWps
+from ssrspeed.result.render import ExporterWps
 from ssrspeed.result.sorter import Sorter
 
 TMP_DIR = KEY_PATH["tmp"]
