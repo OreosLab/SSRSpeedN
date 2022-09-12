@@ -1,0 +1,4 @@
+#!/bin/bash
+[ -f ./tree ] && cd .. && echo hello
+
+tree -L 3 -I "__pycache__|venv" >data/tree.md

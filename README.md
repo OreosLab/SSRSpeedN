@@ -239,21 +239,26 @@ SSRSpeedN
 ├── LICENSE
 ├── README.md
 ├── bin
-│   └── ssrspeed.bat
+│   ├── ssrspeed.bat
+│   ├── ssrspeed.sh
+│   └── st.bat
 ├── data
 │   ├── logs
-│   │   ├── 2022-08-28-00-31-30.log
-│   │   └── 2022-08-28-08-38-41.log
+│   │   └── 2022-09-12-19-23-35.log
+│   ├── restats
 │   ├── results
-│   │   ├── 2022-08-28-00-37-34.json
-│   │   ├── 2022-08-28-00-37-34.png
-│   │   ├── 2022-08-28-08-43-56.json
-│   │   └── 2022-08-28-08-43-56.png
+│   │   ├── 2022-09-12-19-26-02
+│   │   └── 2022-09-12-19-26-02.json
 │   ├── ssrspeed.example.json
 │   ├── ssrspeed.json
-│   └── tmp
-│       ├── config.json
-│       └── tree.md
+│   ├── stats.json
+│   ├── stats.svg
+│   ├── tmp
+│   │   ├── config.json
+│   │   ├── test.txt
+│   │   └── uploads
+│   └── tree.md
+├── pyproject.toml
 ├── requirements-dev.txt
 ├── requirements.txt
 ├── resources
@@ -264,6 +269,10 @@ SSRSpeedN
 │   │   ├── shadowsocksr-win
 │   │   ├── trojan
 │   │   └── v2ray-core
+│   ├── databases
+│   │   ├── GeoLite2-ASN.mmdb
+│   │   ├── GeoLite2-City.mmdb
+│   │   └── GeoLite2-Country.mmdb
 │   ├── static
 │   │   ├── custom
 │   │   ├── fonts
@@ -275,12 +284,10 @@ SSRSpeedN
 │       ├── index.js
 │       ├── manifest.js
 │       └── vendor.js
+├── setup.py
 ├── ssrspeed
 │   ├── __init__.py
 │   ├── __main__.py
-│   ├── colorlog
-│   │   ├── __init__.py
-│   │   └── colorlog.py
 │   ├── config
 │   │   ├── __init__.py
 │   │   └── config.py
@@ -316,7 +323,7 @@ SSRSpeedN
 │   │   ├── exporter.py
 │   │   ├── importer
 │   │   ├── pusher
-│   │   ├── simulator
+│   │   ├── render
 │   │   └── sorter
 │   ├── shell
 │   │   ├── __init__.py
@@ -327,29 +334,29 @@ SSRSpeedN
 │   │   ├── methodology.py
 │   │   ├── methods
 │   │   └── speed_test.py
-│   ├── threadpool
-│   │   ├── __init__.py
-│   │   ├── abstract_task.py
-│   │   ├── task_list.py
-│   │   ├── thread_pool.py
-│   │   └── work_thread.py
-│   ├── types
+│   ├── type
 │   │   ├── __init__.py
 │   │   ├── errors
 │   │   └── nodes
 │   ├── utils
 │   │   ├── __init__.py
 │   │   ├── b64plus.py
-│   │   ├── geo_ip.py
+│   │   ├── geoip.py
 │   │   ├── platform_check.py
 │   │   ├── port_check.py
-│   │   ├── requirements_check.py
+│   │   ├── pynat.py
+│   │   ├── reqs_check.py
 │   │   ├── rules
 │   │   └── web
 │   └── web.py
 ├── tests
 │   ├── __init__.py
+│   ├── geoip.py
+│   ├── pf
+│   ├── print_stats.py
 │   ├── root.py
+│   ├── spy
+│   ├── tree
 │   ├── trojan_test.py
 │   └── wpstest.py
 ```
