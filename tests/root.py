@@ -2,8 +2,8 @@ import os
 import sys
 
 _ = os.sep
-abs_path: list = os.path.abspath(__file__).split(_)
-root_path: str = _.join(abs_path[0:-2]) + _
+file_path: list = os.path.realpath(__file__).split(_)
+root_path: str = _.join(file_path[0:-2]) + _
 
 
 def root():

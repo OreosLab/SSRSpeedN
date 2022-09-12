@@ -3,8 +3,8 @@ import os
 import time
 
 import requests
-from PIL import Image, ImageDraw, ImageFont
 from loguru import logger
+from PIL import Image, ImageDraw, ImageFont
 
 from ssrspeed.config import ssrconfig
 from ssrspeed.paths import KEY_PATH
