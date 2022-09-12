@@ -105,11 +105,15 @@ Usage: ssrspeed [options] arg1 arg2...
                         通过节点配置文件加载节点信息.
 
   -u URL, --url=URL     通过节点订阅链接加载节点信息.
-  -m TEST_METHOD, --method TEST_METHOD
+  -mc MAX_CONNECTIONS, --max-connections=MAX_CONNECTIONS
+
+                        最大连接数。某些机场不支持并发连接，可设置为 1.
+                        
+  -m TEST_METHOD, --method=TEST_METHOD
 
                         在 [speedtestnet, fast, socket, stasync] 中选择测试方法.
 
-  -M TEST_MODE, --mode TEST_MODE
+  -M TEST_MODE, --mode=TEST_MODE
 
                         在 [default, pingonly, stream, all, wps] 中选择测试模式.  
                         

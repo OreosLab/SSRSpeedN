@@ -5,7 +5,7 @@ from typing import Any, Dict
 
 from ssrspeed.paths import KEY_PATH
 
-__version__ = "1.3.3"
+__version__ = "1.3.4"
 __web_api_version__ = "0.5.2"
 
 CONFIG_FILE = KEY_PATH["ssrspeed.json"]

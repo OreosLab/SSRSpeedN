@@ -20,6 +20,14 @@ def set_opts(parser: ArgumentParser):
         help="Load ssr config from subscription url.",
     )
     parser.add_argument(
+        "-mc",
+        "--max-connections",
+        action="store",
+        dest="max_connections",
+        type=int,
+        help="Max number of connections",
+    )
+    parser.add_argument(
         "-m",
         "--method",
         action="store",
@@ -149,14 +157,6 @@ def set_opts(parser: ArgumentParser):
         dest="import_file",
         default="",
         help="Import test result from json file and export it.",
-    )
-    parser.add_argument(
-        "-mc",
-        "--max-connections",
-        action="store",
-        dest="max_connections",
-        type=int,
-        help="Max number of connections",
     )
     parser.add_argument(
         "--skip-requirements-check",
