@@ -1091,7 +1091,7 @@ class ExportResult(object):
 
         draw.text(
             (5, image_height + 30 * 2 + 4),
-            "{}   Generated at {}".format(
+            "{}  Generated at {}".format(
                 self.__addition, time.strftime("%Y-%m-%d %H:%M:%S", generated_time)
             ),
             font=result_font,
@@ -1137,7 +1137,7 @@ class ExportResult(object):
         )
         result_img.save(filename)
         files.append(filename)
-        logger.info("Result image saved as %s." % filename)
+        logger.info("Result image saved as %s" % filename)
 
         for _file in files:
             if not self.__config["uploadResult"]:
