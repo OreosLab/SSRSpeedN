@@ -553,13 +553,9 @@ class SpeedTest:
         logger.info("Client started.")
 
         # Check port
-        result = await async_check_port(port)
-        logger.info(result)
-        if not result:
+        if not await async_check_port(port):
             for _ in range(3):
-                result = await async_check_port(port)
-                logger.error(result)
-                if result:
+                if await async_check_port(port):
                     break
             else:
                 logger.error(f"Port {port} closed.")
