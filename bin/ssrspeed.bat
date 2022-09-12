@@ -40,12 +40,10 @@ python -m pip install --upgrade pip
 pip3 install -r "%SSRSpeed%\requirements.txt"
 :: pip3 install aiofiles
 :: pip3 install aiohttp-socks
-:: pip3 install beautifulsoup4
 :: pip3 install Flask-Cors
 :: pip3 install geoip2
 :: pip3 install loguru
 :: pip3 install Pillow
-:: pip3 install pynat
 :: pip3 install PySocks
 :: pip3 install PyYAML
 :: pip3 install requests

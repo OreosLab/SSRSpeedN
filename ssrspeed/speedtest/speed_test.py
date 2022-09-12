@@ -18,7 +18,7 @@ from ssrspeed.launchers import (
 )
 from ssrspeed.paths import KEY_PATH
 from ssrspeed.speedtest.methodology import SpeedTestMethods
-from ssrspeed.utils import async_check_port, domain2ip, ip_loc
+from ssrspeed.utils import async_check_port, domain2ip, ip_loc, get_ip_info
 
 LOCAL_ADDRESS = ssrconfig["localAddress"]
 LOCAL_PORT = int(ssrconfig["localPort"])
@@ -216,7 +216,7 @@ class SpeedTest:
         sport = ssrconfig["ntt"]["internal_port"]
         try:
             logger.info("Performing UDP NAT Type Test.")
-            t, eip, eport, sip = pynat.get_ip_info(
+            t, eip, eport, sip = get_ip_info(
                 source_ip=ssrconfig["ntt"]["internal_ip"],
                 source_port=sport,
                 include_internal=True,
