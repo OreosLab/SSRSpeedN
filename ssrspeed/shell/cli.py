@@ -104,6 +104,7 @@ def set_opts(parser: ArgumentParser):
         "-t","--type",
         action="store",
         dest="proxy_type",
+        type=str,
         default = "ssr",
         help="Select proxy type in [ssr, ssr-cs, ss, v2ray], default ssr."
         )
@@ -148,6 +149,14 @@ def set_opts(parser: ArgumentParser):
         dest="import_file",
         default="",
         help="Import test result from json file and export it.",
+    )
+    parser.add_argument(
+        "-mc",
+        "--max-connections",
+        action="store",
+        dest="max_connections",
+        type=int,
+        help="Max number of connections",
     )
     parser.add_argument(
         "--skip-requirements-check",
