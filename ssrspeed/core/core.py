@@ -10,7 +10,7 @@ from ssrspeed.result.importer import import_result
 from ssrspeed.speedtest import SpeedTest
 
 
-class SSRSpeedCore(object):
+class SSRSpeedCore:
     def __init__(self):
 
         self.test_method: str = "ST_ASYNC"
@@ -172,8 +172,22 @@ class SSRSpeedCore(object):
     def __export_result(self, split: int = 0, export_type: int = 0):
         er = ExportResult()
         er.set_time_used(self.__time_stamp_stop - self.__time_stamp_start)
-        if self.test_mode == "WEB_PAGE_SIMULATION":
+        if self.test_mode == "TCP_PING":
+            er.set_hide(ping=False, netflix=True, bilibili=True, StSpeed=True)
+        elif self.test_mode == "STREAM":
+            er.set_hide(stream=False, gping=True, StSpeed=True)
+        elif self.test_mode == "ALL":
+            er.set_hide(
+                ntt=False,
+                geoip=False,
+                ping=False,
+                stream=False,
+                speed=False,
+                port=False,
+                multiplex=False,
+            )
+        elif self.test_mode == "WEB_PAGE_SIMULATION":
             er.export_wps_result(self.__results, export_type)
-        else:
-            er.set_colors(self.colors)
-            er.export(self.__results, split, export_type, self.sort_method)
+            return
+        er.set_colors(self.colors)
+        er.export(self.__results, split, export_type, self.sort_method)
