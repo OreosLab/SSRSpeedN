@@ -24,7 +24,7 @@ async def start_web_page_simulation_test(local_host, local_port):
     task_list = []
     semaphore = asyncio.Semaphore(w_config.get("maxWorkers", 4))
     logger.info("Start web page simulation test.")
-    logger.info(f"Proxy {local_host}:local_port{local_port}")
+    logger.info(f"Proxy {local_host}:{local_port}")
     ip_loc = await parse_location(local_port)
     urls = copy.deepcopy(w_config.get("urls", []))
     if ip_loc[0]:
@@ -59,7 +59,7 @@ async def execute(url, host, port, semaphore):
                     logger.info(
                         f"Url: {url}, time used: {res['time']:.2f}s, code: {res['retCode']}."
                     )
-    except aiohttp.ClientTimeout:
+    except asyncio.TimeoutError:
         logger.error(f"Url: {url} timeout.")
     except aiohttp.ClientSSLError:
         logger.error(f"SSL Error on : {url}")
