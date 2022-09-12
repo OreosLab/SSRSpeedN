@@ -432,7 +432,11 @@ class SpeedTest:
             result = await st.start_stream_test(port, self.__stream_cfg, outbound_ip)
             _item.update(result)
 
-        if kwargs.get("default", False) and PING_TEST or kwargs.get("ping_test", False):
+        if (
+            kwargs.get("default", False)
+            and (PING_TEST or GOOGLE_PING_TEST)
+            or kwargs.get("ping_test", False)
+        ):
             ping_res = await self.__ping(cfg["server"], cfg["server_port"], port)
 
             tcp_ping_log = (

@@ -39,16 +39,16 @@ class ExportResult(object):
         self.__addition: str = ssrconfig["exportResult"]["addition"]
         self.__hide_max_speed: bool = ssrconfig["exportResult"]["hide_max_speed"]
         self.__hide_ntt: bool = not ssrconfig["ntt"]["enabled"]
-        self.__hide_netflix: bool = not ssrconfig["netflix"]
-        self.__hide_bilibili = not ssrconfig["bilibili"]
-        self.__hide_stream: bool = not ssrconfig["stream"]
-        self.__hide_stspeed: bool = not ssrconfig["StSpeed"]
-        self.__test_method: bool = not ssrconfig["method"]
+        self.__hide_geoip: bool = not ssrconfig["geoip"]
         self.__hide_ping: bool = not ssrconfig["ping"]
         self.__hide_gping: bool = not ssrconfig["gping"]
+        self.__hide_stream: bool = not ssrconfig["stream"]
+        self.__hide_netflix: bool = not ssrconfig["netflix"]
+        self.__hide_bilibili = not ssrconfig["bilibili"]
         self.__hide_speed: bool = not ssrconfig["speed"]
+        self.__test_method: bool = not ssrconfig["method"]
+        self.__hide_stspeed: bool = not ssrconfig["StSpeed"]
         self.__hide_port: bool = not ssrconfig["port"]
-        self.__hide_geoip: bool = not ssrconfig["geoip"]
         self.__hide_multiplex: bool = not ssrconfig["multiplex"]
         self.__colors: dict = {}
         self.__color_speed_list: list = []
@@ -56,6 +56,19 @@ class ExportResult(object):
         self.__time_used: str = "N/A"
 
     # 	self.set_colors()
+
+    def set_hide(self, **kwargs: bool):
+        self.__hide_ntt = kwargs.get("ntt", True)
+        self.__hide_geoip = kwargs.get("geoip", True)
+        self.__hide_ping = kwargs.get("ping", True)
+        self.__hide_gping = kwargs.get("gping", self.__hide_gping)
+        self.__hide_stream = kwargs.get("stream", True)
+        self.__hide_netflix = kwargs.get("netflix", self.__hide_netflix)
+        self.__hide_bilibili = kwargs.get("bilibili", self.__hide_bilibili)
+        self.__hide_speed = kwargs.get("speed", True)
+        self.__hide_stspeed = kwargs.get("StSpeed", self.__hide_stspeed)
+        self.__hide_port = kwargs.get("port", True)
+        self.__hide_multiplex = kwargs.get("multiplex", True)
 
     def set_colors(self, name: str = "origin"):
         for color in self.__config["colors"]:

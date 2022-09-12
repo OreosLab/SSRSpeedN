@@ -3,6 +3,8 @@ import os
 import shutil
 from typing import Any, Dict
 
+from loguru import logger
+
 from ssrspeed.paths import KEY_PATH
 
 __version__ = "1.3.3"
@@ -33,10 +35,10 @@ if not LOADED:
             )
         shutil.copy(CONFIG_EXAMPLE_FILE, CONFIG_FILE)
 
-    with open(CONFIG_FILE, "r", encoding="utf-8") as f:
-        try:
+    try:
+        with open(CONFIG_FILE, "r", encoding="utf-8") as f:
             file_config = json.load(f)
             config.update(file_config)
-        finally:
-            pass
+    except Exception as e:
+        logger.error(f"Failed to load configuration file.\n{e}")
     LOADED = True
