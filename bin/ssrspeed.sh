@@ -3,14 +3,14 @@
 # shellcheck disable=SC2015,2034,2089,2090
 
 # 当前脚本版本号和新增功能
-VERSION=1.0.1
+VERSION=1.0.2
 
 E[0]="Language:\n 1. English (default) \n 2. 简体中文"
 C[0]="${E[0]}"
-E[1]="Speed test and unlocking test is for reference only and does not represent the actual usage, due to network changes, Netflix blocking and ip replacement. Speed test is time-sensitive."
-C[1]="测速及解锁测试仅供参考, 不代表实际使用情况, 由于网络情况变化, Netflix 封锁及 ip 更换, 测速具有时效性"
-E[2]="New Features: 1. Add automatic and custom items when testing nodes; 2. synchronize the latest GeoIP library of P3terx."
-C[2]="新特性: 1. 增加测节点时自动和自定义项; 2. 同步最新的 P3terx 的 GeoIP 库"
+E[1]="New Features: 1. Support official testing mode; 2. Support Web output with graphical results."
+C[1]="新特性: 1. 增加官方的测试方案选项; 2. 支持网页版输出结果"
+E[2]="Speed test and unlocking test is for reference only and does not represent the actual usage, due to network changes, Netflix blocking and ip replacement. Speed test is time-sensitive."
+C[2]="测速及解锁测试仅供参考, 不代表实际使用情况, 由于网络情况变化, Netflix 封锁及 ip 更换, 测速具有时效性。"
 E[3]="Choose:"
 C[3]="请选择:"
 E[4]="! This cannot be empty !"
@@ -63,10 +63,10 @@ E[27]="Whether to uninstall the following environment dependencies:\n git and py
 C[27]="是否卸载以下环境依赖:\n git 和 python3"
 E[28]="Whether to uninstall brew, a package management tool for Mac?"
 C[28]="是否卸载 Mac 下的一个包管理工具 brew"
-E[29]="Mode:\n 1.Ping and Streaming Media for all nodes. (default)\n 2.Customization"
-C[29]="模式:\n 1.所有节点的 Ping + 流媒体 (默认)\n 2.自定义"
-E[30]="Test items:\n 1.Ping only\n 2.Streaming Media only\n 3.Above all (default)"
-C[30]="测试项目:\n 1.只测 Ping\n 2.只测流媒体\n 3.以上全部 (默认)"
+E[29]="Mode:\n 1.Ping only\n 2.Streaming Media only\n 3.Above all (default)\n 4.Web output with graphical results"
+C[29]="模式:\n 1.只测 Ping\n 2.只测流媒体\n 3.以上全部 (默认)\n 4.结果输出为网页版本，数据图形化。"
+E[30]=""
+C[30]=""
 E[31]="Multiplex:\n 1.On (default)\n 2.Off"
 C[31]="多路复用:\n 1.开启 (默认)\n 2.关闭"
 E[32]="Maximum number of concurrent connections. Input 1 if the airport does not support concurrency. ( Range: 1-999, default: 50):"
@@ -102,8 +102,8 @@ help() {
  -c        中文
  -e        英文
  -r URL    从订阅 URL 加载 ssr 配置
- -a        自动测试模式
- -c        自定义测试模式
+ -m NUM    测试模式 [1-只测 Ping; 2-只测流媒体; 3-以上全部; 4-网页输出，结果为图形化]
+ -n NUM    连接并发数
  -u        卸载
 "
   else
@@ -116,8 +116,8 @@ Options:
  -c        Chinese.
  -e        English.
  -r URL    Load ssr config from subscription url.
- -a        Automatic testing mode.
- -c        Custom testing mode.
+ -m NUM    Test mode [1-Ping only; 2-Streaming Media only; 3-Above all; 4-Web output with graphical results.]
+ -n NUM    Number of concurrent connections.
  -u        Uninstall.
 "
   fi
@@ -127,37 +127,38 @@ Options:
 check_operating_system() {
   UNAME=$(uname 2>/dev/null)
   case "$UNAME" in
-  Darwin)
-    FILE=clients_darwin_64.zip
-    SED_MAC="''"
-    ;;
-  Linux)
-    FILE=clients_linux_amd64.zip
-    [ "$(uname -m)" != "x86_64" ] && error " $(text 21) "
-    [ "$L" = C ] && timedatectl set-timezone Asia/Shanghai || timedatectl set-timezone UTC
-    CMD=("$(grep -i pretty_name /etc/os-release 2>/dev/null | cut -d \" -f2)"
-    "$(hostnamectl 2>/dev/null | grep -i system | cut -d : -f2)"
-    "$(lsb_release -sd 2>/dev/null)"
-    "$(grep -i description /etc/lsb-release 2>/dev/null | cut -d \" -f2)"
-    "$(grep . /etc/redhat-release 2>/dev/null)"
-    "$(grep . /etc/issue 2>/dev/null | cut -d \\ -f1 | sed '/^[ ]*$/d')"
-    )
+    Darwin)
+      FILE=clients_darwin_64.zip
+      SED_MAC="''"
+      ;;
+    Linux)
+      FILE=clients_linux_amd64.zip
+      [ "$(uname -m)" != "x86_64" ] && error " $(text 21) "
+      [ "$L" = C ] && timedatectl set-timezone Asia/Shanghai || timedatectl set-timezone UTC
+      CMD=("$(grep -i pretty_name /etc/os-release 2>/dev/null | cut -d \" -f2)"
+      "$(hostnamectl 2>/dev/null | grep -i system | cut -d : -f2)"
+      "$(lsb_release -sd 2>/dev/null)"
+      "$(grep -i description /etc/lsb-release 2>/dev/null | cut -d \" -f2)"
+      "$(grep . /etc/redhat-release 2>/dev/null)"
+      "$(grep . /etc/issue 2>/dev/null | cut -d \\ -f1 | sed '/^[ ]*$/d')"
+      )
 
-    for i in "${CMD[@]}"; do SYS="$i" && [ -n "$SYS" ] && break; done
+      for i in "${CMD[@]}"; do SYS="$i" && [ -n "$SYS" ] && break; done
 
-    REGEX=("debian" "ubuntu" "centos|red hat|kernel|oracle linux|alma|rocky" "'amazon linux'" "alpine" "arch linux")
-    RELEASE=("Debian" "Ubuntu" "CentOS" "CentOS" "Alpine" "Arch")
-    EXCLUDE=("bookworm")
-    PACKAGE_UPDATE=("apt -y update" "apt -y update" "yum -y update" "yum -y update" "apk update -f" "pacman -Sy")
-    PACKAGE_INSTALL=("apt -y install" "apt -y install" "yum -y install" "yum -y install" "apk add -f" "pacman -S --noconfirm")
-    PACKAGE_UNINSTALL=("apt -y autoremove" "apt -y autoremove" "yum -y autoremove" "yum -y autoremove" "apk del -f" "pacman -Rcnsu --noconfirm")
+      REGEX=("debian" "ubuntu" "centos|red hat|kernel|oracle linux|alma|rocky" "'amazon linux'" "alpine" "arch linux")
+      RELEASE=("Debian" "Ubuntu" "CentOS" "CentOS" "Alpine" "Arch")
+      EXCLUDE=("bookworm")
+      PACKAGE_UPDATE=("apt -y update" "apt -y update" "yum -y update" "yum -y update" "apk update -f" "pacman -Sy")
+      PACKAGE_INSTALL=("apt -y install" "apt -y install" "yum -y install" "yum -y install" "apk add -f" "pacman -S --noconfirm")
+      PACKAGE_UNINSTALL=("apt -y autoremove" "apt -y autoremove" "yum -y autoremove" "yum -y autoremove" "apk del -f" "pacman -Rcnsu --noconfirm")
 
-    for ((int = 0; int < ${#REGEX[@]}; int++)); do
-      echo "$SYS" | grep -iq "${REGEX[int]}" && SYSTEM="${RELEASE[int]}" && [ -n "$SYSTEM" ] && break
-    done
-    [ -z "$SYSTEM" ] && error " $(text 13) "
-    ;;
-  *) error " $(text 13) " ;;
+      for ((int = 0; int < ${#REGEX[@]}; int++)); do
+        echo "$SYS" | grep -iq "${REGEX[int]}" && SYSTEM="${RELEASE[int]}" && [ -n "$SYSTEM" ] && break
+      done
+      [ -z "$SYSTEM" ] && error " $(text 13) "
+      ;;
+    *) error " $(text 13) "
+      ;;
   esac
 }
 
@@ -172,65 +173,40 @@ input_url() {
 }
 
 mode() {
-  MAXCONNECTIONS=50
-  PING=true
-  GPING=true
-  PORT=true
-  SPEED=true
-  STSPEED=true
-  STREAM=true
+  # 多路复用为开启
   MULTIPLEX=true
-  [[ "$MODE_CHOICE" != [12] ]] && warning "\n $(text 29) \n" && reading " $(text 3) " MODE_CHOICE
-  if [ "$MODE_CHOICE" = 2 ]; then
-    warning "\n $(text 30) \n" && reading " $(text 3) " ITEM_CHOICE
-    case "$ITEM_CHOICE" in
-    1)
-      NETFLIX=false
-      STREAM=false
-      HBO=false
-      DISNEY=false
-      YOUTUBE=false
-      ABEMA=false
-      BAHAMUT=false
-      DAZN=false
-      TVB=false
-      BILIBILI=false
-      ;;
-    2)
-      PING=false
-      GPING=false
-      SPEED=false
-      STSPEED=false
-      PORT=false
-      ;;
-    esac
+  [ -z "$MODE_CHOICE"  ] && warning "\n $(text 29) \n" && reading " $(text 3) " MODE_CHOICE
+  case "$MODE_CHOICE" in
+    1 ) MODE="--mode=pingonly" ;;
+    2 ) MODE="--mode=stream" ;;
+    4 ) MODE="--mode=wps" ;;
+    * ) MODE="--mode=all" ;;
+  esac
+  [ -z "$MAXCONNECTIONS" ] && reading "\n $(text 32) " MAXCONNECTIONS
+  local i=0
+  until [[ $MAXCONNECTIONS =~ ^[0-9]{1,3}$ || -z $MAXCONNECTIONS ]]; do
+    ((i++)) || true
+    [ "$i" = 6 ] && error "\n $(text 5) "
     reading "\n $(text 32) " MAXCONNECTIONS
-    local i=0
-    until [[ $MAXCONNECTIONS =~ ^[0-9]{1,3}$ || -z $MAXCONNECTIONS ]]; do
-      ((i++)) || true
-      [ "$i" = 6 ] && error "\n $(text 5) "
-      reading "\n $(text 32) " MAXCONNECTIONS
-    done
-    MAXCONNECTIONS=${MAXCONNECTIONS:-50}
-    if [ "$ITEM_CHOICE" != 2 ]; then
-      warning "\n $(text 12) \n" && reading " $(text 3) " METHOD_CHOICE
-      case "$METHOD_CHOICE" in 1) SORT_METHOD="--sort=speed" ;; 2) SORT_METHOD="--sort=rspeed" ;; 3) SORT_METHOD="--sort=ping" ;; 4) SORT_METHOD="--sort=rping" ;; esac
-      warning "\n $(text 31) \n" && reading " $(text 3) " MULTIPLEX_CHOICE
-      [ "$MULTIPLEX_CHOICE" = 2 ] && MULTIPLEX=false
-    fi
-    warning "\n $(text 7) "
-    reading "\n $(text 8) " INCLUDE_REMARK
-    [ -n "$INCLUDE_REMARK" ] && INCLUDE_REMARK="--include-remark $INCLUDE_REMARK"
-    reading "\n $(text 9) " EXCLUDE_REMARK
-    [ -n "$EXCLUDE_REMARK" ] && EXCLUDE_REMARK="--exclude-remark $EXCLUDE_REMARK"
-    reading "\n $(text 10) " GROUP
-    [ -n "$GROUP" ] && GROUP="-g $GROUP"
-    RESULT_COLOR="--color=origin"
-    #  RESULT_COLOR="--color=origin" && warning "\n $(text 11) " && reading " $(text 3) " CHOOSE_COLOR && [ "$CHOOSE_COLOR" = 2 ] && RESULT_COLOR="--color=poor"
+  done
+  MAXCONNECTIONS=${MAXCONNECTIONS:-50}
+  if [ "$MODE_CHOICE" != 2 ]; then
+    warning "\n $(text 12) \n" && reading " $(text 3) " METHOD_CHOICE
+    case "$METHOD_CHOICE" in 1) SORT_METHOD="--sort=speed" ;; 2) SORT_METHOD="--sort=rspeed" ;; 3) SORT_METHOD="--sort=ping" ;; 4) SORT_METHOD="--sort=rping" ;; esac
+    #  warning "\n $(text 31) \n" && reading " $(text 3) " MULTIPLEX_CHOICE
+    #  [ "$MULTIPLEX_CHOICE" = 2 ] && MULTIPLEX=false
   fi
+  warning "\n $(text 7) "
+  reading "\n $(text 8) " INCLUDE_REMARK
+  [ -n "$INCLUDE_REMARK" ] && INCLUDE_REMARK="--include-remark $INCLUDE_REMARK"
+  reading "\n $(text 9) " EXCLUDE_REMARK
+  [ -n "$EXCLUDE_REMARK" ] && EXCLUDE_REMARK="--exclude-remark $EXCLUDE_REMARK"
+  reading "\n $(text 10) " GROUP
+  [ -n "$GROUP" ] && GROUP="-g $GROUP"
+  RESULT_COLOR="--color=origin"
+  #  RESULT_COLOR="--color=origin" && warning "\n $(text 11) " && reading " $(text 3) " CHOOSE_COLOR && [ "$CHOOSE_COLOR" = 2 ] && RESULT_COLOR="--color=poor"
 }
 
-# shellcheck disable=SC2086
 check_dependencies_Darwin() {
   info "\n $(text 22) \n"
   ! type -p brew >/dev/null 2>&1 && warning " $(text 26) " && sudo /bin/zsh -c "$(curl -fsSL https://gitee.com/cunkai/HomebrewCN/raw/master/Homebrew.sh)"
@@ -243,7 +219,6 @@ check_dependencies_Darwin() {
   fi
 }
 
-# shellcheck disable=SC2086
 check_dependencies_Linux() {
   for j in {" sudo"," wget"," git"," python3"," unzip"}; do ! type -p $j >/dev/null 2>&1 && DEPS+=$j; done
   if [ -n "$DEPS" ]; then
@@ -269,10 +244,10 @@ check_ssrspeedn() {
   cd SSRSpeedN || exit 1
   sudo git pull || sudo git fetch --all && sudo git reset --hard origin/main
   GEOIP_LATEST=$(sudo wget --no-check-certificate -qO- "https://api.github.com/repos/P3TERX/GeoLite.mmdb/releases/latest" | grep 'tag_name' | head -n 1 | cut -d\" -f4)
-  if [[ ${GEOIP_LATEST//./} -gt $(grep 'GeoIP' data/setting 2>/dev/null | cut -d= -f2 | sed "s#[.]##g") ]]; then
+  if [[ ${GEOIP_LATEST//./} -gt $(grep 'GeoIP' data/setting | cut -d= -f2 | sed "s#[.]##g") ]]; then
     [ ! -d resources/databases ] && sudo mkdir -p resources/databases
     for a in {GeoLite2-ASN.mmdb,GeoLite2-City.mmdb}; do
-      sudo wget --no-check-certificate -O resources/databases/"$a" https://github.com/P3TERX/GeoLite.mmdb/releases/download/"$GEOIP_LATEST"/"$a"
+      sudo wget --no-check-certificate -O resources/databases/$a https://github.com/P3TERX/GeoLite.mmdb/releases/download/$GEOIP_LATEST/$a
     done
   fi
   echo -e "language=$L\nGeoIP=$GEOIP_LATEST" | sudo tee data/setting >/dev/null 2>&1
@@ -281,13 +256,13 @@ check_ssrspeedn() {
   sudo pip3 install six
   sudo pip3 install -r requirements.txt
   [ ! -e data/ssrspeed.json ] && sudo cp -f data/ssrspeed.example.json data/ssrspeed.json
-  sudo sed -i $SED_MAC "/maxConnections/s#:.*#: $MAXCONNECTIONS,#g; /\"ping/s#:.*#: $PING,#g; /\"gping/s#:.*#: $GPING,#g; /\"port/s#:.*#: $PORT,#g; /\"speed/s#:.*#: $SPEED,#g; /\"StSpeed/s#:.*#: $STSPEED,#g; /\"stream/s#:.*#: $STREAM,#g; /\"multiplex/s#:.*#: $MULTIPLEX,#g" data/ssrspeed.json
+  sudo sed -i $SED_MAC "/maxConnections/s#:.*#: $MAXCONNECTIONS,#g; /\"multiplex/s#:.*#: $MULTIPLEX,#g" data/ssrspeed.json
 }
 
 # shellcheck disable=SC2086
 test() {
   info "\n $(text 16) \n"
-  sudo python3 -m ssrspeed $URL $INCLUDE_REMARK $EXCLUDE_REMARK $GROUP $RESULT_COLOR $SORT_METHOD --skip-requirements-check --yes
+  sudo python3 -m ssrspeed $URL $MODE $INCLUDE_REMARK $EXCLUDE_REMARK $GROUP $RESULT_COLOR $SORT_METHOD --skip-requirements-check --yes
 }
 
 uninstall() {
@@ -323,17 +298,18 @@ uninstall() {
 select_language
 
 # 传参 2/2
-while getopts ":AaCcHhUuR:r:" OPTNAME; do
+while getopts ":HhUuR:r:M:m:N:n:" OPTNAME; do
   case "$OPTNAME" in
-  [Hh]) help ;;
-  [Uu]) uninstall ;;
-  [Rr]) URL=$OPTARG ;;
-  [Cc]) MODE_CHOICE=2 ;;
-  [Aa]) MODE_CHOICE=1 ;;
+    [Hh]) help ;;
+    [Uu]) uninstall ;;
+    [Rr]) URL=$OPTARG ;;
+    [Mm]) MODE_CHOICE=$OPTARG ;;
+    [Nn]) MAXCONNECTIONS=$OPTARG ;;
   esac
 done
 
 check_operating_system
+info "\n $(text 2)"
 input_url
 mode
 check_dependencies_"$UNAME"
