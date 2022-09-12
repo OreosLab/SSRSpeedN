@@ -21,35 +21,34 @@ if not os.path.exists(RESULTS_DIR):
     os.mkdir(RESULTS_DIR)
 
 LOG_FILE = f"{LOGS_DIR}{time.strftime('%Y-%m-%d-%H-%M-%S', time.localtime())}.log"
-logger_config = {
-    "handlers": [
-        {
-            "sink": sys.stdout,
-            "level": "INFO",
-            "format": "[<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green>][<level>{level}</level>][<yellow>{file}</yellow>:<cyan>{line}</cyan>]: <level>{message}</level>",
-            "colorize": True,  # 自定义配色
-            "serialize": False,  # 以 JSON 数据格式打印
-            "backtrace": True,  # 是否显示完整的异常堆栈跟踪
-            "diagnose": True,  # 异常跟踪是否显示触发异常的方法或语句所使用的变量，生产环境设为 False
-            "enqueue": True,  # 默认线程安全。若想实现协程安全 或 进程安全，该参数设为 True
-            "catch": True,  # 捕获异常
-        },
-        {
-            "sink": LOG_FILE,
-            "level": "INFO",
-            "format": "[{time:YYYY-MM-DD HH:mm:ss.SSS}][{level}][{file}:{line}]: {message}",
-            "serialize": False,
-            "backtrace": True,
-            "diagnose": True,
-            "enqueue": True,
-            "catch": True,
-        },
-    ]
-}
+handlers = [
+    {
+        "sink": sys.stdout,
+        "level": "INFO",
+        "format": "[<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green>][<level>{level}</level>]"
+        "[<yellow>{file}</yellow>:<cyan>{line}</cyan>]: <level>{message}</level>",
+        "colorize": True,  # 自定义配色
+        "serialize": False,  # 以 JSON 数据格式打印
+        "backtrace": True,  # 是否显示完整的异常堆栈跟踪
+        "diagnose": True,  # 异常跟踪是否显示触发异常的方法或语句所使用的变量，生产环境应设为 False
+        "enqueue": True,  # 默认线程安全。若想实现协程安全 或 进程安全，该参数设为 True
+        "catch": True,  # 捕获异常
+    },
+    {
+        "sink": LOG_FILE,
+        "level": "INFO",
+        "format": "[{time:YYYY-MM-DD HH:mm:ss.SSS}][{level}][{file}:{line}]: {message}",
+        "serialize": False,
+        "backtrace": True,
+        "diagnose": True,
+        "enqueue": True,
+        "catch": True,
+    },
+]
 
 from ssrspeed.speedtest.methods import webpage_simulation as webPageSimulation
 
-logger.configure(**logger_config)
+logger.configure(handlers=handlers)
 logger.enable("__main__")
 
 

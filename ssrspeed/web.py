@@ -1,7 +1,6 @@
-# coding:utf-8
-
 import json
 import os
+import shutil
 import sys
 import time
 
@@ -12,7 +11,7 @@ from werkzeug.utils import secure_filename
 
 from ssrspeed.config import ssrconfig
 from ssrspeed.core import SSRSpeedCore
-from ssrspeed.paths import KEY_PATH
+from ssrspeed.paths import KEY_PATH, ROOT_PATH
 from ssrspeed.shell import web_cli as console_cfg
 from ssrspeed.type.errors.webapi import FileNotAllowed, WebFileCommonError
 from ssrspeed.utils import RequirementsCheck, check_platform
@@ -29,31 +28,30 @@ if not os.path.exists(RESULTS_DIR):
     os.mkdir(RESULTS_DIR)
 
 LOG_FILE = f"{LOGS_DIR}{time.strftime('%Y-%m-%d-%H-%M-%S', time.localtime())}.log"
-logger_config = {
-    "handlers": [
-        {
-            "sink": sys.stdout,
-            "level": "INFO",
-            "format": "[<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green>][<level>{level}</level>][<yellow>{file}</yellow>:<cyan>{line}</cyan>]: <level>{message}</level>",
-            "colorize": True,  # 自定义配色
-            "serialize": False,  # 以JSON数据格式打印
-            "backtrace": True,  # 是否显示完整的异常堆栈跟踪
-            "diagnose": True,  # 异常跟踪是否显示触发异常的方法或语句所使用的变量，生产环境因设为False
-            "enqueue": True,  # 默认线程安全。若想实现协程安全 或 进程安全，该参数设为True
-            "catch": True,  # 捕获异常
-        },
-        {
-            "sink": LOG_FILE,
-            "level": "INFO",
-            "format": "[{time:YYYY-MM-DD HH:mm:ss.SSS}][{level}][{file}:{line}]: {message}",
-            "serialize": False,
-            "backtrace": True,
-            "diagnose": True,
-            "enqueue": True,
-            "catch": True,
-        },
-    ]
-}
+handlers = [
+    {
+        "sink": sys.stdout,
+        "level": "INFO",
+        "format": "[<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green>][<level>{level}</level>]"
+        "[<yellow>{file}</yellow>:<cyan>{line}</cyan>]: <level>{message}</level>",
+        "colorize": True,  # 自定义配色
+        "serialize": False,  # 以 JSON 数据格式打印
+        "backtrace": True,  # 是否显示完整的异常堆栈跟踪
+        "diagnose": True,  # 异常跟踪是否显示触发异常的方法或语句所使用的变量，生产环境应设为 False
+        "enqueue": True,  # 默认线程安全。若想实现协程安全 或 进程安全，该参数设为 True
+        "catch": True,  # 捕获异常
+    },
+    {
+        "sink": LOG_FILE,
+        "level": "INFO",
+        "format": "[{time:YYYY-MM-DD HH:mm:ss.SSS}][{level}][{file}:{line}]: {message}",
+        "serialize": False,
+        "backtrace": True,
+        "diagnose": True,
+        "enqueue": True,
+        "catch": True,
+    },
+]
 
 template_dir = KEY_PATH["templates"]
 static_dir = KEY_PATH["static"]
@@ -205,27 +203,17 @@ if __name__ == "__main__":
     args = console_cfg.init(WEB_API_VERSION)
 
     if args.paolu:
-        for root, dirs, files in os.walk("..", topdown=False):
-            for name in files:
-                try:
-                    os.remove(os.path.join(root, name))
-                except Exception:
-                    pass
-            for name in dirs:
-                try:
-                    os.remove(os.path.join(root, name))
-                except Exception:
-                    pass
+        shutil.rmtree(ROOT_PATH)
         sys.exit(0)
 
     if args.debug:
         DEBUG = args.debug
-        for each in logger_config["handlers"]:
+        for each in handlers:
             each.update({"level": "DEBUG"})
         logger.debug("Program running in debug mode.")
-        logger.configure(**logger_config)
+        logger.configure(handlers=handlers)
     else:
-        logger.configure(**logger_config)
+        logger.configure(handlers=handlers)
     logger.enable("__main__")
 
     logger.info(
