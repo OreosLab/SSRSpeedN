@@ -14,7 +14,7 @@ from ssrspeed.core import SSRSpeedCore
 from ssrspeed.paths import KEY_PATH, ROOT_PATH
 from ssrspeed.shell import web_cli as console_cfg
 from ssrspeed.type.errors.webapi import FileNotAllowed, WebFileCommonError
-from ssrspeed.utils import RequirementsCheck, check_platform
+from ssrspeed.utils import PLATFORM, RequirementsCheck
 from ssrspeed.utils.web import get_post_data
 
 WEB_API_VERSION = ssrconfig["WEB_API_VERSION"]
@@ -191,8 +191,7 @@ def get_results():
 
 
 if __name__ == "__main__":
-    pfInfo = check_platform()
-    if pfInfo == "Unknown":
+    if PLATFORM == "Unknown":
         logger.critical(
             "Your system does not support it. Please contact the developer."
         )

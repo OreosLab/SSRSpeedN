@@ -4,7 +4,6 @@ import os
 import socket
 
 import geoip2.database
-import pynat
 import socks
 from geoip2.errors import AddressNotFoundError
 from loguru import logger
@@ -18,7 +17,7 @@ from ssrspeed.launchers import (
 )
 from ssrspeed.paths import KEY_PATH
 from ssrspeed.speedtest.methodology import SpeedTestMethods
-from ssrspeed.utils import async_check_port, domain2ip, ip_loc, get_ip_info
+from ssrspeed.utils import async_check_port, domain2ip, get_ip_info, ip_loc
 
 LOCAL_ADDRESS = ssrconfig["localAddress"]
 LOCAL_PORT = int(ssrconfig["localPort"])
@@ -319,7 +318,7 @@ class SpeedTest:
             _item["ntt"]["public_port"] = eport
             if t:
                 nat_info += " - NAT Type: " + t
-                if t != pynat.BLOCKED:
+                if t != "Blocked":
                     nat_info += f" - Internal End: {sip}:{sport}"
                     nat_info += f" - Public End: {eip}:{eport}"
 
@@ -495,7 +494,7 @@ class SpeedTest:
             _item["ntt"]["public_port"] = eport
             if t:
                 nat_info += " - NAT Type: " + t
-                if t != pynat.BLOCKED:
+                if t != "Blocked":
                     nat_info += f" - Internal End: {sip}:{sport}"
                     nat_info += f" - Public End: {eip}:{eport}"
 

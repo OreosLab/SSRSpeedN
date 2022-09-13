@@ -2,6 +2,8 @@ import platform
 
 from loguru import logger
 
+PLATFORM = None
+
 
 def check_platform() -> str:
     tmp = platform.platform()
@@ -14,3 +16,7 @@ def check_platform() -> str:
         return "MacOS"
     else:
         return "Unknown"
+
+
+if not PLATFORM:
+    PLATFORM = check_platform()

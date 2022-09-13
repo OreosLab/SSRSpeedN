@@ -54,7 +54,7 @@ class ShadowsocksR(BaseClient):
 
         if self._process is None:
 
-            if self._platform == "Windows":
+            if ShadowsocksR._platform == "Windows":
                 if self.useSsrCSharp:
                     self.__ssr_csharp_conf(config)
                     self._process = subprocess.Popen(
@@ -90,7 +90,7 @@ class ShadowsocksR(BaseClient):
                         f'Starting shadowsocksr-libev with server {config["server"]}:{config["server_port"]}'
                     )
 
-            elif self._platform == "Linux" or self._platform == "MacOS":
+            elif ShadowsocksR._platform == "Linux" or ShadowsocksR._platform == "MacOS":
                 if debug:
                     self._process = subprocess.Popen(
                         [

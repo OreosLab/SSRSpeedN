@@ -30,7 +30,7 @@ class Shadowsocks(BaseClient):
 
         if self._process is None:
 
-            if self._platform == "Windows":
+            if Shadowsocks._platform == "Windows":
                 if debug:
                     self._process = subprocess.Popen(
                         [
@@ -56,7 +56,7 @@ class Shadowsocks(BaseClient):
                     f'Starting shadowsocks-libev with server {config["server"]}:{config["server_port"]}'
                 )
 
-            elif self._platform == "Linux" or self._platform == "MacOS":
+            elif Shadowsocks._platform == "Linux" or Shadowsocks._platform == "MacOS":
                 if debug:
                     self._process = subprocess.Popen(
                         [

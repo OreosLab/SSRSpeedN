@@ -1,28 +1,28 @@
 import signal
+from abc import ABCMeta, abstractmethod
 from typing import Any, Dict, List
 
 from loguru import logger
 
 from ssrspeed.config import ssrconfig
-from ssrspeed.utils import check_platform
+from ssrspeed.utils import PLATFORM
 
 
-class BaseClient(object):
+class BaseClient(metaclass=ABCMeta):
+
+    _platform = PLATFORM
+
     def __init__(self):
         self._localAddress: str = ssrconfig.get("localAddress", "127.0.0.1")
         self._localPort: int = ssrconfig.get("localPort", 1087)
         self._config_list: List[Dict[str, Any]] = []
         self._config: Dict[str, Any] = {}
-        self._platform: str = self._check_platform()
         self._process = None
-
-    @staticmethod
-    def _check_platform() -> str:
-        return check_platform()
 
     def _before_stop_client(self):
         pass
 
+    @abstractmethod
     def start_client(self, config: Dict[str, Any]):
         pass
 
@@ -36,7 +36,7 @@ class BaseClient(object):
     def stop_client(self):
         self._before_stop_client()
         if self._process is not None:
-            if self._check_platform() == "Windows":
+            if BaseClient._platform == "Windows":
                 self._process.terminate()
             # 	self._process.send_signal(signal.SIGINT)
             else:

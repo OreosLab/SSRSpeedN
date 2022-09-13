@@ -27,7 +27,7 @@ class Trojan(BaseClient):
 
         if self._process is None:
 
-            if self._platform == "Windows":
+            if Trojan._platform == "Windows":
                 if debug:
                     self._process = subprocess.Popen(
                         [
@@ -50,7 +50,7 @@ class Trojan(BaseClient):
                     f'Starting trojan with server {config["server"]}:{config["server_port"]}'
                 )
 
-            elif self._platform == "Linux" or self._platform == "MacOS":
+            elif Trojan._platform == "Linux" or Trojan._platform == "MacOS":
                 if debug:
                     self._process = subprocess.Popen(
                         [

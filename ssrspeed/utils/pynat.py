@@ -28,14 +28,13 @@ Copyright (C) 2022 Ariel A. Licensed under the MIT License.
 
 Drop Python 2 support by Oreomeow, 2022-09-12.
 """
-import sys
-import socket
-import random
-import codecs
 import argparse
+import codecs
 import ipaddress
+import random
 import secrets
-
+import socket
+import sys
 
 __version__ = "0.7.0"
 url = "https://github.com/aarant/pynat"

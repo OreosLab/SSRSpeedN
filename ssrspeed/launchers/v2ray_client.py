@@ -27,7 +27,7 @@ class V2Ray(BaseClient):
 
         if self._process is None:
 
-            if self._platform == "Windows":
+            if V2Ray._platform == "Windows":
                 if debug:
                     self._process = subprocess.Popen(
                         [
@@ -50,7 +50,7 @@ class V2Ray(BaseClient):
                     f'Starting v2ray-core with server {config["server"]}:{config["server_port"]}'
                 )
 
-            elif self._platform == "Linux" or self._platform == "MacOS":
+            elif V2Ray._platform == "Linux" or V2Ray._platform == "MacOS":
                 if debug:
                     self._process = subprocess.Popen(
                         [

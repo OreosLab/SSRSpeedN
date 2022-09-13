@@ -6,7 +6,7 @@ from typing import Dict, Optional
 from loguru import logger
 
 from ssrspeed.paths import KEY_PATH
-from ssrspeed.utils import check_platform
+from ssrspeed.utils import PLATFORM
 
 CLIENTS_DIR = KEY_PATH["clients"]
 DATABASES_DIR = KEY_PATH["databases"]
@@ -60,10 +60,9 @@ class RequirementsCheck(object):
         }
 
     def check(self):
-        platform = check_platform()
-        if platform == "Windows":
+        if PLATFORM == "Windows":
             self.__checks(self.__win_require)
-        elif platform == "Linux" or platform == "MacOS":
+        elif PLATFORM == "Linux" or PLATFORM == "MacOS":
             self.__linux_check()
             self.__checks(self.__linux_require)
         else:

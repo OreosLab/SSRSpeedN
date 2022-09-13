@@ -4,8 +4,8 @@ import time
 
 import requests
 from loguru import logger
-from pilmoji import Pilmoji
 from PIL import Image, ImageDraw, ImageFont
+from pilmoji import Pilmoji
 
 from ssrspeed.config import ssrconfig
 from ssrspeed.paths import KEY_PATH
@@ -118,7 +118,7 @@ class ExportResult(object):
 
     def __get_max_width(self, result: dict) -> tuple:
         font = self.__font
-        draw = ImageDraw.Draw(Image.new("RGB", (1, 1), (255, 255, 255)))
+        pilmoji = Pilmoji(Image.new("RGB", (1, 1), (255, 255, 255)))
         max_group_width = 0
         max_remark_width = 0
         len_in = 0
@@ -128,12 +128,12 @@ class ExportResult(object):
             remark = item["remarks"]
             inres = item["InRes"]
             outres = item["OutRes"]
-            max_group_width = max(max_group_width, draw.textsize(group, font=font)[0])
+            max_group_width = max(max_group_width, pilmoji.getsize(group, font=font)[0])
             max_remark_width = max(
-                max_remark_width, draw.textsize(remark, font=font)[0]
+                max_remark_width, pilmoji.getsize(remark, font=font)[0]
             )
-            len_in = max(len_in, draw.textsize(inres, font=font)[0])
-            len_out = max(len_out, draw.textsize(outres, font=font)[0])
+            len_in = max(len_in, pilmoji.getsize(inres, font=font)[0])
+            len_out = max(len_out, pilmoji.getsize(outres, font=font)[0])
         return max_group_width + 10, max_remark_width + 10, len_in + 20, len_out + 20
 
     """
@@ -266,7 +266,7 @@ class ExportResult(object):
             "RGB", (image_right_position, new_image_height), (255, 255, 255)
         )
         draw = ImageDraw.Draw(result_img)
-        pilmoji = Pilmoji(result_img)
+        pilmoji = Pilmoji(result_img, emoji_position_offset=(0, 3))
 
         # draw.line(
         #     (

@@ -9,7 +9,7 @@ from ssrspeed.config import ssrconfig
 from ssrspeed.core import SSRSpeedCore
 from ssrspeed.paths import KEY_PATH, ROOT_PATH
 from ssrspeed.shell import cli as cli_cfg
-from ssrspeed.utils import RequirementsCheck, check_platform
+from ssrspeed.utils import PLATFORM, RequirementsCheck
 
 LOGS_DIR = KEY_PATH["logs"]
 RESULTS_DIR = KEY_PATH["results"]
@@ -48,8 +48,7 @@ handlers = [
 VERSION = ssrconfig["VERSION"]
 
 if __name__ == "__main__":
-    pf = check_platform()
-    if pf == "Unknown":
+    if PLATFORM == "Unknown":
         logger.critical("Your system is not supported. Please contact the developer.")
         sys.exit(1)
 
