@@ -14,9 +14,6 @@ from ssrspeed.paths import KEY_PATH
 CLIENTS_DIR = KEY_PATH["clients"]
 
 
-# CONFIG_FILE = KEY_PATH["config.json"]
-
-
 class ShadowsocksR(BaseClient):
     def __init__(self, file: str):
         super(ShadowsocksR, self).__init__()
@@ -48,7 +45,6 @@ class ShadowsocksR(BaseClient):
 
     async def start_client(self, config: Dict[str, Any], debug=False):
         self._config = config
-        # 	self._config["server_port"] = int(self._config["server_port"])
         async with aiofiles.open(self.config_file, "w+", encoding="utf-8") as f:
             await f.write(json.dumps(self._config))
 

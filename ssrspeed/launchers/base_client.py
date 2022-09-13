@@ -19,9 +19,6 @@ class BaseClient(metaclass=ABCMeta):
         self._config: Dict[str, Any] = {}
         self._process = None
 
-    def _before_stop_client(self):
-        pass
-
     @abstractmethod
     def start_client(self, config: Dict[str, Any]):
         pass
@@ -31,6 +28,9 @@ class BaseClient(metaclass=ABCMeta):
 
     def test_process_terminate(self):
         self._process.terminate()
+
+    def _before_stop_client(self):
+        pass
 
     # fmt: off
     def stop_client(self):
@@ -47,7 +47,3 @@ class BaseClient(metaclass=ABCMeta):
             logger.info("Client terminated.")
     #   self.__ssrProcess.terminate()
     # fmt: on
-
-
-if __name__ == "__main__":
-    pass

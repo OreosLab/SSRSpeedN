@@ -195,16 +195,14 @@ class SpeedTest:
             res["rawTcpPingStatus"] = latency_test[2]
             logger.debug(latency_test)
 
-        if (not PING_TEST) or (latency_test[0] > 0):
-            if GOOGLE_PING_TEST:
-                try:
-                    google_ping_test = await st.start_google_ping(port)
-                    res["gPing"] = google_ping_test[0]
-                    res["gPingLoss"] = 1 - google_ping_test[1]
-                    res["rawGooglePingStatus"] = google_ping_test[2]
-                except Exception:
-                    logger.error("", exc_info=True)
-                    pass
+        if ((not PING_TEST) or (latency_test[0] > 0)) and GOOGLE_PING_TEST:
+            try:
+                google_ping_test = await st.start_google_ping(port)
+                res["gPing"] = google_ping_test[0]
+                res["gPingLoss"] = 1 - google_ping_test[1]
+                res["rawGooglePingStatus"] = google_ping_test[2]
+            except Exception:
+                logger.error("", exc_info=True)
 
         return res
 
@@ -411,7 +409,7 @@ class SpeedTest:
             )
 
             geoip_log = (
-                f"Inbound IP : {inbound_ip}, Geo : {inbound_info}\n"
+                f"Inbound IP : {inbound_ip}, Geo : {inbound_info} "
                 f"Outbound IP : {outbound_ip}, Geo : {outbound_info}"
             )
 
@@ -528,8 +526,8 @@ class SpeedTest:
                 f"Starting test {cfg['group']} - {cfg['remarks']} [{dic['done_nodes']}/{dic['total_nodes']}]"
             )
         name = asyncio.current_task().get_name()
-        file = f"{KEY_PATH['tmp']}{name}.json"
-        client = self.__get_client(node.node_type, file)
+        file_ = f"{KEY_PATH['tmp']}{name}.json"
+        client = self.__get_client(node.node_type, file_)
         if not client:
             logger.warning(f"Unknown Node Type: {node.node_type}.")
             return False
@@ -569,8 +567,8 @@ class SpeedTest:
         port_queue.put_nowait(port)
         if client:
             client.stop_client()
-        if os.path.exists(file):
-            os.remove(file)
+        if os.path.exists(file_):
+            os.remove(file_)
 
     async def __run(self, **kwargs):
         task_list = []

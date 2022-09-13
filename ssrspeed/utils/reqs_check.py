@@ -79,7 +79,6 @@ class RequirementsCheck(object):
                 if os.path.exists(require):
                     if os.path.isdir(require):
                         logger.warning(f"Requirement {require} not found !!!")
-                        continue
                 else:
                     logger.warning(f"Requirement {require} not found !!!")
 

@@ -82,7 +82,7 @@ def randint(n):
     return secrets.randbits(n)
 
 
-def ORD(ch):  # compatible to python3
+def ord_(ch):  # compatible to python3
     return ch if type(ch) == int else ord(ch)
 
 
@@ -149,7 +149,7 @@ def get_stun_response(sock, addr, trans_id=None, send_data=b"", max_timeouts=6):
                 ):  # If not on a 32-bit boundary, add padding bytes
                     i += 4 - (attr_length % 4)
                 if attr_type in [MAPPED_ADDRESS, SOURCE_ADDRESS, CHANGED_ADDRESS]:
-                    family, port = ORD(attr_value[1]), int(
+                    family, port = ord_(attr_value[1]), int(
                         codecs.encode(attr_value[2:4], "hex"), 16
                     )
                     if family == 0x01:  # IPv4

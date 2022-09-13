@@ -243,9 +243,7 @@ if __name__ == "__main__":
 
     if not SKIP_CONFIRMATION:
         ans = input("Before the test please confirm the nodes, Ctrl-C to exit. (Y/N)")
-        if ans.upper() == "Y":
-            pass
-        else:
+        if ans.upper() != "Y":
             sys.exit(0)
 
     sc.start_test(args)

@@ -6,9 +6,6 @@ from ssrspeed.utils import b64plus
 
 
 class ParserV2RayQuantumult(object):
-    def __init__(self):
-        pass
-
     @staticmethod
     def parse_subs_config(raw_link: str) -> Optional[dict]:
         link = raw_link[8:]

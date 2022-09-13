@@ -1,7 +1,4 @@
 class Sorter(object):
-    def __init__(self):
-        pass
-
     @staticmethod
     def __sort_by_speed(result) -> float:
         return result["dspeed"]

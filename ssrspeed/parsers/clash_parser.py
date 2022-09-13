@@ -17,64 +17,59 @@ class ClashParser:
         return deepcopy(self.__ss_base_config)
 
     def __parse_shadowsocks(self, cfg: dict) -> dict:
-        try:
-            _dict = self.__get_shadowsocks_base_config()
-            _dict["server"] = cfg["server"]
-            _dict["server_port"] = int(cfg["port"])
-            _dict["password"] = cfg["password"]
-            _dict["method"] = cfg["cipher"]
-            _dict["remarks"] = cfg.get("name", cfg["server"])
-            _dict["group"] = cfg.get("group", "N/A")
-            _dict["fast_open"] = False
+        _dict = self.__get_shadowsocks_base_config()
+        _dict["server"] = cfg["server"]
+        _dict["server_port"] = int(cfg["port"])
+        _dict["password"] = cfg["password"]
+        _dict["method"] = cfg["cipher"]
+        _dict["remarks"] = cfg.get("name", cfg["server"])
+        _dict["group"] = cfg.get("group", "N/A")
+        _dict["fast_open"] = False
 
-            p_opts = {}
-            plugin = ""
-            if cfg.__contains__("plugin"):
-                plugin = cfg.get("plugin", "")
-                if plugin == "obfs":
+        p_opts = {}
+        plugin = ""
+        if cfg.__contains__("plugin"):
+            plugin = cfg.get("plugin", "")
+            if plugin == "obfs":
+                plugin = "obfs-local"
+            elif plugin == "v2ray-plugin":
+                logger.warning("V2Ray plugin not supported.")
+                logger.info(f'Skip {_dict["group"]} - {_dict["remarks"]}')
+                return {}
+            p_opts = cfg.get("plugin-opts", {})
+        elif cfg.__contains__("obfs"):
+            raw_plugin = cfg.get("obfs", "")
+            if raw_plugin:
+                if raw_plugin == "http":
                     plugin = "obfs-local"
-                elif plugin == "v2ray-plugin":
-                    logger.warning("V2Ray plugin not supported.")
+                    p_opts["mode"] = "http"
+                    p_opts["host"] = cfg.get("obfs-host", "")
+                elif raw_plugin == "tls":
+                    plugin = "obfs-local"
+                    p_opts["mode"] = "tls"
+                    p_opts["host"] = cfg.get("obfs-host", "")
+                else:
+                    logger.warning(f"Plugin {raw_plugin} not supported.")
                     logger.info(f'Skip {_dict["group"]} - {_dict["remarks"]}')
                     return {}
-                p_opts = cfg.get("plugin-opts", {})
-            elif cfg.__contains__("obfs"):
-                raw_plugin = cfg.get("obfs", "")
-                if raw_plugin:
-                    if raw_plugin == "http":
-                        plugin = "obfs-local"
-                        p_opts["mode"] = "http"
-                        p_opts["host"] = cfg.get("obfs-host", "")
-                    elif raw_plugin == "tls":
-                        plugin = "obfs-local"
-                        p_opts["mode"] = "tls"
-                        p_opts["host"] = cfg.get("obfs-host", "")
-                    else:
-                        logger.warning(f"Plugin {raw_plugin} not supported.")
-                        logger.info(f'Skip {_dict["group"]} - {_dict["remarks"]}')
-                        return {}
 
-            logger.debug(f'{_dict["group"]} - {_dict["remarks"]}')
-            logger.debug(
-                f'Plugin [{plugin}], mode [{p_opts.get("mode", "")}], host [{p_opts.get("host", "")}]'
+        logger.debug(f'{_dict["group"]} - {_dict["remarks"]}')
+        logger.debug(
+            f'Plugin [{plugin}], mode [{p_opts.get("mode", "")}], host [{p_opts.get("host", "")}]'
+        )
+        plugin_opts = ""
+        if plugin:
+            plugin_opts += (
+                f'obfs={p_opts.get("mode", "")}' if p_opts.get("mode", "") else ""
             )
-            plugin_opts = ""
-            if plugin:
-                plugin_opts += (
-                    f'obfs={p_opts.get("mode", "")}' if p_opts.get("mode", "") else ""
-                )
-                plugin_opts += (
-                    f';obfs-host={p_opts.get("host", "")}'
-                    if p_opts.get("host", "")
-                    else ""
-                )
+            plugin_opts += (
+                f';obfs-host={p_opts.get("host", "")}' if p_opts.get("host", "") else ""
+            )
 
-            _dict["plugin"] = plugin
-            _dict["plugin_opts"] = plugin_opts
-            _dict["plugin_args"] = ""
-            return _dict
-        except Exception as e:
-            raise e
+        _dict["plugin"] = plugin
+        _dict["plugin_opts"] = plugin_opts
+        _dict["plugin_args"] = ""
+        return _dict
 
     @staticmethod
     def __convert_v2ray_cfg(cfg: dict) -> dict:

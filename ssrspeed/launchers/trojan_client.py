@@ -12,9 +12,6 @@ from ssrspeed.paths import KEY_PATH
 CLIENTS_DIR = KEY_PATH["clients"]
 
 
-# CONFIG_FILE = KEY_PATH["config.json"]
-
-
 class Trojan(BaseClient):
     def __init__(self, file: str):
         super(Trojan, self).__init__()

@@ -37,18 +37,14 @@ class ShadowsocksRParser(BaseParser):
         for ii in decoded2:
             if "obfsparam" in ii:
                 _config["obfs_param"] = b64plus.decode(ii.split("=")[1]).decode("utf-8")
-                continue
             elif "protocolparam" in ii or "protoparam" in ii:
                 _config["protocol_param"] = b64plus.decode(ii.split("=")[1]).decode(
                     "utf-8"
                 )
-                continue
             elif "remarks" in ii:
                 _config["remarks"] = b64plus.decode(ii.split("=")[1]).decode("utf-8")
-                continue
             elif "group" in ii:
                 _config["group"] = b64plus.decode(ii.split("=")[1]).decode("utf-8")
-                continue
 
         if _config["remarks"] == "":
             _config["remarks"] = _config["server"]
