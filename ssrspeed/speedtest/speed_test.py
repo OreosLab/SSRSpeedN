@@ -264,8 +264,8 @@ class SpeedTest:
             )
 
             geoip_log = (
-                f"Inbound IP : {inbound_ip}, Geo : {inbound_info} "
-                f"Outbound IP : {outbound_ip}, Geo : {outbound_info}"
+                f"* Inbound IP : {inbound_ip}, Geo : {inbound_info} "
+                f"* Outbound IP : {outbound_ip}, Geo : {outbound_info} "
             )
 
             _item["geoIP"]["inbound"]["address"] = inbound_ip
@@ -315,10 +315,10 @@ class SpeedTest:
             _item["ntt"]["public_ip"] = eip
             _item["ntt"]["public_port"] = eport
             if t:
-                nat_info += " - NAT Type: " + t
+                nat_info = f"* NAT Type: {t} "
                 if t != "Blocked":
-                    nat_info += f" - Internal End: {sip}:{sport}"
-                    nat_info += f" - Public End: {eip}:{eport}"
+                    nat_info += f"* Internal End: {sip}:{sport} "
+                    nat_info += f"* Public End: {eip}:{eport} "
 
         await asyncio.wait(task_list)
 
@@ -329,12 +329,12 @@ class SpeedTest:
         if pint_task:
             ping_res = pint_task.result()
             tcp_ping_log = (
-                f"- Loss: [{ping_res['loss'] * 100:.2f}%] "
-                f"- TCP Ping: [{ping_res['ping'] * 1000:.2f}] "
+                f"* Loss: [{ping_res['loss'] * 100:.2f}%] "
+                f"* TCP Ping: [{ping_res['ping'] * 1000:.2f}] "
             )
             google_ping_log = (
-                f"- Loss: [{ping_res['gPingLoss'] * 100:.2f}%] "
-                f"- Google Ping: [{ping_res['gPing'] * 1000:.2f}] "
+                f"* Loss: [{ping_res['gPingLoss'] * 100:.2f}%] "
+                f"* Google Ping: [{ping_res['gPing'] * 1000:.2f}] "
             )
             _item["ping"] = ping_res["ping"]
             _item["loss"] = ping_res["loss"]
@@ -345,7 +345,7 @@ class SpeedTest:
 
         if wps_task:
             res = wps_task.result()
-            wps_log = "[WebPageSimulation]"
+            wps_log = "[WebPageSimulation] "
             _item["webPageSimulation"]["results"] = res
 
         if speed_task:
@@ -357,8 +357,8 @@ class SpeedTest:
                 )
 
             speed_log = (
-                f"- AvgStSpeed: [{test_res[0] / 1024 / 1024:.2f}MB/s] "
-                f"- AvgMtSpeed: [{test_res[1] / 1024 / 1024:.2f}MB/s]"
+                f"* AvgStSpeed: [{test_res[0] / 1024 / 1024:.2f}MB/s] "
+                f"* AvgMtSpeed: [{test_res[1] / 1024 / 1024:.2f}MB/s] "
             )
 
             _item["dspeed"] = test_res[0]
@@ -409,8 +409,8 @@ class SpeedTest:
             )
 
             geoip_log = (
-                f"Inbound IP : {inbound_ip}, Geo : {inbound_info} "
-                f"Outbound IP : {outbound_ip}, Geo : {outbound_info}"
+                f"- Inbound IP : {inbound_ip}, Geo : {inbound_info} "
+                f"- Outbound IP : {outbound_ip}, Geo : {outbound_info} "
             )
 
             _item["geoIP"]["inbound"]["address"] = inbound_ip
@@ -455,7 +455,7 @@ class SpeedTest:
 
         if kwargs.get("default", False) and WPS_TEST or kwargs.get("wps_test", False):
             res = await st.start_wps_test(port)
-            wps_log = "[WebPageSimulation]"
+            wps_log = "[WebPageSimulation] "
             _item["webPageSimulation"]["results"] = res
 
         if (
@@ -491,10 +491,10 @@ class SpeedTest:
             _item["ntt"]["public_ip"] = eip
             _item["ntt"]["public_port"] = eport
             if t:
-                nat_info += " - NAT Type: " + t
+                nat_info = f"- NAT Type: {t} "
                 if t != "Blocked":
-                    nat_info += f" - Internal End: {sip}:{sport}"
-                    nat_info += f" - Public End: {eip}:{eport}"
+                    nat_info += f"- Internal End: {sip}:{sport} "
+                    nat_info += f"- Public End: {eip}:{eport} "
 
         logger.info(
             node_info
