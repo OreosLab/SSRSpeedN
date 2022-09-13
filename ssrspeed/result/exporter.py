@@ -4,6 +4,7 @@ import time
 
 import requests
 from loguru import logger
+from pilmoji import Pilmoji
 from PIL import Image, ImageDraw, ImageFont
 
 from ssrspeed.config import ssrconfig
@@ -265,6 +266,7 @@ class ExportResult(object):
             "RGB", (image_right_position, new_image_height), (255, 255, 255)
         )
         draw = ImageDraw.Draw(result_img)
+        pilmoji = Pilmoji(result_img)
 
         # draw.line(
         #     (
@@ -277,9 +279,9 @@ class ExportResult(object):
         #     width=1,
         # )
 
-        text = "机场测评图 with SSRSpeed N ( v{} )".format(ssrconfig["VERSION"])
-        draw.text(
-            (self.__get_base_pos(image_right_position, text), 4),
+        text = "\u2708\uFE0F 机场测评图 with SSRSpeed N ( v{} )".format(ssrconfig["VERSION"])
+        pilmoji.text(
+            (int(self.__get_base_pos(image_right_position, text)), 4),
             text,
             font=result_font,
             fill=(0, 0, 0),
@@ -752,10 +754,10 @@ class ExportResult(object):
             item = result[i]
 
             group = item["group"]
-            draw.text((5, 30 * j + 30 + 4), group, font=result_font, fill=(0, 0, 0))
+            pilmoji.text((5, 30 * j + 30 + 4), group, font=result_font, fill=(0, 0, 0))
 
             remarks = item["remarks"]
-            draw.text(
+            pilmoji.text(
                 (group_right_position + 5, 30 * j + 30 + 4),
                 remarks,
                 font=result_font,

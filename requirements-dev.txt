@@ -3,7 +3,7 @@ aiohttp-socks
 Flask-Cors
 geoip2
 loguru
-Pillow
+pilmoji
 PySocks
 PyYAML
 requests
