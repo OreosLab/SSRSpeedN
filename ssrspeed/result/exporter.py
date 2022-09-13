@@ -279,13 +279,24 @@ class ExportResult(object):
         #     width=1,
         # )
 
-        text = "\u2708\uFE0F 机场测评图 with SSRSpeed N ( v{} )".format(ssrconfig["VERSION"])
-        pilmoji.text(
-            (int(self.__get_base_pos(image_right_position, text)), 4),
-            text,
-            font=result_font,
-            fill=(0, 0, 0),
-        )
+        try:
+            text = "\u2708\uFE0F 机场测评图 with SSRSpeed N ( v{} )".format(
+                ssrconfig["VERSION"]
+            )
+            pilmoji.text(
+                (int(self.__get_base_pos(image_right_position, text)), 4),
+                text,
+                font=result_font,
+                fill=(0, 0, 0),
+            )
+        except Exception:
+            text = "机场测评图 with SSRSpeed N ( v{} )".format(ssrconfig["VERSION"])
+            draw.text(
+                (self.__get_base_pos(image_right_position, text), 4),
+                text,
+                font=result_font,
+                fill=(0, 0, 0),
+            )
         draw.line((0, 30, image_right_position - 1, 30), fill=(127, 127, 127), width=1)
 
         draw.line((1, 0, 1, new_image_height - 1), fill=(127, 127, 127), width=1)
@@ -754,15 +765,25 @@ class ExportResult(object):
             item = result[i]
 
             group = item["group"]
-            pilmoji.text((5, 30 * j + 30 + 4), group, font=result_font, fill=(0, 0, 0))
-
             remarks = item["remarks"]
-            pilmoji.text(
-                (group_right_position + 5, 30 * j + 30 + 4),
-                remarks,
-                font=result_font,
-                fill=(0, 0, 0, 0),
-            )
+            try:
+                pilmoji.text(
+                    (5, 30 * j + 30 + 4), group, font=result_font, fill=(0, 0, 0)
+                )
+                pilmoji.text(
+                    (group_right_position + 5, 30 * j + 30 + 4),
+                    remarks,
+                    font=result_font,
+                    fill=(0, 0, 0, 0),
+                )
+            except Exception:
+                draw.text((5, 30 * j + 30 + 4), group, font=result_font, fill=(0, 0, 0))
+                draw.text(
+                    (group_right_position + 5, 30 * j + 30 + 4),
+                    remarks,
+                    font=result_font,
+                    fill=(0, 0, 0, 0),
+                )
 
             if not self.__hide_gping:
                 loss = "%.2f" % (item["gPingLoss"] * 100) + "%"

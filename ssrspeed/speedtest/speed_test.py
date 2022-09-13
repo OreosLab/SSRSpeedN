@@ -264,7 +264,7 @@ class SpeedTest:
             )
 
             geoip_log = (
-                f"Inbound IP : {inbound_ip}, Geo : {inbound_info}\n"
+                f"Inbound IP : {inbound_ip}, Geo : {inbound_info} "
                 f"Outbound IP : {outbound_ip}, Geo : {outbound_info}"
             )
 

@@ -92,7 +92,7 @@ class RequirementsCheck(object):
     @staticmethod
     def __linux_check_libsodium() -> bool:
         logger.info("Checking libsodium.")
-        if check_platform() == "MacOS":
+        if PLATFORM == "MacOS":
             # logger.warning("MacOS does not support detection of libsodium,
             # please ensure that libsodium is installed.")
             try:
