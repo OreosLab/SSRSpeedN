@@ -4,6 +4,7 @@ import shutil
 import sys
 import time
 
+import requests
 from loguru import logger
 
 from ssrspeed import __version__ as version
@@ -16,6 +17,16 @@ def init_dir(paths):
     for path in paths:
         if not os.path.exists(path):
             os.makedirs(path)
+
+
+def check_dir(paths):
+    flag = False                        # 检测必要文件夹是否存在
+    for path in paths:
+        if not os.path.exists(path):
+            os.makedirs(path)
+            flag = True                 # 发送文件夹建立行为
+    if flag:
+        exit(0)
 
 
 def generate_path_json(data, file):
@@ -51,6 +62,68 @@ def get_handlers(logs_dir):
     ]
 
 
+def download(url, headers, path):
+    print(f"正在下载: {url}")
+    with open(file=path, mode='wb') as f:
+        data = requests.get(url=url, headers=headers).content
+        f.write(data)
+    return f"已保存至: {path}"
+
+
+def download_resource(download_type, platform, download_path=os.getcwd()):
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+    _ = os.sep
+    urls = []
+    files = []
+    task_list = []
+    file_info = []
+    client_resources_url = "https://api.github.com/repos/OreosLab/SSRSpeedN/releases/latest"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/64.0.3282.119 Safari/537.36 ",
+    }
+    work_dir = download_path if download_path.endswith(_) else download_path + _
+    if download_type == "all":
+        urls.extend([client_resources_url])
+        files.extend(["GeoLite2-City.mmdb", "GeoLite2-ASN.mmdb"])
+        if platform == "Windows":
+            files.append("clients_win_64.zip")
+        elif platform == "Linux":
+            files.append("clients_linux_amd64.zip")
+        elif platform == "MacOS":
+            files.append("clients_darwin_64.zip")
+    elif download_type == "database":
+        urls.append(client_resources_url)
+        files.extend(["GeoLite2-City.mmdb", "GeoLite2-ASN.mmdb"])
+    elif download_type == "client":
+        urls.append(client_resources_url)
+        if platform == "Windows":
+            files.append("clients_win_64.zip")
+        elif platform == "Linux":
+            files.append("clients_linux_amd64.zip")
+        elif platform == "MacOS":
+            files.append("clients_darwin_64.zip")
+    for url in urls:
+        response = requests.get(url=url, headers=headers).json()
+        for each in response['assets']:
+            if each['name'] in files:
+                file_info.append({
+                    "url": each['browser_download_url'],
+                    "path": f"{work_dir}{each['name']}"
+                })
+    with ThreadPoolExecutor() as pool:
+        for each in file_info:
+            task_list.append(pool.submit(
+                download,
+                url=each['url'],
+                headers=headers,
+                path=each['path']
+            ))
+    for each in as_completed(task_list):
+        print(each)
+    exit(0)
+
+
 def main():
     if PLATFORM == "Unknown":
         logger.critical("Your system is not supported. Please contact the developer.")
@@ -70,14 +143,22 @@ def main():
     else:
         key_path = get_path_json()
 
+    if download_type := args.download:
+        download_resource(download_type, PLATFORM, args.dir)
+
     # 生成项目路径 json 文件
     generate_path_json(key_path, JSON_PATH)
     # 配置日志格式及日志文件路径
     handlers = get_handlers(key_path["logs"])
-    # 初始化临时文件、日志和结果集目录
-    init_dir(
-        [key_path["tmp"], key_path["logs"], key_path["custom"], key_path["results"]]
-    )
+    # 检测外部资源目录(不存在，则建议资源文件夹，供用户存放运行依赖资源)
+    check_dir([key_path['clients'], key_path['databases']])
+    # 初始化临时文件、日志和结果集目录(非项目依赖项)
+    init_dir([
+        key_path["tmp"],
+        key_path["logs"],
+        key_path["custom"],
+        key_path["results"]
+    ])
 
     # 部署日志模板
     if args.debug:
