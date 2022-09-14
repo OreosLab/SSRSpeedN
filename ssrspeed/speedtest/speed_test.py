@@ -15,7 +15,6 @@ from ssrspeed.launchers import (
     TrojanClient,
     V2RayClient,
 )
-from ssrspeed.result.exporter import TMP_DIR
 from ssrspeed.speedtest.methodology import SpeedTestMethods
 from ssrspeed.utils import async_check_port, domain2ip, get_ip_info, ip_loc
 
