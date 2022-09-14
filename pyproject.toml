@@ -6,6 +6,25 @@ profile = "black"
 multi_line_output = 3
 verbose = true
 
+[tool.pylint.messages_control]
+max-line-length = 88
+disable = [
+  "bad-continuation",
+  "bad-whitespace",
+  "fixme",
+  "line-too-long",
+  "missing-docstring",
+  "no-else-return",
+  "no-member",
+  "no-value-for-parameter",
+  "protected-access",
+  "too-few-public-methods",
+  "unused-argument",
+]
+
+[tool.pylint.design]
+max-returns = 8
+
 [tool.mypy]
 python_version = 3.8
 ignore_missing_imports = true

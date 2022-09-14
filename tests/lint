@@ -1,0 +1,4 @@
+#!/bin/bash
+
+[ -f ./lint ] && cd .. && echo hello
+pylint ssrspeed > data/pylint

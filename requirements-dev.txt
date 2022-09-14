@@ -11,9 +11,11 @@ selenium==4.4.3
 webdriver-manager
 
 black
+coverage
 isort
 mypy
 py-spy
+pylint
 
 types-aiofiles
 types-PyYAML
