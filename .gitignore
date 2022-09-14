@@ -370,11 +370,8 @@ tags
 
 # Project
 bin/**
+data/
+resources/
 !bin/ssrspeed.bat
 !bin/ssrspeed.sh
-data/**
-!data/ssrspeed.example.json
-resources/clients/
-resources/databases/
-resources/static/custom/**
-!resources/static/custom/readme.md
+ssrspeed/paths/paths.json

@@ -5,7 +5,7 @@ from loguru import logger
 from ssrspeed.utils import b64plus
 
 
-class ParserV2RayQuantumult(object):
+class ParserV2RayQuantumult:
     @staticmethod
     def parse_subs_config(raw_link: str) -> Optional[dict]:
         link = raw_link[8:]

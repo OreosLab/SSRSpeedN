@@ -10,10 +10,10 @@ root()
 
 from loguru import logger
 
-from ssrspeed.paths import KEY_PATH
+from ssrspeed.config import ssrconfig
 
-LOGS_DIR = KEY_PATH["logs"]
-RESULTS_DIR = KEY_PATH["results"]
+LOGS_DIR = ssrconfig["path"]["logs"]
+RESULTS_DIR = ssrconfig["path"]["results"]
 
 if not os.path.exists(LOGS_DIR):
     os.mkdir(LOGS_DIR)

@@ -7,10 +7,10 @@ from typing import Any, Dict, Optional
 import aiofiles
 from loguru import logger
 
-from ssrspeed.launchers import BaseClient
-from ssrspeed.paths import KEY_PATH
+from ssrspeed.config import ssrconfig
+from ssrspeed.launchers.base_client import BaseClient
 
-CLIENTS_DIR = KEY_PATH["clients"]
+CLIENTS_DIR = ssrconfig["path"]["clients"]
 
 
 class Shadowsocks(BaseClient):
@@ -149,8 +149,7 @@ class Shadowsockss(BaseClient):
     def start_client(self, config: Dict[str, Any], testing: bool = False, debug=False):
         if self._process is None:
 
-            platform = self._check_platform()
-            if platform == "Windows":
+            if Shadowsockss._platform == "Windows":
                 if not testing:
                     self.__win_conf()
                 # 	sys.exit(0)
@@ -158,7 +157,7 @@ class Shadowsockss(BaseClient):
                     [f"{CLIENTS_DIR}shadowsocks-win/Shadowsocks.exe"]
                 )
 
-            elif platform == "Linux" or platform == "MacOS":
+            elif Shadowsockss._platform == "Linux" or Shadowsockss._platform == "MacOS":
                 self._config = config
                 self._config["server_port"] = int(self._config["server_port"])
                 with open(self.config_file, "w+", encoding="utf-8") as f:

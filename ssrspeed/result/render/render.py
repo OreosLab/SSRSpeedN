@@ -5,10 +5,10 @@ import time
 
 from loguru import logger
 
-from ssrspeed.paths import KEY_PATH
+from ssrspeed.config import ssrconfig
 
-RESULTS_DIR = KEY_PATH["results"]
-TEMPLATES_DIR = KEY_PATH["templates"]
+RESULTS_DIR = ssrconfig["path"]["results"]
+TEMPLATES_DIR = ssrconfig["path"]["templates"]
 
 
 class ExporterWps(object):

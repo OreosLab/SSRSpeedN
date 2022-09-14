@@ -4,7 +4,7 @@ import json
 from loguru import logger
 
 
-class ParserShadowsocksD(object):
+class ParserShadowsocksD:
     def __init__(self, base_config):
         self.__config_list: list = []
         self.__baseConfig = base_config

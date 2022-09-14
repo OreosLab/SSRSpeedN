@@ -1,8 +1,8 @@
 import requests
 from loguru import logger
 
-from ssrspeed.parsers import BaseParser
-from ssrspeed.parsers.ss_parsers import (
+from ssrspeed.parsers.base import BaseParser
+from ssrspeed.parsers.ss import (
     ParserShadowsocksBasic,
     ParserShadowsocksClash,
     ParserShadowsocksD,

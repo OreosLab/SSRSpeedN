@@ -4,7 +4,7 @@ from tests import root
 
 root()
 
-from ssrspeed.parsers import TrojanParser
+from ssrspeed.parsers.trojan import TrojanParser
 
 if __name__ == "__main__":
     links = (

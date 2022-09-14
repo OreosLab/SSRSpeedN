@@ -4,7 +4,7 @@ import yaml
 from loguru import logger
 
 
-class ParserShadowsocksClash(object):
+class ParserShadowsocksClash:
     def __init__(self, base_config: dict):
         self.__config_list: list = []
         self.__base_config = base_config

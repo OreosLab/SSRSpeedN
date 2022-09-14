@@ -5,57 +5,53 @@ from typing import Dict, Optional
 
 from loguru import logger
 
-from ssrspeed.paths import KEY_PATH
-from ssrspeed.utils import PLATFORM
-
-CLIENTS_DIR = KEY_PATH["clients"]
-DATABASES_DIR = KEY_PATH["databases"]
+from ssrspeed.utils.platform_check import PLATFORM
 
 
 class RequirementsCheck(object):
-    def __init__(self):
+    def __init__(self, client_dir, databases_dir):
         self.__win_require: dict = {
             "Shadowsocks-libev": [
-                f"{CLIENTS_DIR}shadowsocks-libev/obfs-local.exe",
-                f"{CLIENTS_DIR}shadowsocks-libev/simple-obfs.exe",
-                f"{CLIENTS_DIR}shadowsocks-libev/ss-local.exe",
-                f"{CLIENTS_DIR}shadowsocks-libev/ss-tunnel.exe",
+                f"{client_dir}shadowsocks-libev/obfs-local.exe",
+                f"{client_dir}shadowsocks-libev/simple-obfs.exe",
+                f"{client_dir}shadowsocks-libev/ss-local.exe",
+                f"{client_dir}shadowsocks-libev/ss-tunnel.exe",
             ],
             "ShadowsocksR-libev": [
-                f"{CLIENTS_DIR}shadowsocksr-libev/libssp-0.dll",
-                f"{CLIENTS_DIR}shadowsocksr-libev/libwinpthread-1.dll",
-                f"{CLIENTS_DIR}shadowsocksr-libev/libpcre-1.dll",
-                f"{CLIENTS_DIR}shadowsocksr-libev/libcrypto-1_1.dll",
-                f"{CLIENTS_DIR}shadowsocksr-libev/ssr-local.exe",
+                f"{client_dir}shadowsocksr-libev/libssp-0.dll",
+                f"{client_dir}shadowsocksr-libev/libwinpthread-1.dll",
+                f"{client_dir}shadowsocksr-libev/libpcre-1.dll",
+                f"{client_dir}shadowsocksr-libev/libcrypto-1_1.dll",
+                f"{client_dir}shadowsocksr-libev/ssr-local.exe",
             ],
-            "ShadowsocksR-C#": [f"{CLIENTS_DIR}shadowsocksr-win/shadowsocksr.exe"],
-            "Trojan": [f"{CLIENTS_DIR}trojan/trojan.exe"],
+            "ShadowsocksR-C#": [f"{client_dir}shadowsocksr-win/shadowsocksr.exe"],
+            "Trojan": [f"{client_dir}trojan/trojan.exe"],
             "V2Ray-Core": [
-                f"{CLIENTS_DIR}v2ray-core/v2ctl.exe",
-                f"{CLIENTS_DIR}v2ray-core/v2ray.exe",
+                f"{client_dir}v2ray-core/v2ctl.exe",
+                f"{client_dir}v2ray-core/v2ray.exe",
             ],
             "GeoIP2 Databases": [
-                f"{DATABASES_DIR}GeoLite2-City.mmdb",
-                f"{DATABASES_DIR}GeoLite2-ASN.mmdb",
+                f"{databases_dir}GeoLite2-City.mmdb",
+                f"{databases_dir}GeoLite2-ASN.mmdb",
             ],
         }
 
         self.__linux_require: dict = {
             "Shadowsocks-libev": [
-                f"{CLIENTS_DIR}shadowsocks-libev/simple-obfs",
-                f"{CLIENTS_DIR}shadowsocks-libev/ss-local",
+                f"{client_dir}shadowsocks-libev/simple-obfs",
+                f"{client_dir}shadowsocks-libev/ss-local",
             ],
             "ShadowsocksR-Python": [
-                f"{CLIENTS_DIR}shadowsocksr/shadowsocks/local.py",
+                f"{client_dir}shadowsocksr/shadowsocks/local.py",
             ],
-            "Trojan": [f"{CLIENTS_DIR}trojan/trojan"],
+            "Trojan": [f"{client_dir}trojan/trojan"],
             "V2Ray-Core": [
-                f"{CLIENTS_DIR}v2ray-core/v2ctl",
-                f"{CLIENTS_DIR}v2ray-core/v2ray",
+                f"{client_dir}v2ray-core/v2ctl",
+                f"{client_dir}v2ray-core/v2ray",
             ],
             "GeoIP2 Databases": [
-                f"{DATABASES_DIR}GeoLite2-City.mmdb",
-                f"{DATABASES_DIR}GeoLite2-ASN.mmdb",
+                f"{databases_dir}GeoLite2-City.mmdb",
+                f"{databases_dir}GeoLite2-ASN.mmdb",
             ],
         }
 

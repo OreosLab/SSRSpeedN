@@ -1,28 +1,39 @@
+import json
 import os
 import sys
 
 _ = os.sep
-FILE_PATH = os.path.realpath(__file__).split(_)
-ROOT_PATH = _.join(FILE_PATH[0:-3]) + _
-KEY_PATH = {
-    "data": f"{ROOT_PATH}data{_}",
-    "logs": f"{ROOT_PATH}data{_}logs{_}",
-    "results": f"{ROOT_PATH}data{_}results{_}",
-    "tmp": f"{ROOT_PATH}data{_}tmp{_}",
-    "uploads": f"{ROOT_PATH}data{_}tmp{_}uploads{_}",
-    "config.json": f"{ROOT_PATH}data{_}tmp{_}config.json",
-    "ssrspeed.example.json": f"{ROOT_PATH}data{_}ssrspeed.example.json",
-    "ssrspeed.json": f"{ROOT_PATH}data{_}ssrspeed.json",
-    "resources": f"{ROOT_PATH}resources{_}",
-    "clients": f"{ROOT_PATH}resources{_}clients{_}",
-    "databases": f"{ROOT_PATH}resources{_}databases{_}",
+WD_PATH = os.getcwd() + _
+CURRENT_PATH = os.path.dirname(__file__) + _
+JSON_PATH = f"{CURRENT_PATH}paths.json"
+ROOT_PATH = _.join(CURRENT_PATH.split(_)[0:-2]) + _
+
+INNER_PATH = {
+    "ssrspeed": f"{ROOT_PATH}",
     "static": f"{ROOT_PATH}resources{_}static{_}",
-    "custom": f"{ROOT_PATH}resources{_}static{_}custom{_}",
     "fonts": f"{ROOT_PATH}resources{_}static{_}fonts{_}",
     "logos": f"{ROOT_PATH}resources{_}static{_}logos{_}",
     "templates": f"{ROOT_PATH}resources{_}templates{_}",
-    "ssrspeed": f"{ROOT_PATH}ssrspeed{_}",
+    "ssrspeed.example.json": f"{ROOT_PATH}resources{_}ssrspeed.example.json",
 }
+
+
+def get_path_json(work_path=WD_PATH):
+    inner_dict = {
+        "data": f"{work_path}data{_}",
+        "logs": f"{work_path}data{_}logs{_}",
+        "results": f"{work_path}data{_}results{_}",
+        "tmp": f"{work_path}data{_}tmp{_}",
+        "uploads": f"{work_path}data{_}tmp{_}uploads{_}",
+        "config.json": f"{work_path}data{_}tmp{_}config.json",
+        "ssrspeed.json": f"{work_path}data{_}ssrspeed.json",
+        "resources": f"{work_path}resources{_}",
+        "clients": f"{work_path}resources{_}clients{_}",
+        "databases": f"{work_path}resources{_}databases{_}",
+        "custom": f"{work_path}resources{_}custom{_}",
+    }
+    inner_dict.update(INNER_PATH)
+    return inner_dict
 
 
 def root():
@@ -32,5 +43,8 @@ def root():
 
 
 if __name__ == "__main__":
+    print(CURRENT_PATH)
+    print(JSON_PATH)
     print(ROOT_PATH)
-    print(KEY_PATH)
+    print(WD_PATH)
+    print(json.dumps(get_path_json(), indent=4))

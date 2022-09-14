@@ -6,7 +6,7 @@ import requests
 from loguru import logger
 
 from ssrspeed.config import ssrconfig
-from ssrspeed.parsers.base_configs import shadowsocks_get_config
+from ssrspeed.parsers.conf import shadowsocks_get_config
 from ssrspeed.utils import b64plus
 
 LOCAL_ADDRESS = ssrconfig["localAddress"]
@@ -14,7 +14,7 @@ LOCAL_PORT = ssrconfig["localPort"]
 TIMEOUT = 10
 
 
-class BaseParser(object):
+class BaseParser:
     def __init__(self):
         self._config_list: list = []
         self.__base_shadowsocks_config: dict = shadowsocks_get_config()

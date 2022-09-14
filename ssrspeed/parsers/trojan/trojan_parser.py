@@ -3,7 +3,7 @@ from urllib.parse import unquote
 
 from loguru import logger
 
-from ssrspeed.parsers import BaseParser
+from ssrspeed.parsers.base import BaseParser
 
 
 class TrojanParser(BaseParser):

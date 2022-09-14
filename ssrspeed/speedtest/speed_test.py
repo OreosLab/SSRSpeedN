@@ -15,9 +15,12 @@ from ssrspeed.launchers import (
     TrojanClient,
     V2RayClient,
 )
-from ssrspeed.paths import KEY_PATH
+from ssrspeed.result.exporter import TMP_DIR
 from ssrspeed.speedtest.methodology import SpeedTestMethods
 from ssrspeed.utils import async_check_port, domain2ip, get_ip_info, ip_loc
+
+DATABASES_DIR = ssrconfig["path"]["databases"]
+TMP_DIR = ssrconfig["path"]["tmp"]
 
 LOCAL_ADDRESS = ssrconfig["localAddress"]
 LOCAL_PORT = int(ssrconfig["localPort"])
@@ -129,12 +132,8 @@ class SpeedTest:
         return self.__current
 
     def load_geo_info(self):
-        self.__city_data = geoip2.database.Reader(
-            f"{KEY_PATH['databases']}GeoLite2-City.mmdb"
-        )
-        self.__ans_data = geoip2.database.Reader(
-            f"{KEY_PATH['databases']}GeoLite2-ASN.mmdb"
-        )
+        self.__city_data = geoip2.database.Reader(f"{DATABASES_DIR}GeoLite2-City.mmdb")
+        self.__ans_data = geoip2.database.Reader(f"{DATABASES_DIR}GeoLite2-ASN.mmdb")
 
     def query_geo_local(self, ip):
         country, city, organization = "N/A", "Unknown City", "N/A"
@@ -526,7 +525,7 @@ class SpeedTest:
                 f"Starting test {cfg['group']} - {cfg['remarks']} [{dic['done_nodes']}/{dic['total_nodes']}]"
             )
         name = asyncio.current_task().get_name()
-        file_ = f"{KEY_PATH['tmp']}{name}.json"
+        file_ = f"{TMP_DIR}{name}.json"
         client = self.__get_client(node.node_type, file_)
         if not client:
             logger.warning(f"Unknown Node Type: {node.node_type}.")

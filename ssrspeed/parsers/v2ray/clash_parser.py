@@ -1,10 +1,8 @@
 import yaml
 from loguru import logger
 
-from ssrspeed.paths import KEY_PATH
 
-
-class ParserV2RayClash(object):
+class ParserV2RayClash:
     def __init__(self):
         self.__clash_vmess_configs: list = []
         self.__decoded_configs: list = []
@@ -88,5 +86,7 @@ class ParserV2RayClash(object):
 
 
 if __name__ == "__main__":
+    from ssrspeed.config import ssrconfig
+
     cvp = ParserV2RayClash()
-    cvp.parse_gui_config(KEY_PATH["tmp"] + "config.example.yml")
+    cvp.parse_gui_config(ssrconfig["path"]["tmp"] + "config.example.yml")

@@ -8,17 +8,16 @@ from PIL import Image, ImageDraw, ImageFont
 from pilmoji import Pilmoji
 
 from ssrspeed.config import ssrconfig
-from ssrspeed.paths import KEY_PATH
 from ssrspeed.result.pusher import push2server
 from ssrspeed.result.render import ExporterWps
 from ssrspeed.result.sorter import Sorter
 
-TMP_DIR = KEY_PATH["tmp"]
+TMP_DIR = ssrconfig["path"]["tmp"]
 if not os.path.exists(TMP_DIR):
     os.makedirs(TMP_DIR)
 TEST_TXT = TMP_DIR + "test.txt"
-LOGOS_DIR = KEY_PATH["logos"]
-RESULTS_DIR = KEY_PATH["results"]
+LOGOS_DIR = ssrconfig["path"]["logos"]
+RESULTS_DIR = ssrconfig["path"]["results"]
 
 """
 resultJson
@@ -90,8 +89,8 @@ class ExportResult(object):
     def set_font(
         name: str = "SourceHanSansCN-Medium.otf", size: int = 18
     ) -> ImageFont.truetype:
-        font = KEY_PATH["fonts"] + name
-        custom_font = KEY_PATH["custom"] + name
+        font = ssrconfig["path"]["fonts"] + name
+        custom_font = ssrconfig["path"]["custom"] + name
         if os.path.isfile(font):
             return ImageFont.truetype(font, size)
         elif os.path.isfile(custom_font):

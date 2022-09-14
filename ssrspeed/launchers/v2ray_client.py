@@ -6,10 +6,10 @@ from typing import Any, Dict
 import aiofiles
 from loguru import logger
 
-from ssrspeed.launchers import BaseClient
-from ssrspeed.paths import KEY_PATH
+from ssrspeed.config import ssrconfig
+from ssrspeed.launchers.base_client import BaseClient
 
-CLIENTS_DIR = KEY_PATH["clients"]
+CLIENTS_DIR = ssrconfig["path"]["clients"]
 
 
 class V2Ray(BaseClient):

@@ -1,3 +1,3 @@
-from . import cli, web_cli
+from . import cli
 
-__all__ = ["cli", "web_cli"]
+__all__ = ["cli"]

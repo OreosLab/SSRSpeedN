@@ -3,17 +3,18 @@ import os
 import shutil
 from typing import Any, Dict
 
-from ssrspeed.paths import KEY_PATH
+from ssrspeed import __version__ as version
+from ssrspeed.paths import JSON_PATH
 
-__version__ = "1.3.6"
-__web_api_version__ = "0.5.2"
+config: Dict[str, Any] = {"VERSION": version}
 
-CONFIG_FILE = KEY_PATH["ssrspeed.json"]
-CONFIG_EXAMPLE_FILE = KEY_PATH["ssrspeed.example.json"]
-config: Dict[str, Any] = {
-    "VERSION": __version__,
-    "WEB_API_VERSION": __web_api_version__,
-}
+
+with open(file=JSON_PATH, mode="r", encoding="utf-8") as f:
+    config.update({"path": json.load(f)})
+
+CONFIG_FILE = config["path"]["ssrspeed.json"]
+CONFIG_EXAMPLE_FILE = config["path"]["ssrspeed.example.json"]
+
 
 LOADED = False
 

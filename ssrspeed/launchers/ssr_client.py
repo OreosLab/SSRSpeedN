@@ -8,10 +8,10 @@ import aiofiles
 import requests
 from loguru import logger
 
-from ssrspeed.launchers import BaseClient
-from ssrspeed.paths import KEY_PATH
+from ssrspeed.config import ssrconfig
+from ssrspeed.launchers.base_client import BaseClient
 
-CLIENTS_DIR = KEY_PATH["clients"]
+CLIENTS_DIR = ssrconfig["path"]["clients"]
 
 
 class ShadowsocksR(BaseClient):
@@ -118,8 +118,6 @@ class ShadowsocksR(BaseClient):
                 )
                 sys.exit(1)
 
-    # 	print(self.__process.returncode)
-
 
 class ShadowsocksRR(BaseClient):
     def __init__(self, name):
@@ -182,7 +180,7 @@ class ShadowsocksRR(BaseClient):
 
         rep.encoding = "utf-8"
         if rep.status_code == 200:
-            # 	logger.debug(rep.content)
+            logger.debug(rep.content)
             return rep.json()
         else:
             logger.error(rep.status_code)
@@ -219,14 +217,16 @@ class ShadowsocksRR(BaseClient):
     def start_client(self, config: Dict[str, Any], debug=False):
         if self._process is None:
 
-            if self._platform == "Windows":
+            if ShadowsocksRR._platform == "Windows":
                 self.__win_conf()
                 # 	sys.exit(0)
                 self._process = subprocess.Popen(
                     [f"{CLIENTS_DIR}shadowsocksr-libev/ssr-local.exe"]
                 )
 
-            elif self._platform == "Linux" or self._platform == "MacOS":
+            elif (
+                ShadowsocksRR._platform == "Linux" or ShadowsocksRR._platform == "MacOS"
+            ):
                 self._config = config
                 self._config["server_port"] = int(self._config["server_port"])
                 with open(self.config_file, "w+", encoding="utf-8") as f:
@@ -260,5 +260,3 @@ class ShadowsocksRR(BaseClient):
                     "Your system does not support it. Please contact the developer."
                 )
                 sys.exit(1)
-
-    # 	print(self.__process.returncode)

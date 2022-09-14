@@ -1,13 +1,9 @@
 import requests
 from loguru import logger
 
-from ssrspeed.parsers import BaseParser
-from ssrspeed.parsers.base_configs import V2RayBaseConfigs
-from ssrspeed.parsers.v2ray_parsers import (
-    ParserV2RayClash,
-    ParserV2RayN,
-    ParserV2RayQuantumult,
-)
+from ssrspeed.parsers.base import BaseParser
+from ssrspeed.parsers.conf import V2RayBaseConfigs
+from ssrspeed.parsers.v2ray import ParserV2RayClash, ParserV2RayN, ParserV2RayQuantumult
 from ssrspeed.utils import b64plus
 
 

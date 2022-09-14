@@ -2,10 +2,9 @@ import requests
 from loguru import logger
 
 from ssrspeed.config import ssrconfig
-from ssrspeed.paths import KEY_PATH
 
 UPLOAD_RESULT = ssrconfig["uploadResult"]
-TEST_PNG = KEY_PATH["tmp"] + "test.png"
+TEST_PNG = ssrconfig["path"]["tmp"] + "test.png"
 
 
 def push2server(filename: str) -> dict:

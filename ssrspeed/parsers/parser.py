@@ -7,17 +7,17 @@ import requests
 from loguru import logger
 
 from ssrspeed.config import ssrconfig
-from ssrspeed.parsers import ClashParser, TrojanParser
-from ssrspeed.parsers.base_configs import V2RayBaseConfigs, shadowsocks_get_config
-from ssrspeed.parsers.node_filter import NodeFilter
-from ssrspeed.parsers.ss_parsers import (
+from ssrspeed.parsers.clash import ClashParser
+from ssrspeed.parsers.conf import V2RayBaseConfigs, shadowsocks_get_config
+from ssrspeed.parsers.filter import NodeFilter
+from ssrspeed.parsers.ss import (
     ParserShadowsocksBasic,
     ParserShadowsocksD,
     ParserShadowsocksSIP002,
 )
-from ssrspeed.parsers.ssr_parsers import ParserShadowsocksR
-from ssrspeed.parsers.v2ray_parsers import ParserV2RayN, ParserV2RayQuantumult
-from ssrspeed.paths import KEY_PATH
+from ssrspeed.parsers.ssr import ParserShadowsocksR
+from ssrspeed.parsers.trojan import TrojanParser
+from ssrspeed.parsers.v2ray import ParserV2RayN, ParserV2RayQuantumult
 from ssrspeed.type.nodes import NodeShadowsocks, NodeShadowsocksR, NodeTrojan, NodeV2Ray
 from ssrspeed.utils import b64plus
 
@@ -27,7 +27,7 @@ LOCAL_PORT = ssrconfig["localPort"]
 TIMEOUT = 10
 
 
-TMP_DIR = KEY_PATH["tmp"]
+TMP_DIR = ssrconfig["path"]["tmp"]
 if not os.path.exists(TMP_DIR):
     os.makedirs(TMP_DIR)
 TEST_TXT = TMP_DIR + "test.txt"

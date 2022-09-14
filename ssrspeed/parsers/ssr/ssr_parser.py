@@ -1,6 +1,6 @@
 from loguru import logger
 
-from ssrspeed.parsers import BaseParser
+from ssrspeed.parsers.base import BaseParser
 from ssrspeed.utils import b64plus
 
 

@@ -6,7 +6,7 @@ from loguru import logger
 from ssrspeed.utils import b64plus
 
 
-class ParserV2RayN(object):
+class ParserV2RayN:
     def __init__(self):
         self.__decoded_configs = []
 

@@ -8,7 +8,7 @@ from loguru import logger
 from ssrspeed.utils import b64plus
 
 
-class ParserShadowsocksBasic(object):
+class ParserShadowsocksBasic:
     def __init__(self, base_config: dict):
         self.__config_list: list = []
         self.__base_config: dict = base_config

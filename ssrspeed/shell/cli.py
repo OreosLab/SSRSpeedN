@@ -4,12 +4,12 @@ from argparse import ArgumentParser, Namespace
 
 def set_opts(parser: ArgumentParser):
     parser.add_argument(
-        "-c",
-        "--config",
+        "-d",
+        "--dir",
         action="store",
-        dest="guiConfig",
-        default="",
-        help="Load configurations from file.",
+        dest="dir",
+        type=str,
+        help="Specify a work directory with clients and data.",
     )
     parser.add_argument(
         "-u",
@@ -20,21 +20,28 @@ def set_opts(parser: ArgumentParser):
         help="Load ssr config from subscription url.",
     )
     parser.add_argument(
+        "-i",
+        "--import",
+        action="store",
+        dest="import_file",
+        default="",
+        help="Import test result from json file and export it.",
+    )
+    parser.add_argument(
+        "-c",
+        "--config",
+        action="store",
+        dest="guiConfig",
+        default="",
+        help="Load configurations from file.",
+    )
+    parser.add_argument(
         "-mc",
         "--max-connections",
         action="store",
         dest="max_connections",
         type=int,
-        help="Max number of connections",
-    )
-    parser.add_argument(
-        "-m",
-        "--method",
-        action="store",
-        dest="test_method",
-        default="stasync",
-        choices=["speedtestnet", "fast", "socket", "stasync"],
-        help="Select test method in [speedtestnet, fast, socket, stasync].",
+        help="Set max number of connections.",
     )
     parser.add_argument(
         "-M",
@@ -46,20 +53,21 @@ def set_opts(parser: ArgumentParser):
         help="Select test mode in [default, pingonly, stream, all, wps].",
     )
     parser.add_argument(
+        "-m",
+        "--method",
+        action="store",
+        dest="test_method",
+        default="",
+        choices=["stasync", "socket", "speedtestnet", "fast"],
+        help="Select test method in [speedtestnet, fast, socket, stasync].",
+    )
+    parser.add_argument(
         "--include",
         action="extend",
         nargs="+",
         dest="filter",
         default=[],
         help="Filter nodes by group and remarks using keyword.",
-    )
-    parser.add_argument(
-        "--include-remark",
-        action="extend",
-        nargs="+",
-        dest="remarks",
-        default=[],
-        help="Filter nodes by remarks using keyword.",
     )
     parser.add_argument(
         "--include-group",
@@ -70,10 +78,18 @@ def set_opts(parser: ArgumentParser):
         help="Filter nodes by group name using keyword.",
     )
     parser.add_argument(
+        "--include-remark",
+        action="extend",
+        nargs="+",
+        dest="remarks",
+        default=[],
+        help="Filter nodes by remarks using keyword.",
+    )
+    parser.add_argument(
         "--exclude",
         action="extend",
         nargs="+",
-        dest="efliter",
+        dest="efilter",
         default=[],
         help="Exclude nodes by group and remarks using keyword.",
     )
@@ -107,40 +123,14 @@ def set_opts(parser: ArgumentParser):
         default="",
         help="Manually set group.",
     )
-    """
-    parser.add_argument(
-        "-t","--type",
-        action="store",
-        dest="proxy_type",
-        type=str,
-        default = "ssr",
-        help="Select proxy type in [ssr, ssr-cs, ss, v2ray], default ssr."
-        )
-    """
-    parser.add_argument(
-        "-y",
-        "--yes",
-        action="store_true",
-        dest="confirmation",
-        default=False,
-        help="Skip node list confirmation before test.",
-    )
     parser.add_argument(
         "-C",
         "--color",
         action="store",
         dest="result_color",
-        default="",
+        default="origin",
         help="Set the colors when exporting images..",
     )
-    """
-    parser.add_argument(
-        "-s","--split",
-        action="store",
-        dest="split_count",
-        default="-1",
-        help="Set the number of nodes displayed in a single image when exporting images."
-    """
     parser.add_argument(
         "-s",
         "--sort",
@@ -149,14 +139,6 @@ def set_opts(parser: ArgumentParser):
         default="",
         choices=["speed", "rspeed", "ping", "rping"],
         help="Select sort method in [speed, rspeed, ping, rping], default not sorted.",
-    )
-    parser.add_argument(
-        "-i",
-        "--import",
-        action="store",
-        dest="import_file",
-        default="",
-        help="Import test result from json file and export it.",
     )
     parser.add_argument(
         "--skip-requirements-check",
@@ -171,6 +153,27 @@ def set_opts(parser: ArgumentParser):
         dest="debug",
         default=False,
         help="Run program in debug mode.",
+    )
+    parser.add_argument(
+        "-web",
+        action="store_true",
+        dest="web",
+        help="Start web server.",
+    )
+    parser.add_argument(
+        "-l",
+        "--listen",
+        action="store",
+        dest="listen",
+        help="Set listen address for web server.",
+    )
+    parser.add_argument(
+        "-p",
+        "--port",
+        action="store",
+        dest="port",
+        type=int,
+        help="Set listen port for web server.",
     )
     parser.add_argument(
         "--paolu", action="store_true", dest="paolu", default=False, help="rm -rf *"
