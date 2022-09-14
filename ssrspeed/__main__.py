@@ -70,45 +70,50 @@ def download(url, headers, path):
     return f"已保存至: {path}"
 
 
-def download_resource(download_type, platform, download_path=os.getcwd()):
+def download_resource(download_type, platform, download_path=None):
     from concurrent.futures import ThreadPoolExecutor, as_completed
     _ = os.sep
-    urls = []
-    files = []
+    urls_info = []
     task_list = []
     file_info = []
+    client_file = None
+    proxy = "https://ghproxy.com/"
+    if download_path is None:
+        download_path = os.getcwd()
+    work_dir = download_path if download_path.endswith(_) else download_path + _
     client_resources_url = "https://api.github.com/repos/OreosLab/SSRSpeedN/releases/latest"
+    database_resources_url = "https://api.github.com/repos/P3TERX/GeoLite.mmdb/releases/latest"
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
         "Chrome/64.0.3282.119 Safari/537.36 ",
     }
-    work_dir = download_path if download_path.endswith(_) else download_path + _
+    if platform == "Windows":
+        client_file = "clients_win_64.zip"
+    elif platform == "Linux":
+        client_file = "clients_linux_amd64.zip"
+    elif platform == "MacOS":
+        client_file = "clients_darwin_64.zip"
+    client_file_info = {
+            "url": client_resources_url,
+            "files": [client_file]
+        }
+    database_file_info = {
+            "url": database_resources_url,
+            "files": ["GeoLite2-City.mmdb", "GeoLite2-ASN.mmdb"]
+        }
     if download_type == "all":
-        urls.extend([client_resources_url])
-        files.extend(["GeoLite2-City.mmdb", "GeoLite2-ASN.mmdb"])
-        if platform == "Windows":
-            files.append("clients_win_64.zip")
-        elif platform == "Linux":
-            files.append("clients_linux_amd64.zip")
-        elif platform == "MacOS":
-            files.append("clients_darwin_64.zip")
+        urls_info.append(client_file_info)
+        urls_info.append(database_file_info)
     elif download_type == "database":
-        urls.append(client_resources_url)
-        files.extend(["GeoLite2-City.mmdb", "GeoLite2-ASN.mmdb"])
+        urls_info.append(database_file_info)
     elif download_type == "client":
-        urls.append(client_resources_url)
-        if platform == "Windows":
-            files.append("clients_win_64.zip")
-        elif platform == "Linux":
-            files.append("clients_linux_amd64.zip")
-        elif platform == "MacOS":
-            files.append("clients_darwin_64.zip")
-    for url in urls:
-        response = requests.get(url=url, headers=headers).json()
+        urls_info.append(client_file_info)
+    for url_info in urls_info:
+        response = requests.get(url=url_info['url'], headers=headers).json()
         for each in response['assets']:
-            if each['name'] in files:
+            if each['name'] in url_info['files']:
                 file_info.append({
-                    "url": each['browser_download_url'],
+                    "url": proxy + each['browser_download_url'],
                     "path": f"{work_dir}{each['name']}"
                 })
     with ThreadPoolExecutor() as pool:
@@ -120,7 +125,7 @@ def download_resource(download_type, platform, download_path=os.getcwd()):
                 path=each['path']
             ))
     for each in as_completed(task_list):
-        print(each)
+        print(each.result())
     exit(0)
 
 
@@ -137,8 +142,6 @@ def main():
 
     # 生成项目路径字典
     if args.dir:
-        _ = os.sep
-        work_dir = args.dir if args.dir.endswith(_) else args.dir + _
         key_path = get_path_json(work_path=work_dir)
     else:
         key_path = get_path_json()
