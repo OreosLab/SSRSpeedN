@@ -1,5 +1,6 @@
-import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
+
+import requests
 
 
 def download_resource(url, headers, path):
@@ -60,7 +61,10 @@ def download(download_type, platform, download_path=None):
         for each in file_info:
             task_list.append(
                 pool.submit(
-                    download_resource, url=each["url"], headers=headers, path=each["path"]
+                    download_resource,
+                    url=each["url"],
+                    headers=headers,
+                    path=each["path"],
                 )
             )
     for each in as_completed(task_list):

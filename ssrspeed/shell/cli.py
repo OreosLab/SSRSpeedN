@@ -148,14 +148,8 @@ def set_opts(parser: ArgumentParser):
         help="Skip requirements check.",
     )
     parser.add_argument(
-        "--debug",
-        action="store_true",
-        dest="debug",
-        default=False,
-        help="Run program in debug mode.",
-    )
-    parser.add_argument(
-        "-web",
+        "-w",
+        "--web",
         action="store_true",
         dest="web",
         help="Start web server.",
@@ -181,6 +175,13 @@ def set_opts(parser: ArgumentParser):
         dest="download",
         choices=["all", "client", "database"],
         help="Download resources in ['all', 'client', 'database']",
+    )
+    parser.add_argument(
+        "--debug",
+        action="store_true",
+        dest="debug",
+        default=False,
+        help="Run program in debug mode.",
     )
     parser.add_argument(
         "--paolu", action="store_true", dest="paolu", default=False, help="rm -rf *"

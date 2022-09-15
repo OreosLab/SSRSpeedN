@@ -10,11 +10,11 @@ ROOT_PATH = _.join(CURRENT_PATH.split(_)[0:-2]) + _
 
 INNER_PATH = {
     "ssrspeed": f"{ROOT_PATH}",
-    "static": f"{ROOT_PATH}resources{_}static{_}",
-    "fonts": f"{ROOT_PATH}resources{_}static{_}fonts{_}",
-    "logos": f"{ROOT_PATH}resources{_}static{_}logos{_}",
-    "templates": f"{ROOT_PATH}resources{_}templates{_}",
-    "ssrspeed.example.json": f"{ROOT_PATH}resources{_}ssrspeed.example.json",
+    "static": f"{ROOT_PATH}resource{_}static{_}",
+    "fonts": f"{ROOT_PATH}resource{_}static{_}fonts{_}",
+    "logos": f"{ROOT_PATH}resource{_}static{_}logos{_}",
+    "templates": f"{ROOT_PATH}resource{_}templates{_}",
+    "ssrspeed.example.json": f"{ROOT_PATH}resource{_}ssrspeed.example.json",
 }
 
 

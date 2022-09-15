@@ -100,32 +100,37 @@ Usage: ssrspeed [options] arg1 arg2...
 可选参数:
   -h, --help            输出帮助信息并退出
   --version             输出版本号并退出
+  -d DIR, --dir DIR     指定包含 clients 和 data 的目录，默认为当前目录.
+  -u URL, --url=URL     通过节点订阅链接加载节点信息.
+  -i IMPORT_FILE, --import=IMPORT_FILE
+
+                        根据 json 文件输出测试结果.
+
   -c GUICONFIG, --config=GUICONFIG
 
                         通过节点配置文件加载节点信息.
 
-  -u URL, --url=URL     通过节点订阅链接加载节点信息.
+
   -mc MAX_CONNECTIONS, --max-connections=MAX_CONNECTIONS
 
-                        最大连接数。某些机场不支持并发连接，可设置为 1.
-                        
-  -m TEST_METHOD, --method=TEST_METHOD
-
-                        在 [speedtestnet, fast, socket, stasync] 中选择测试方法.
+                        设置最大连接数。某些机场不支持并发连接，可设置为 1.
 
   -M TEST_MODE, --mode=TEST_MODE
 
                         在 [default, pingonly, stream, all, wps] 中选择测试模式.  
                         
+  -m TEST_METHOD, --method=TEST_METHOD
+
+                        在 [stasync, socket, speedtestnet, fast] 中选择测试方法.
+
   --include             通过节点标识和组名筛选节点.
   --include-remark      通过节点标识筛选节点.
   --include-group       通过组名筛选节点.
   --exclude             通过节点标识和组名排除节点.
-  --exclude-group       通过组名排除节点.
   --exclude-remark      通过节点标识排除节点.
+  --exclude-group       通过组名排除节点.
   --use-ssr-cs          替换 SSR 内核 ShadowsocksR-libev --> ShadowsocksR-C# (Only Windows)
-  -g GROUP              自定义测速组名.
-  -y, --yes             跳过节点信息确认（我嫌那玩意太麻烦设成默认了）.
+  -g GROUP_OVERRIDE     自定义测速组名.
   -C RESULT_COLOR, --color=RESULT_COLOR
 
                         设定测速结果展示配色.
@@ -135,14 +140,17 @@ Usage: ssrspeed [options] arg1 arg2...
                         选择节点排序方式 按速度排序 / 速度倒序 / 按延迟排序 / 延迟倒序
                         [speed, rspeed, ping, rping]，默认不排序.
 
-  -i IMPORT_FILE, --import=IMPORT_FILE
-
-                        提供给不会 p 图的同学，偷偷改结果的 json 文件后重新输出结果.
-
   --skip-requirements-check
 
                         跳过确认.
 
+  -w, --web             启动网络服务器.
+  -l LISTEN, --listen=LISTEN
+
+                        设置网络服务器的监听地址.
+
+  -p PORT, --port=PORT  设置网络服务器的监听端口.
+  --download            在 [all, client, database] 中选择下载资源类型.
   --debug               采用 debug 模式.
   --paolu               删除项目所有文件.
 ```
@@ -187,7 +195,7 @@ python -m ssrspeed -u "https://home.yoyu.dev/subscriptionlink" --include 香港 
     "port": true,       // 是否输出端口
     "multiplex": true,  // 是否输出复用检测
     "exportResult": {
-        "addition": "测速频道：@Cheap_Proxy",   // 自定义附加信息
+        "addition": "OreosLab ©",   // 自定义附加信息
         "uploadResult": false,
         "hide_max_speed": false,               // 是否隐藏最高速度
         "font": "SourceHanSansCN-Medium.otf",  // 自定义字体，见下方说明
@@ -242,48 +250,9 @@ SSRSpeedN
 │   ├── ssrspeed.bat
 │   ├── ssrspeed.sh
 │   └── st.bat
-├── data
-│   ├── logs
-│   │   └── 2022-09-12-19-23-35.log
-│   ├── restats
-│   ├── results
-│   │   ├── 2022-09-12-19-26-02
-│   │   └── 2022-09-12-19-26-02.json
-│   ├── ssrspeed.example.json
-│   ├── ssrspeed.json
-│   ├── stats.json
-│   ├── stats.svg
-│   ├── tmp
-│   │   ├── config.json
-│   │   ├── test.txt
-│   │   └── uploads
-│   └── tree.md
 ├── pyproject.toml
 ├── requirements-dev.txt
 ├── requirements.txt
-├── resources
-│   ├── clients
-│   │   ├── shadowsocks-libev
-│   │   ├── shadowsocks-win
-│   │   ├── shadowsocksr-libev
-│   │   ├── shadowsocksr-win
-│   │   ├── trojan
-│   │   └── v2ray-core
-│   ├── databases
-│   │   ├── GeoLite2-ASN.mmdb
-│   │   ├── GeoLite2-City.mmdb
-│   │   └── GeoLite2-Country.mmdb
-│   ├── static
-│   │   ├── custom
-│   │   ├── fonts
-│   │   └── logos
-│   └── templates
-│       ├── 535877f50039c0cb49a6196a5b7517cd.woff
-│       ├── 732389ded34cb9c52dd88271f1345af9.ttf
-│       ├── index.html
-│       ├── index.js
-│       ├── manifest.js
-│       └── vendor.js
 ├── setup.py
 ├── ssrspeed
 │   ├── __init__.py
@@ -294,6 +263,9 @@ SSRSpeedN
 │   ├── core
 │   │   ├── __init__.py
 │   │   └── core.py
+│   ├── download
+│   │   ├── __init__.py
+│   │   └── download.py
 │   ├── launchers
 │   │   ├── __init__.py
 │   │   ├── base_client.py
@@ -303,21 +275,23 @@ SSRSpeedN
 │   │   └── v2ray_client.py
 │   ├── parsers
 │   │   ├── __init__.py
-│   │   ├── base_configs
-│   │   ├── base_parser.py
-│   │   ├── clash_parser.py
-│   │   ├── config_parser.py
-│   │   ├── node_filter
-│   │   ├── ss_parser.py
-│   │   ├── ss_parsers
-│   │   ├── ssr_parser.py
-│   │   ├── ssr_parsers
-│   │   ├── trojan_parser.py
-│   │   ├── v2ray_parser.py
-│   │   └── v2ray_parsers
+│   │   ├── base
+│   │   ├── clash
+│   │   ├── conf
+│   │   ├── filter
+│   │   ├── parser.py
+│   │   ├── ss
+│   │   ├── ssr
+│   │   ├── trojan
+│   │   └── v2ray
 │   ├── paths
 │   │   ├── __init__.py
+│   │   ├── paths.json
 │   │   └── paths.py
+│   ├── resource
+│   │   ├── ssrspeed.example.json
+│   │   ├── static
+│   │   └── templates
 │   ├── result
 │   │   ├── __init__.py
 │   │   ├── exporter.py
@@ -327,8 +301,7 @@ SSRSpeedN
 │   │   └── sorter
 │   ├── shell
 │   │   ├── __init__.py
-│   │   ├── cli.py
-│   │   └── web_cli.py
+│   │   └── cli.py
 │   ├── speedtest
 │   │   ├── __init__.py
 │   │   ├── methodology.py
@@ -348,10 +321,13 @@ SSRSpeedN
 │   │   ├── reqs_check.py
 │   │   ├── rules
 │   │   └── web
-│   └── web.py
+│   └── web
+│       ├── __init__.py
+│       └── web.py
 ├── tests
 │   ├── __init__.py
 │   ├── geoip.py
+│   ├── lint
 │   ├── pf
 │   ├── print_stats.py
 │   ├── root.py
