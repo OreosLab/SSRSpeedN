@@ -142,7 +142,7 @@ def main():
 
     # 生成项目路径字典
     if args.dir:
-        key_path = get_path_json(work_path=work_dir)
+        key_path = get_path_json(work_path=args.dir)
     else:
         key_path = get_path_json()
 
