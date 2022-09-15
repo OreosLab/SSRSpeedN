@@ -2,7 +2,7 @@ import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 
-def download(url, headers, path):
+def download_resource(url, headers, path):
     print(f"正在下载: {url}")
     with open(file=path, mode="wb") as f:
         data = requests.get(url=url, headers=headers).content
@@ -10,7 +10,7 @@ def download(url, headers, path):
     return f"已保存至: {path}"
 
 
-def download_resource(download_type, platform, download_path=None):
+def download(download_type, platform, download_path=None):
     _ = os.sep
     urls_info = []
     task_list = []
@@ -60,7 +60,7 @@ def download_resource(download_type, platform, download_path=None):
         for each in file_info:
             task_list.append(
                 pool.submit(
-                    download, url=each["url"], headers=headers, path=each["path"]
+                    download_resource, url=each["url"], headers=headers, path=each["path"]
                 )
             )
     for each in as_completed(task_list):
