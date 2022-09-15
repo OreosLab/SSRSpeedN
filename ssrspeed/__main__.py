@@ -20,11 +20,11 @@ def init_dir(paths):
 
 
 def check_dir(paths):
-    flag = False                        # 检测必要文件夹是否存在
+    flag = False  # 检测必要文件夹是否存在
     for path in paths:
         if not os.path.exists(path):
             os.makedirs(path)
-            flag = True                 # 发送文件夹建立行为
+            flag = True  # 发送文件夹建立行为
     if flag:
         exit(0)
 
@@ -64,7 +64,7 @@ def get_handlers(logs_dir):
 
 def download(url, headers, path):
     print(f"正在下载: {url}")
-    with open(file=path, mode='wb') as f:
+    with open(file=path, mode="wb") as f:
         data = requests.get(url=url, headers=headers).content
         f.write(data)
     return f"已保存至: {path}"
@@ -72,61 +72,62 @@ def download(url, headers, path):
 
 def download_resource(download_type, platform, download_path=None):
     from concurrent.futures import ThreadPoolExecutor, as_completed
+
     _ = os.sep
     urls_info = []
     task_list = []
     file_info = []
-    client_file = None
     proxy = "https://ghproxy.com/"
     if download_path is None:
         download_path = os.getcwd()
     work_dir = download_path if download_path.endswith(_) else download_path + _
-    client_resources_url = "https://api.github.com/repos/OreosLab/SSRSpeedN/releases/latest"
-    database_resources_url = "https://api.github.com/repos/P3TERX/GeoLite.mmdb/releases/latest"
+    client_resources_url = (
+        "https://api.github.com/repos/OreosLab/SSRSpeedN/releases/latest"
+    )
+    database_resources_url = (
+        "https://api.github.com/repos/P3TERX/GeoLite.mmdb/releases/latest"
+    )
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
         "Chrome/64.0.3282.119 Safari/537.36 ",
     }
-    if platform == "Windows":
-        client_file = "clients_win_64.zip"
-    elif platform == "Linux":
-        client_file = "clients_linux_amd64.zip"
-    elif platform == "MacOS":
-        client_file = "clients_darwin_64.zip"
     client_file_info = {
-            "url": client_resources_url,
-            "files": [client_file]
-        }
+        "Windows": {"url": client_resources_url, "files": ["clients_win_64.zip"]},
+        "Linux": {"url": client_resources_url, "files": ["clients_linux_amd64.zip"]},
+        "MacOS": {"url": client_resources_url, "files": ["clients_darwin_64.zip"]},
+    }
     database_file_info = {
-            "url": database_resources_url,
-            "files": ["GeoLite2-City.mmdb", "GeoLite2-ASN.mmdb"]
-        }
+        "url": database_resources_url,
+        "files": ["GeoLite2-City.mmdb", "GeoLite2-ASN.mmdb"],
+    }
+
     if download_type == "all":
-        urls_info.append(client_file_info)
+        urls_info.append(client_file_info[platform])
         urls_info.append(database_file_info)
     elif download_type == "database":
         urls_info.append(database_file_info)
     elif download_type == "client":
-        urls_info.append(client_file_info)
+        urls_info.append(client_file_info[platform])
     for url_info in urls_info:
-        response = requests.get(url=url_info['url'], headers=headers).json()
-        for each in response['assets']:
-            if each['name'] in url_info['files']:
-                file_info.append({
-                    "url": proxy + each['browser_download_url'],
-                    "path": f"{work_dir}{each['name']}"
-                })
+        response = requests.get(url=url_info["url"], headers=headers).json()
+        for each in response["assets"]:
+            if each["name"] in url_info["files"]:
+                file_info.append(
+                    {
+                        "url": proxy + each["browser_download_url"],
+                        "path": f"{work_dir}{each['name']}",
+                    }
+                )
     with ThreadPoolExecutor() as pool:
         for each in file_info:
-            task_list.append(pool.submit(
-                download,
-                url=each['url'],
-                headers=headers,
-                path=each['path']
-            ))
+            task_list.append(
+                pool.submit(
+                    download, url=each["url"], headers=headers, path=each["path"]
+                )
+            )
     for each in as_completed(task_list):
         print(each.result())
-    exit(0)
+    sys.exit(0)
 
 
 def main():
@@ -142,7 +143,7 @@ def main():
 
     # 生成项目路径字典
     if args.dir:
-        key_path = get_path_json(work_path=work_dir)
+        key_path = get_path_json(work_path=args.dir)
     else:
         key_path = get_path_json()
 
@@ -154,14 +155,11 @@ def main():
     # 配置日志格式及日志文件路径
     handlers = get_handlers(key_path["logs"])
     # 检测外部资源目录(不存在，则建议资源文件夹，供用户存放运行依赖资源)
-    check_dir([key_path['clients'], key_path['databases']])
+    check_dir([key_path["clients"], key_path["databases"]])
     # 初始化临时文件、日志和结果集目录(非项目依赖项)
-    init_dir([
-        key_path["tmp"],
-        key_path["logs"],
-        key_path["custom"],
-        key_path["results"]
-    ])
+    init_dir(
+        [key_path["tmp"], key_path["logs"], key_path["custom"], key_path["results"]]
+    )
 
     # 部署日志模板
     if args.debug:

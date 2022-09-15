@@ -179,8 +179,8 @@ def set_opts(parser: ArgumentParser):
         "--download",
         action="store",
         dest="download",
-        choices=['all', 'client', 'database'],
-        help="Select resources in ['all', 'client', 'database']",
+        choices=["all", "client", "database"],
+        help="Download resources in ['all', 'client', 'database']",
     )
     parser.add_argument(
         "--paolu", action="store_true", dest="paolu", default=False, help="rm -rf *"
