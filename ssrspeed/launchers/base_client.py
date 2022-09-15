@@ -9,7 +9,6 @@ from ssrspeed.utils import PLATFORM
 
 
 class BaseClient(metaclass=ABCMeta):
-
     _platform = PLATFORM
 
     def __init__(self):

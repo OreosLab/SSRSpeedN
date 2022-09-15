@@ -183,9 +183,6 @@ def set_opts(parser: ArgumentParser):
         default=False,
         help="Run program in debug mode.",
     )
-    parser.add_argument(
-        "--paolu", action="store_true", dest="paolu", default=False, help="rm -rf *"
-    )
 
 
 def init(version: str) -> Namespace:

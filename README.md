@@ -159,7 +159,6 @@ ssrspeed
                         在 [all, client, database] 中选择下载资源类型.
 
   --debug               采用 debug 模式.
-  --paolu               删除项目所有文件.
 
   测试模式
   模式                 备注

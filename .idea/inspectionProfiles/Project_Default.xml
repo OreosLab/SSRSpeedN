@@ -1,34 +1,15 @@
 <component name="InspectionProjectProfileManager">
   <profile version="1.0">
     <option name="myName" value="Project Default" />
-    <inspection_tool class="PyArgumentEqualDefaultInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
-    <inspection_tool class="PyAugmentAssignmentInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
     <inspection_tool class="PyBroadExceptionInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
     <inspection_tool class="PyCompatibilityInspection" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="ourVersions">
         <value>
-          <list size="1">
+          <list size="4">
             <item index="0" class="java.lang.String" itemvalue="3.8" />
-          </list>
-        </value>
-      </option>
-    </inspection_tool>
-    <inspection_tool class="PyMissingTypeHintsInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
-    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <option name="ignoredPackages">
-        <value>
-          <list size="11">
-            <item index="0" class="java.lang.String" itemvalue="pyyaml" />
-            <item index="1" class="java.lang.String" itemvalue="beautifulsoup4" />
-            <item index="2" class="java.lang.String" itemvalue="aiohttp_socks" />
-            <item index="3" class="java.lang.String" itemvalue="selenium" />
-            <item index="4" class="java.lang.String" itemvalue="pillow" />
-            <item index="5" class="java.lang.String" itemvalue="flask-cors" />
-            <item index="6" class="java.lang.String" itemvalue="aiohttp" />
-            <item index="7" class="java.lang.String" itemvalue="pysocks" />
-            <item index="8" class="java.lang.String" itemvalue="pynat" />
-            <item index="9" class="java.lang.String" itemvalue="requests" />
-            <item index="10" class="java.lang.String" itemvalue="flask" />
+            <item index="1" class="java.lang.String" itemvalue="3.9" />
+            <item index="2" class="java.lang.String" itemvalue="3.10" />
+            <item index="3" class="java.lang.String" itemvalue="3.11" />
           </list>
         </value>
       </option>

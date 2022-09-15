@@ -26,7 +26,6 @@ LOCAL_ADDRESS = ssrconfig["localAddress"]
 LOCAL_PORT = ssrconfig["localPort"]
 TIMEOUT = 10
 
-
 TMP_DIR = ssrconfig["path"]["tmp"]
 if not os.path.exists(TMP_DIR):
     os.makedirs(TMP_DIR)

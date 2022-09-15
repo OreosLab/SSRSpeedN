@@ -6,7 +6,7 @@ this_directory = os.path.abspath(os.path.dirname(__file__))
 
 setup(
     name="ssrspeed",
-    version="1.4.0",
+    version="1.4.2",
     keywords=["ssr", "speed", "test"],
     url="https://github.com/OreosLab/SSRSpeedN",
     license="GPL-3.0 License",
@@ -23,7 +23,7 @@ setup(
         "Flask-Cors",
         "geoip2",
         "loguru",
-        "Pillow",
+        "pilmoji",
         "PySocks",
         "PyYAML",
         "requests",

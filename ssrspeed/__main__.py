@@ -1,15 +1,13 @@
 import json
 import os
-import shutil
 import sys
 import time
 
-import requests
 from loguru import logger
 
 from ssrspeed import __version__ as version
 from ssrspeed.download import download
-from ssrspeed.paths import JSON_PATH, ROOT_PATH, get_path_json
+from ssrspeed.paths import JSON_PATH, get_path_json
 from ssrspeed.shell import cli as cli_cfg
 from ssrspeed.utils import PLATFORM, RequirementsCheck
 
@@ -69,10 +67,6 @@ def main():
         sys.exit(1)
 
     args = cli_cfg.init(version)
-
-    if args.paolu:
-        shutil.rmtree(ROOT_PATH)
-        sys.exit(0)
 
     # 生成项目路径字典
     if args.dir:

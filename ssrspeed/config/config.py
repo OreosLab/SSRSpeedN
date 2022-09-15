@@ -8,13 +8,11 @@ from ssrspeed.paths import JSON_PATH
 
 config: Dict[str, Any] = {"VERSION": version}
 
-
 with open(file=JSON_PATH, mode="r", encoding="utf-8") as f:
     config.update({"path": json.load(f)})
 
 CONFIG_FILE = config["path"]["ssrspeed.json"]
 CONFIG_EXAMPLE_FILE = config["path"]["ssrspeed.example.json"]
-
 
 LOADED = False
 

@@ -22,7 +22,7 @@ echo [3] 参数查阅
 echo [4] 当前 SSRSpeed 版本
 echo [5] 为本次运行获取管理员权限
 echo ===============================================
-echo 请选择 [1-5]: 
+echo 请选择 [1-5]:
 choice /c 12345
 if %errorlevel%==5 ( goto :uac )
 if %errorlevel%==4 ( goto :ver )
@@ -71,7 +71,7 @@ echo.
 echo usage: ssrspeed [-h] [--version] [-d DIR] [-u URL] [-i IMPORT_FILE] [-c GUICONFIG] [-mc MAX_CONNECTIONS] [-M {default,pingonly,stream,all,wps}]
 echo                 [-m {stasync,socket,speedtestnet,fast}] [--include FILTER [FILTER ...]] [--include-group GROUP [GROUP ...]]
 echo                 [--include-remark REMARKS [REMARKS ...]] [--exclude EFILTER [EFILTER ...]] [--exclude-group EGFILTER [EGFILTER ...]]
-echo                 [--exclude-remark ERFILTER [ERFILTER ...]] [--use-ssr-cs] [-g GROUP_OVERRIDE] [-C RESULT_COLOR] [-s {speed,rspeed,ping,rping}] 
+echo                 [--exclude-remark ERFILTER [ERFILTER ...]] [--use-ssr-cs] [-g GROUP_OVERRIDE] [-C RESULT_COLOR] [-s {speed,rspeed,ping,rping}]
 echo                 [--skip-requirements-check] [-w] [-l LISTEN] [-p PORT] [--download {all,client,database}] [--debug] [--paolu]
 echo.
 echo optional arguments:
@@ -116,7 +116,6 @@ echo  -p PORT, --port PORT  Set listen port for web server.
 echo  --download {all,client,database}
 echo                        Download resources in ['all', 'client', 'database']
 echo  --debug               Run program in debug mode.
-echo  --paolu               rm -rf *
 echo.
 echo  Test Modes
 echo  Mode                 Remark
@@ -142,7 +141,7 @@ echo.
 echo 用法：ssrspeed [-h] [--version] [-d DIR] [-u URL] [-i IMPORT_FILE] [-c GUICONFIG] [-mc MAX_CONNECTIONS] [-M {default,pingonly,stream,all,wps}]
 echo                 [-m {stasync,socket,speedtestnet,fast}] [--include FILTER [FILTER ...]] [--include-group GROUP [GROUP ...]]
 echo                 [--include-remark REMARKS [REMARKS ...]] [--exclude EFILTER [EFILTER ...]] [--exclude-group EGFILTER [EGFILTER ...]]
-echo                 [--exclude-remark ERFILTER [ERFILTER ...]] [--use-ssr-cs] [-g GROUP_OVERRIDE] [-C RESULT_COLOR] [-s {speed,rspeed,ping,rping}] 
+echo                 [--exclude-remark ERFILTER [ERFILTER ...]] [--use-ssr-cs] [-g GROUP_OVERRIDE] [-C RESULT_COLOR] [-s {speed,rspeed,ping,rping}]
 echo                 [--skip-requirements-check] [-w] [-l LISTEN] [-p PORT] [--download {all,client,database}] [--debug] [--paolu]
 echo.
 echo 可选参数：
@@ -158,7 +157,7 @@ echo                        通过节点配置文件加载节点信息.
 echo  -mc MAX_CONNECTIONS, --max-connections MAX_CONNECTIONS
 echo                        设置最大连接数。某些机场不支持并发连接，可设置为 1.
 echo  -M {default,pingonly,stream,all,wps}, --mode {default,pingonly,stream,all,wps}
-echo                        在 [default, pingonly, stream, all, wps] 中选择测试模式.                         
+echo                        在 [default, pingonly, stream, all, wps] 中选择测试模式.
 echo  -m {stasync,socket,speedtestnet,fast}, --method {stasync,socket,speedtestnet,fast}
 echo                        在 [stasync, socket, speedtestnet, fast] 中选择测试方法.
 echo  --include FILTER [FILTER ...]
@@ -172,8 +171,8 @@ echo                        通过节点标识和组名排除节点.
 echo  --exclude-group EGFILTER [EGFILTER ...]
 echo                        通过组名排除节点.
 echo  --exclude-remark ERFILTER [ERFILTER ...]
-echo                        通过节点标识排除节点.       
-echo  --use-ssr-cs          替换 SSR 内核 ShadowsocksR-libev --> ShadowsocksR-C# (Only Windows)
+echo                        通过节点标识排除节点.
+echo  --use-ssr-cs          替换 SSR 内核 ShadowsocksR-libev 为 ShadowsocksR-C# (Only Windows)
 echo  -g GROUP_OVERRIDE     自定义测速组名.
 echo  -C RESULT_COLOR, --color RESULT_COLOR
 echo                        设定测速结果展示配色.
@@ -185,10 +184,9 @@ echo  -w, --web             启动网络服务器.
 echo  -l LISTEN, --listen LISTEN
 echo                        设置网络服务器的监听地址.
 echo  -p PORT, --port PORT  设置网络服务器的监听端口.
-echo  --download {all,client,database}            
+echo  --download {all,client,database}
 echo                        在 [all, client, database] 中选择下载资源类型.
 echo  --debug               采用 debug 模式.
-echo  --paolu               删除项目所有文件.
 echo.
 echo  测试模式
 echo  模式                 备注
