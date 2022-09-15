@@ -28,11 +28,9 @@ max-returns = 8
 [tool.mypy]
 python_version = 3.8
 ignore_missing_imports = true
-exclude = ["venv"]
+exclude = ["build|dist|venv"]
 show_error_codes = true
 
 [[tool.mypy.overrides]]
-module = [
-  "ssrspeed.speedtest.methods.*"
-]
+module = ["ssrspeed.speedtest.methods.*"]
 ignore_errors = true

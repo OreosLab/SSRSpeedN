@@ -12,7 +12,7 @@ TEMPLATES_DIR = ssrconfig["path"]["templates"]
 
 
 class ExporterWps(object):
-    def __init__(self, result: dict):
+    def __init__(self, result: list):
         now_time = []
         for item in result:
             item["geoIP"]["inbound"]["address"] = "*.*.*.*"

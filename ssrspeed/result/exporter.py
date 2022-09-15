@@ -88,7 +88,7 @@ class ExportResult(object):
     @staticmethod
     def set_font(
         name: str = "SourceHanSansCN-Medium.otf", size: int = 18
-    ) -> ImageFont.truetype:
+    ) -> ImageFont.FreeTypeFont:
         font = ssrconfig["path"]["fonts"] + name
         custom_font = ssrconfig["path"]["custom"] + name
         if os.path.isfile(font):
@@ -96,12 +96,12 @@ class ExportResult(object):
         elif os.path.isfile(custom_font):
             return ImageFont.truetype(custom_font, size)
 
-    def set_time_used(self, time_used):
+    def set_time_used(self, time_used: float):
         self.__time_used = time.strftime("%H:%M:%S", time.gmtime(time_used))
         logger.info("Time Used : {}".format(self.__time_used))
 
     def export(
-        self, result, split: int = 0, export_type: int = 0, sort_method: str = ""
+        self, result: list, split: int = 0, export_type: int = 0, sort_method: str = ""
     ):
         if not export_type:
             self.__export_as_json(result)
@@ -109,13 +109,13 @@ class ExportResult(object):
         result = sorter.sort_result(result, sort_method)
         self.__export_as_png(result)
 
-    def export_wps_result(self, result, export_type: int = 0):
+    def export_wps_result(self, result: list, export_type: int = 0):
         if not export_type:
             result = self.__export_as_json(result)
         epwps = ExporterWps(result)
         epwps.export()
 
-    def __get_max_width(self, result: dict) -> tuple:
+    def __get_max_width(self, result: list) -> tuple:
         font = self.__font
         pilmoji = Pilmoji(Image.new("RGB", (1, 1), (255, 255, 255)))
         max_group_width = 0
@@ -137,7 +137,7 @@ class ExportResult(object):
 
     """
     @staticmethod
-    def __deweighting(result: dict) -> list:
+    def __deweighting(result: list) -> list:
         _result = []
         for r in result:
             is_found = False
@@ -163,7 +163,7 @@ class ExportResult(object):
         logger.debug("Base Position {}".format(base_pos))
         return base_pos
 
-    def __export_as_png(self, result: dict):
+    def __export_as_png(self, result: list):
         if not self.__color_speed_list:
             self.set_colors()
         # 	result = self.__deweighting(result)
@@ -1227,7 +1227,7 @@ class ExportResult(object):
         return 255, 255, 255
 
     @staticmethod
-    def __export_as_json(result):
+    def __export_as_json(result: list) -> list:
         # 	result = self.__deweighting(result)
         filename = (
             RESULTS_DIR + time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime()) + ".json"

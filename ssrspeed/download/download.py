@@ -24,8 +24,17 @@ def get_terminal_size(platform):
 
 
 def download_resource(url, headers, name, size, position, path, cols):
-    with tqdm(desc=name, total=size, unit="b", position=position, colour="GREEN", ascii=True, leave=False,
-              unit_scale=True, ncols=cols - 10) as bar, open(file=path, mode="wb") as f:
+    with tqdm(
+        desc=name,
+        total=size,
+        unit="b",
+        position=position,
+        colour="GREEN",
+        ascii=True,
+        leave=False,
+        unit_scale=True,
+        ncols=cols - 10,
+    ) as bar, open(file=path, mode="wb") as f:
         content = requests.get(url=url, headers=headers, stream=True).iter_content(
             chunk_size=1024
         )
@@ -53,7 +62,7 @@ def download(download_type, platform, download_path=None):
     )
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
-                      "Chrome/64.0.3282.119 Safari/537.36 ",
+        "Chrome/64.0.3282.119 Safari/537.36 ",
     }
     client_file_info = {
         "Windows": {"url": client_resources_url, "files": ["clients_win_64.zip"]},
@@ -94,7 +103,7 @@ def download(download_type, platform, download_path=None):
                     download_resource,
                     **kwargs,
                     headers=headers,
-                    cols=terminal_size[0] - 10,
+                    cols=terminal_size[0],
                 )
             )
         done, pending = wait(task_list)

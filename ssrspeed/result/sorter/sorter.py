@@ -1,13 +1,13 @@
 class Sorter(object):
     @staticmethod
-    def __sort_by_speed(result) -> float:
+    def __sort_by_speed(result: dict) -> float:
         return result["dspeed"]
 
     @staticmethod
-    def __sort_by_ping(result) -> float:
+    def __sort_by_ping(result: dict) -> float:
         return result["ping"]
 
-    def sort_result(self, result, sort_method: str) -> dict:
+    def sort_result(self, result: list, sort_method: str) -> list:
         if sort_method != "":
             if sort_method == "SPEED":
                 result.sort(key=self.__sort_by_speed, reverse=True)
