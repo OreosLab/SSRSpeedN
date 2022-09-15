@@ -10,7 +10,7 @@ setup(
     keywords=["ssr", "speed", "test"],
     url="https://github.com/OreosLab/SSRSpeedN",
     license="GPL-3.0 License",
-    description="一个简单的测速工具",
+    description="A simple tool to test nodes.",
     long_description=open(
         os.path.join(this_directory, "README.md"), encoding="utf-8"
     ).read(),
@@ -31,8 +31,8 @@ setup(
         "webdriver-manager",
     ],
     classifiers=[
-        "Development Status :: 4 - Bate",
-        "License :: GPL-3.0 License",
+        "Development Status :: 4 - Beta",
+        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.8",
