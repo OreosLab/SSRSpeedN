@@ -176,6 +176,13 @@ def set_opts(parser: ArgumentParser):
         help="Set listen port for web server.",
     )
     parser.add_argument(
+        "--download",
+        action="store",
+        dest="download",
+        choices=['all', 'client', 'database'],
+        help="Select resources in ['all', 'client', 'database']",
+    )
+    parser.add_argument(
         "--paolu", action="store_true", dest="paolu", default=False, help="rm -rf *"
     )
 

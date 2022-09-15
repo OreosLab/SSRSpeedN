@@ -19,18 +19,19 @@ INNER_PATH = {
 
 
 def get_path_json(work_path=WD_PATH):
+    work_dir = work_path if work_path.endswith(_) else work_path + _
     inner_dict = {
-        "data": f"{work_path}data{_}",
-        "logs": f"{work_path}data{_}logs{_}",
-        "results": f"{work_path}data{_}results{_}",
-        "tmp": f"{work_path}data{_}tmp{_}",
-        "uploads": f"{work_path}data{_}tmp{_}uploads{_}",
-        "config.json": f"{work_path}data{_}tmp{_}config.json",
-        "ssrspeed.json": f"{work_path}data{_}ssrspeed.json",
-        "resources": f"{work_path}resources{_}",
-        "clients": f"{work_path}resources{_}clients{_}",
-        "databases": f"{work_path}resources{_}databases{_}",
-        "custom": f"{work_path}resources{_}custom{_}",
+        "data": f"{work_dir}data{_}",
+        "logs": f"{work_dir}data{_}logs{_}",
+        "results": f"{work_dir}data{_}results{_}",
+        "tmp": f"{work_dir}data{_}tmp{_}",
+        "uploads": f"{work_dir}data{_}tmp{_}uploads{_}",
+        "config.json": f"{work_dir}data{_}tmp{_}config.json",
+        "ssrspeed.json": f"{work_dir}data{_}ssrspeed.json",
+        "resources": f"{work_dir}resources{_}",
+        "clients": f"{work_dir}resources{_}clients{_}",
+        "databases": f"{work_dir}resources{_}databases{_}",
+        "custom": f"{work_dir}resources{_}custom{_}",
     }
     inner_dict.update(INNER_PATH)
     return inner_dict
