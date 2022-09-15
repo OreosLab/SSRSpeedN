@@ -14,10 +14,7 @@ Batch speed measuring tool based on Shadowsocks(R) and V2Ray
 
 * 测速及解锁测试仅供参考，不代表实际使用情况，由于网络情况变化、Netflix 封锁及 ip 更换，测速具有时效性
 
-* 本项目使用 [Python](https://www.python.org/) 编写，使用前请完成环境安装
-* 首次运行前请执行 `.\bin\ssrspeed` 安装 pip 及相关依赖，也可使用 `pip install -r requirements.txt` 命令自行安装
-* `data/logs` 文件夹用于记录测速日志，包含节点的详细信息及测速订阅，非必要请勿泄露
-* 执行 `.\bin\ssrspeed` 批处理命令即可测速，测速结果保存在 `data/results` 文件夹下，不过大佬喜欢用命令行测也可以
+* 本项目使用 [Python 3.8+](https://www.python.org/downloads/) 编写，使用前请完成环境安装
 * 因为需要依赖 Python 环境，且本项目仍在测试阶段，可能存在部分 bug ，可到 [tg 群组](https://t.me/+muGNhnaZglQ0N2Q1) 进行反馈。
 * Netflix 解锁测速结果说明:
 
@@ -67,7 +64,7 @@ Linux 依赖
 
 ## 支持平台
 
-### 已测试平台
+### 测试通过平台
 
 1. Windows 10 x64
 
@@ -75,26 +72,16 @@ Linux 依赖
 
 ### 理论支持平台
 
-支持 Python 及 Shadowsocks, ShadowsocksR, V2Ray 的平台
+支持 Python 3.8+ 及 Shadowsocks, ShadowsocksR, V2Ray, Trojan 的平台
 
-### 一定支持平台
+## 使用指南
 
-支持 SSRSpeedN 的平台
+[**Wiki**](https://github.com/OreosLab/SSRSpeedN/wiki)
 
-## 测速技巧
-
-### 命令行测速（建议大佬使用）
-
-安装第三方库:
-
-```bash
-pip install -r requirements.txt
-```
-
-测速主程序及附加选项：
+### 命令行测试
 
 ```powershell
-python -m ssrspeed
+ssrspeed
 用法：ssrspeed [options] arg1 arg2...
 
  可选参数：
@@ -193,15 +180,15 @@ python -m ssrspeed
 使用样例 :
 
 ```powershell
-python -m ssrspeed -c gui-config.json -M stream --include 韩国 --include-remark Azure --include-group YoYu
-python -m ssrspeed -u "https://home.yoyu.dev/subscriptionlink" --include 香港 Azure --include-group YoYu --exclude Azure
+ssrspeed -c gui-config.json -M stream --include 韩国 --include-remark Azure --include-group YoYu
+ssrspeed -u "https://home.yoyu.dev/subscriptionlink" --include 香港 Azure --include-group YoYu --exclude Azure
 ```
 
 ## 自由配置
 
 * **修改测速内容**
 
-  在 `ssrspeed.json` 文件下第 15 行至第 31 行，默认允许。
+  在 `data/ssrspeed.json` 文件下第 15 行至第 31 行，默认允许。
 
   ```jsonc
     "fastSpeed": false,  // 是否开启快速测速
@@ -269,7 +256,7 @@ python -m ssrspeed -u "https://home.yoyu.dev/subscriptionlink" --include 香港 
 
   * **自定义字体**
 
-    下载字体文件放入 `resources/custom/` 文件夹下，修改 `ssrspeed.json` 文件下第 44 行为字体文件名，本项目自带两个字体
+    下载字体文件放入 `resources/custom/` 文件夹下，修改 `data/ssrspeed.json` 文件下第 44 行为字体文件名，本项目自带两个字体
 
   * **自定义颜色**
 
