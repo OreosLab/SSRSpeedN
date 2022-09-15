@@ -95,64 +95,99 @@ pip install -r requirements.txt
 
 ```powershell
 python -m ssrspeed
-Usage: ssrspeed [options] arg1 arg2...
+用法：ssrspeed [options] arg1 arg2...
 
-可选参数:
+ 可选参数：
+
   -h, --help            输出帮助信息并退出
   --version             输出版本号并退出
   -d DIR, --dir DIR     指定包含 clients 和 data 的目录，默认为当前目录.
-  -u URL, --url=URL     通过节点订阅链接加载节点信息.
-  -i IMPORT_FILE, --import=IMPORT_FILE
+  -u URL, --url URL     通过节点订阅链接加载节点信息.
+  -i IMPORT_FILE, --import IMPORT_FILE
 
                         根据 json 文件输出测试结果.
 
-  -c GUICONFIG, --config=GUICONFIG
+  -c GUICONFIG, --config GUICONFIG
 
                         通过节点配置文件加载节点信息.
 
-
-  -mc MAX_CONNECTIONS, --max-connections=MAX_CONNECTIONS
+  -mc MAX_CONNECTIONS, --max-connections MAX_CONNECTIONS
 
                         设置最大连接数。某些机场不支持并发连接，可设置为 1.
 
-  -M TEST_MODE, --mode=TEST_MODE
+  -M {default,pingonly,stream,all,wps}, --mode {default,pingonly,stream,all,wps}
 
-                        在 [default, pingonly, stream, all, wps] 中选择测试模式.  
-                        
-  -m TEST_METHOD, --method=TEST_METHOD
+                        在 [default, pingonly, stream, all, wps] 中选择测试模式.   
+
+  -m {stasync,socket,speedtestnet,fast}, --method {stasync,socket,speedtestnet,fast}
 
                         在 [stasync, socket, speedtestnet, fast] 中选择测试方法.
 
-  --include             通过节点标识和组名筛选节点.
-  --include-remark      通过节点标识筛选节点.
-  --include-group       通过组名筛选节点.
-  --exclude             通过节点标识和组名排除节点.
-  --exclude-remark      通过节点标识排除节点.
-  --exclude-group       通过组名排除节点.
-  --use-ssr-cs          替换 SSR 内核 ShadowsocksR-libev --> ShadowsocksR-C# (Only Windows)
+  --include FILTER [FILTER ...]
+
+                        通过节点标识和组名筛选节点.
+
+  --include-group GROUP [GROUP ...]
+
+                        通过组名筛选节点.
+
+  --include-remark REMARKS [REMARKS ...]
+
+                        通过节点标识筛选节点.
+
+  --exclude EFILTER [EFILTER ...]
+
+                        通过节点标识和组名排除节点.
+
+  --exclude-group EGFILTER [EGFILTER ...]
+
+                        通过组名排除节点.
+
+  --exclude-remark ERFILTER [ERFILTER ...]
+
+                        通过节点标识排除节点.       
+
+  --use-ssr-cs          替换 SSR 内核 ShadowsocksR-libev 为 ShadowsocksR-C# (Only Windows)
   -g GROUP_OVERRIDE     自定义测速组名.
-  -C RESULT_COLOR, --color=RESULT_COLOR
+  -C RESULT_COLOR, --color RESULT_COLOR
 
                         设定测速结果展示配色.
 
-  -S SORT_METHOD, --sort=SORT_METHOD
+  -s {speed,rspeed,ping,rping}, --sort {speed,rspeed,ping,rping}
 
-                        选择节点排序方式 按速度排序 / 速度倒序 / 按延迟排序 / 延迟倒序
-                        [speed, rspeed, ping, rping]，默认不排序.
+                        选择节点排序方式 [按速度排序 / 速度倒序 / 按延迟排序 / 延迟倒序]，默认不排序.
 
   --skip-requirements-check
 
                         跳过确认.
 
   -w, --web             启动网络服务器.
-  -l LISTEN, --listen=LISTEN
+  -l LISTEN, --listen LISTEN
 
                         设置网络服务器的监听地址.
 
-  -p PORT, --port=PORT  设置网络服务器的监听端口.
-  --download            在 [all, client, database] 中选择下载资源类型.
+  -p PORT, --port PORT  设置网络服务器的监听端口.
+  --download {all,client,database}            
+
+                        在 [all, client, database] 中选择下载资源类型.
+
   --debug               采用 debug 模式.
   --paolu               删除项目所有文件.
+
+  测试模式
+  模式                 备注
+  DEFAULT               可以通过 ssrspeed.json 自由配置
+  TCP_PING              仅 tcp ping，无速度测试
+  STREAM                仅流媒体解锁测试
+  ALL                   全速测试（不包括网页模拟）
+  WEB_PAGE_SIMULATION   网页模拟测试
+
+  测试方法
+  方法                 备注
+  ST_ASYNC              单线程异步下载
+  SOCKET                具有多线程的原始套接字
+  SPEED_TEST_NET        SpeedTest.Net 速度测试
+  FAST                  Fast.com 速度测试
 ```
 
 使用样例 :

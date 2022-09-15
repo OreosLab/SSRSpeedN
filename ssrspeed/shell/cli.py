@@ -59,7 +59,7 @@ def set_opts(parser: ArgumentParser):
         dest="test_method",
         default="",
         choices=["stasync", "socket", "speedtestnet", "fast"],
-        help="Select test method in [speedtestnet, fast, socket, stasync].",
+        help="Select test method in [stasync, socket, speedtestnet, fast].",
     )
     parser.add_argument(
         "--include",
