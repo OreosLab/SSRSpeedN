@@ -24,7 +24,7 @@ def check_dir(paths):
     for path in paths:
         if not os.path.exists(path):
             os.makedirs(path)
-            flag = True  # 发送文件夹建立行为
+            flag = True  # 发生文件夹建立行为
     if flag:
         logger.warning("Please download the resource and store it in the specified location!")
         exit(0)
@@ -81,8 +81,11 @@ def main():
 
     # 生成项目路径 json 文件
     generate_path_json(key_path, JSON_PATH)
-    # 导入路径JSON数据拷贝至缓存
-    load_path_config(key_path)
+    # 拷贝版本信息和历经数据至缓存
+    load_path_config({
+        "VERSION": version,
+        "path": key_path
+    })
     # 生成配置文件并将配置文件JSON数据拷贝至缓存
     generate_config_file()
     # 配置日志格式及日志文件路径
