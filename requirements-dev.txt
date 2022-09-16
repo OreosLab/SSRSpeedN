@@ -16,6 +16,7 @@ isort
 mypy
 py-spy
 pylint
+twine
 
 types-aiofiles
 types-PyYAML

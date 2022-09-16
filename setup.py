@@ -25,7 +25,7 @@ setup(
     description="A simple tool to test nodes.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    packages=find_packages(include=["ssrspeed.*"]),
+    packages=find_packages(include=["ssrspeed", "ssrspeed.*"]),
     include_package_data=True,
     python_requires=">=3.8.0",
     install_requires=install_requires,
