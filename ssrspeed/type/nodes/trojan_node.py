@@ -1,4 +1,4 @@
-from .base_node import BaseNode
+from ssrspeed.type.nodes.base_node import BaseNode
 
 
 class NodeTrojan(BaseNode):

@@ -105,4 +105,6 @@ class SpeedTestMethods:
 
     @staticmethod
     def start_wps_test(port):
-        return webpage_simulation.start_web_page_simulation_test(LOCAL_ADDRESS, port)
+        return webpage_simulation.start_web_page_simulation_test(
+            ssrconfig["webPageSimulation"], LOCAL_ADDRESS, port
+        )

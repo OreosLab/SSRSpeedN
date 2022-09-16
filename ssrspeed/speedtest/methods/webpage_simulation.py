@@ -6,19 +6,13 @@ import aiohttp
 from aiohttp_socks import ProxyConnector
 from loguru import logger
 
-from ssrspeed.config import ssrconfig
 from ssrspeed.utils import parse_location
-
-w_config: dict = {}
-try:
-    w_config = ssrconfig["webPageSimulation"]
-except KeyError:
-    raise KeyError("Web page simulation configurations not found.")
 
 results: list = []
 
 
-async def start_web_page_simulation_test(local_host, local_port):
+async def start_web_page_simulation_test(w_config, local_host, local_port):
+
     while len(results):
         results.pop()
     task_list = []
@@ -69,5 +63,21 @@ async def execute(url, host, port, semaphore):
 
 
 if __name__ == "__main__":
+    w_config = {
+        "enabled": True,
+        "maxWorkers": 4,
+        "urls": [
+            "https://www.google.com.hk",
+            "https://www.youtube.com",
+            "https://www.bing.com",
+            "https://www.github.com",
+            "https://www.microsoft.com",
+        ],
+        "cnUrls": [
+            "https://www.baidu.com",
+            "https://www.weibo.com",
+            "https://www.qq.com",
+        ],
+    }
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-    print(asyncio.run(start_web_page_simulation_test("127.0.0.1", 7890)))
+    print(asyncio.run(start_web_page_simulation_test(w_config, "127.0.0.1", 7890)))

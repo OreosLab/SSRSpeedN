@@ -350,4 +350,4 @@ if __name__ == "__main__":
         "BILIBILI_TEST": True,
     }
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-    print(asyncio.run(start_stream_test(7890, STREAM_CFG, "N/A")))
+    logger.info(asyncio.run(start_stream_test(7890, STREAM_CFG, "N/A")))

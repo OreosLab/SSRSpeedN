@@ -9,13 +9,6 @@ from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 
-LOCAL_PORT = 1080
-
-
-def set_proxy_port(port: int):
-    global LOCAL_PORT
-    LOCAL_PORT = port
-
 
 def speed_test_netflix(port: int) -> Tuple[float, float, List[float], float]:
     try:
@@ -78,4 +71,4 @@ def speed_test_netflix(port: int) -> Tuple[float, float, List[float], float]:
 
 
 if __name__ == "__main__":
-    print(speed_test_netflix(7890))
+    logger.info(speed_test_netflix(7890))
