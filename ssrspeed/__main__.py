@@ -117,8 +117,11 @@ def main():
         logger.warning("Requirements check skipped.")
 
     if args.web:
+        
         from ssrspeed.web import start_server
+        
         start_server(args, key_path)
+        
     else:
         config_url = ""
         config_filename = ""
