@@ -1,0 +1,4 @@
+#!/bin/bash
+
+[ -f ./tdis ] && cd .. && echo hello
+twine upload --repository-url https://test.pypi.org/legacy/ dist/*

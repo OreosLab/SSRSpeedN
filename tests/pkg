@@ -1,0 +1,5 @@
+#!/bin/bash
+
+[ -f ./pkg ] && cd .. && echo hello
+rm -rf build/ dist/ ssrspeed.egg-info/
+python setup.py sdist bdist_wheel && pip install -e .
