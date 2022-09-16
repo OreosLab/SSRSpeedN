@@ -9,6 +9,7 @@ from ssrspeed import __version__ as version
 from ssrspeed.download import download
 from ssrspeed.paths import JSON_PATH, get_path_json
 from ssrspeed.shell import cli as cli_cfg
+from ssrspeed.config import ssrconfig, generate_config_file, load_path_config
 from ssrspeed.utils import PLATFORM, RequirementsCheck
 
 
@@ -25,6 +26,7 @@ def check_dir(paths):
             os.makedirs(path)
             flag = True  # 发送文件夹建立行为
     if flag:
+        logger.warning("Please download the resource and store it in the specified location!")
         exit(0)
 
 
@@ -79,6 +81,10 @@ def main():
 
     # 生成项目路径 json 文件
     generate_path_json(key_path, JSON_PATH)
+    # 导入路径JSON数据拷贝至缓存
+    load_path_config(key_path)
+    # 生成配置文件并将配置文件JSON数据拷贝至缓存
+    generate_config_file()
     # 配置日志格式及日志文件路径
     handlers = get_handlers(key_path["logs"])
     # 检测外部资源目录(不存在，则建议资源文件夹，供用户存放运行依赖资源)
@@ -87,7 +93,9 @@ def main():
     init_dir(
         [key_path["tmp"], key_path["logs"], key_path["custom"], key_path["results"]]
     )
-
+    if ssrconfig['fastSpeed'] is True:
+        for each in handlers:
+            each.update({"enqueue": False})
     # 部署日志模板
     if args.debug:
         for each in handlers:
@@ -107,11 +115,11 @@ def main():
         logger.warning("Requirements check skipped.")
 
     if args.web:
-
+        
         from ssrspeed.web import start_server
-
+        
         start_server(args, key_path)
-
+        
     else:
         config_url = ""
         config_filename = ""

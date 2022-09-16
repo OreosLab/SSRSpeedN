@@ -2,38 +2,43 @@ import json
 import os
 import shutil
 from typing import Any, Dict
-
 from ssrspeed import __version__ as version
-from ssrspeed.paths import JSON_PATH
 
 config: Dict[str, Any] = {"VERSION": version}
 
-with open(file=JSON_PATH, mode="r", encoding="utf-8") as f:
-    config.update({"path": json.load(f)})
 
-CONFIG_FILE = config["path"]["ssrspeed.json"]
-CONFIG_EXAMPLE_FILE = config["path"]["ssrspeed.example.json"]
+def load_path_config(key_path):
+    config.update({"path": key_path})
 
-LOADED = False
 
-if not LOADED:
-    if os.path.exists(CONFIG_FILE):
-        if os.path.isdir(CONFIG_FILE):
-            shutil.rmtree(CONFIG_FILE)
-            if not os.path.exists(CONFIG_EXAMPLE_FILE):
+def mkdir(data_dir):
+    if os.path.exists(data_dir):
+        if os.path.isfile(data_dir):
+            os.remove(data_dir)
+            os.makedirs(data_dir)
+    else:
+        os.makedirs(data_dir)
+
+
+def generate_config_file():
+    data_dir = config["path"]["data"]
+    config_file = config["path"]["ssrspeed.json"]
+    config_example_file = config["path"]["ssrspeed.example.json"]
+    mkdir(data_dir)
+    if os.path.exists(config_file):
+        if os.path.isdir(config_file):
+            shutil.rmtree(config_file)
+            if not os.path.exists(config_example_file):
                 raise FileNotFoundError(
                     "Default configuration file not found, please download from the official repo and try again."
                 )
-            shutil.copy(CONFIG_EXAMPLE_FILE, CONFIG_FILE)
+            shutil.copy(config_example_file, config_file)
     else:
-        if not os.path.exists(CONFIG_EXAMPLE_FILE):
+        if not os.path.exists(config_example_file):
             raise FileNotFoundError(
                 "Default configuration file not found, please download from the official repo and try again."
             )
-        shutil.copy(CONFIG_EXAMPLE_FILE, CONFIG_FILE)
-
-    with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+        shutil.copy(config_example_file, config_file)
+    with open(config_file, "r", encoding="utf-8") as f:
         file_config = json.load(f)
         config.update(file_config)
-
-    LOADED = True
