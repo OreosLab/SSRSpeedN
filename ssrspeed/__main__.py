@@ -5,7 +5,7 @@ import time
 
 from loguru import logger
 
-from ssrspeed import __version__ as version, __banner__ as banner
+from ssrspeed import __version__ as version
 from ssrspeed.download import download
 from ssrspeed.paths import JSON_PATH, get_path_json
 from ssrspeed.shell import cli as cli_cfg
@@ -67,9 +67,7 @@ def main():
     if PLATFORM == "Unknown":
         logger.critical("Your system is not supported. Please contact the developer.")
         sys.exit(1)
-    else:
-        os.system("clear" if PLATFORM != "Windows" else "cls")
-        print(banner)
+
     args = cli_cfg.init(version)
 
     # 生成项目路径字典
