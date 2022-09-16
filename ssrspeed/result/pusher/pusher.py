@@ -17,9 +17,8 @@ def push2server(filename: str) -> dict:
             UPLOAD_RESULT["server"], files=files, data=param, timeout=10
         )
         result["status"] = rep.status_code
-        if rep.status_code == 200:
-            if rep.text == "ok":
-                result["code"] = 0
+        if rep.status_code == 200 and rep.text == "ok":
+            result["code"] = 0
         return result
     except requests.exceptions.Timeout:
         logger.error("Connect to server timeout.")

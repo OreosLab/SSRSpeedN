@@ -1,5 +1,6 @@
 import copy
 import json
+from abc import ABCMeta, abstractmethod
 from typing import Optional, Tuple
 
 import requests
@@ -14,7 +15,7 @@ LOCAL_PORT = ssrconfig["localPort"]
 TIMEOUT = 10
 
 
-class BaseParser:
+class BaseParser(metaclass=ABCMeta):
     def __init__(self):
         self._config_list: list = []
         self.__base_shadowsocks_config: dict = shadowsocks_get_config()
@@ -29,6 +30,7 @@ class BaseParser:
         for item in new_configs:
             self._config_list.append(item)
 
+    @abstractmethod
     def _parse_link(self, link: str) -> dict:
         return {}
 
@@ -86,21 +88,12 @@ class BaseParser:
                     _list.append(item)
         self._config_list = _list
 
-    def filter_node(
-        self,
-        kwl: Optional[list] = None,
-        gkwl: Optional[list] = None,
-        rkwl: Optional[list] = None,
-    ):
-        if not kwl:
-            kwl = []
-        if not gkwl:
-            gkwl = []
-        if not rkwl:
-            rkwl = []
+    def filter_node(self, **kwargs: list):
+        kwl = kwargs.get("kwl", [])
+        gkwl = kwargs.get("gkwl", [])
+        rkwl = kwargs.get("rkwl", [])
         _list: list = []
-        # 	print(len(self._config_list))
-        # 	print(type(kwl))
+        # 	print(len(self._config_list), type(kwl))
         if kwl:
             for kw in kwl:
                 for item in self._config_list:
@@ -139,19 +132,12 @@ class BaseParser:
 
     def exclude_node(
         self,
-        kwl: Optional[list] = None,
-        gkwl: Optional[list] = None,
-        rkwl: Optional[list] = None,
+        **kwargs: list,
     ):
-        # 	print((kw,gkw,rkw))
-        # 	print(len(self._config_list))
-        # 	print(self._config_list)
-        if not kwl:
-            kwl = []
-        if not gkwl:
-            gkwl = []
-        if not rkwl:
-            rkwl = []
+        #   print(kwargs, "\n", len(self._config_list), "\n", self._config_list)
+        kwl = kwargs.get("kwl", [])
+        gkwl = kwargs.get("gkwl", [])
+        rkwl = kwargs.get("rkwl", [])
         if kwl:
             for kw in kwl:
                 _list: list = []

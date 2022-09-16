@@ -121,11 +121,9 @@ class Shadowsockss(BaseClient):
         logger.info("Wait 3 secs to start the client.")
         for _ in range(0, 6):
             time.sleep(0.5)
-        self.start_client({}, True)
+        self.start_client({})
 
         return cur_config
-
-    # 	return tmp_conf["configs"][cur_index]
 
     def __win_conf(self):
         with open(
@@ -146,13 +144,11 @@ class Shadowsockss(BaseClient):
         ) as f:
             f.write(json.dumps(tmp_conf))
 
-    def start_client(self, config: Dict[str, Any], testing: bool = False, debug=False):
+    def start_client(self, config: Dict[str, Any], debug=False):
         if self._process is None:
 
             if Shadowsockss._platform == "Windows":
-                if not testing:
-                    self.__win_conf()
-                # 	sys.exit(0)
+                self.__win_conf()
                 self._process = subprocess.Popen(
                     [f"{CLIENTS_DIR}shadowsocks-win/Shadowsocks.exe"]
                 )

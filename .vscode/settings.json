@@ -115,6 +115,7 @@
         "mmdb",
         "msum",
         "mytvsuper",
+        "ncols",
         "Netfilx",
         "networkbits",
         "nmsl",
@@ -203,6 +204,7 @@
         "threadsperurl",
         "Tifinagh",
         "topdown",
+        "tqdm",
         "tropar",
         "tvsuper",
         "ufile",
@@ -223,5 +225,6 @@
         "xtension",
         "Ytype",
         "yyds"
-    ]
+    ],
+    "cSpell.language": "en,en-GB,en-US,lorem"
 }

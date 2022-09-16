@@ -172,8 +172,6 @@ class ShadowsocksRR(BaseClient):
                 if i >= 4:
                     return False
                 continue
-            # 	self.next_win_conf()
-            # 	return False
             except Exception:
                 logger.error("Get current config failed.", exc_info=True)
                 return False
@@ -204,7 +202,6 @@ class ShadowsocksRR(BaseClient):
                 if i >= 4:
                     return False
                 continue
-            # 	return False
             except Exception:
                 logger.error("Request next config failed.", exc_info=True)
                 return False
@@ -219,7 +216,6 @@ class ShadowsocksRR(BaseClient):
 
             if ShadowsocksRR._platform == "Windows":
                 self.__win_conf()
-                # 	sys.exit(0)
                 self._process = subprocess.Popen(
                     [f"{CLIENTS_DIR}shadowsocksr-libev/ssr-local.exe"]
                 )

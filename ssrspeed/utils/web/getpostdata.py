@@ -13,7 +13,6 @@ def get_post_data() -> dict:
         _data = request.get_data()
         return json.loads(_data.decode("utf-8"))
     elif request.content_type.startswith("application/x-www-form-urlencoded"):
-        # print(1)
         # print(urllib.parse.parse_qs(request.get_data().decode("utf-8")))
         return parse_qs_plus(urllib.parse.parse_qs(request.get_data().decode("utf-8")))
     else:

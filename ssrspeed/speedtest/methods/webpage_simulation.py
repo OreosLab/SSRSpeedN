@@ -13,7 +13,7 @@ w_config: dict = {}
 try:
     w_config = ssrconfig["webPageSimulation"]
 except KeyError:
-    raise Exception("Web page simulation configurations not found.")
+    raise KeyError("Web page simulation configurations not found.")
 
 results: list = []
 
@@ -27,9 +27,8 @@ async def start_web_page_simulation_test(local_host, local_port):
     logger.info(f"Proxy {local_host}:{local_port}")
     ip_loc = await parse_location(local_port)
     urls = copy.deepcopy(w_config.get("urls", []))
-    if ip_loc[0]:
-        if ip_loc[1] == "CN":
-            urls = copy.deepcopy(w_config.get("cnUrls", []))
+    if ip_loc[0] and ip_loc[1] == "CN":
+        urls = copy.deepcopy(w_config.get("cnUrls", []))
     logger.info(f"Read {len(urls)} url(s).")
     for url in urls:
         task_list.append(

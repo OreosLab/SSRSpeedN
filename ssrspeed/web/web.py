@@ -23,10 +23,6 @@ def server_method(app, sc):
     def index():
         return redirect("https://web1.ospf.in/", 301)
 
-    # return render_template(
-    # 	"index.html"
-    # )
-
     """
     {
         "proxyType": "SSR",      // [SSR, SSR-C#, SS, V2RAY]
@@ -59,7 +55,6 @@ def server_method(app, sc):
             if sc.web_get_status() == "running":
                 return "running"
             subscription_url = data.get("url", "")
-            # proxy_type = data.get("proxyType","SSR")
             if not subscription_url:
                 return "invalid url."
             return json.dumps(sc.web_read_subscription(subscription_url))
@@ -70,7 +65,6 @@ def server_method(app, sc):
             if sc.web_get_status() == "running":
                 return "running"
             ufile = request.files["file"]
-            # data = get_post_data()
             if ufile:
                 if check_file_allowed(ufile.filename):
                     filename = secure_filename(ufile.filename)
@@ -80,10 +74,10 @@ def server_method(app, sc):
                     return json.dumps(sc.web_read_config_file(tmp_filename))
                 else:
                     logger.error(f"Disallowed file {ufile.filename}.")
-                    return FileNotAllowed.errMsg
+                    return FileNotAllowed.err_msg
             else:
                 logger.error("File upload failed or unknown error.")
-                return WebFileCommonError.errMsg
+                return WebFileCommonError.err_msg
 
     @app.route("/getcolors", methods=["GET"])
     def get_colors():
@@ -93,13 +87,11 @@ def server_method(app, sc):
     def start_test():
         if request.method == "POST":
             data = get_post_data()
-            # 	return "SUCCESS"
             if sc.web_get_status() == "running":
                 return "running"
             configs = data.get("configs", [])
             if not configs:
                 return "No configs"
-            # proxy_type = data.get("proxyType","SSR")
             test_method = data.get("testMethod", "ST_ASYNC")
             colors = data.get("colors", "origin")
             sort_method = data.get("sortMethod", "")

@@ -1,6 +1,6 @@
-class WebErrorBase(object):
-    errMsg: str = ""
-    errTag: str = ""
+class WebErrorBase:
+    err_msg: str = ""
+    err_tag: str = ""
 
     def __init__(self):
         raise TypeError("Web Errors should not be instantiated.")

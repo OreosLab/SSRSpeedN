@@ -18,7 +18,7 @@ INNER_PATH = {
 }
 
 
-def get_path_json(work_path=WD_PATH):
+def get_path_json(work_path: str = WD_PATH) -> dict:
     work_dir = work_path if work_path.endswith(_) else work_path + _
     inner_dict = {
         "data": f"{work_dir}data{_}",

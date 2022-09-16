@@ -33,9 +33,7 @@ def geo_info(ip):
     try:
         with geoip2.database.Reader("resources/databases/GeoLite2-ASN.mmdb") as reader:
 
-            # response = reader.asn(ip)
-            # print(response)
-
+            # print(response := reader.asn(ip))
             organization = reader.asn(ip).autonomous_system_organization
             # print(organization)
 

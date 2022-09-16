@@ -19,7 +19,7 @@ class BaseClient(metaclass=ABCMeta):
         self._process = None
 
     @abstractmethod
-    def start_client(self, config: Dict[str, Any]):
+    async def start_client(self, config: Dict[str, Any], debug: bool = False):
         pass
 
     def check_alive(self) -> bool:
@@ -37,12 +37,9 @@ class BaseClient(metaclass=ABCMeta):
         if self._process is not None:
             if BaseClient._platform == "Windows":
                 self._process.terminate()
-            # 	self._process.send_signal(signal.SIGINT)
             else:
                 self._process.send_signal(signal.SIGINT)
-            # 	self._process.send_signal(signal.SIGQUIT)
         # 	print(self.__process.returncode)
             self._process = None
             logger.info("Client terminated.")
-    #   self.__ssrProcess.terminate()
     # fmt: on

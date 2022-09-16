@@ -207,7 +207,7 @@ class UniversalParser:
         for item in self.nodes:
             logger.info(f'{item.config["group"]} - {item.config["remarks"]}')
 
-    # logger.info(f"{len(self.__nodes)} node(s) in list.")
+    #   logger.info(f"{len(self.__nodes)} node(s) in list.")
 
     def read_subscription(self, urls: list):
         for url in urls:
@@ -254,7 +254,6 @@ class UniversalParser:
             else:
                 rep = requests.get(url, headers=header, timeout=15)
             rep.encoding = "utf-8"
-            # 	rep = rep.content.decode("utf-8")
             res = rep.text
 
             parsed = False

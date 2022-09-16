@@ -1,0 +1,6 @@
+#!/bin/bash
+
+[ -f ./dis ] && cd .. && echo hello
+coverage run -m ssrspeed -u "$1" -g coverage -c poor -s ping
+coverage html
+coverage report

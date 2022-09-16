@@ -8,8 +8,8 @@ from loguru import logger
 from ssrspeed.utils.platform_check import PLATFORM
 
 
-class RequirementsCheck(object):
-    def __init__(self, client_dir, databases_dir):
+class RequirementsCheck:
+    def __init__(self, client_dir: str, databases_dir: str):
         self.__win_require: dict = {
             "Shadowsocks-libev": [
                 f"{client_dir}shadowsocks-libev/obfs-local.exe",
@@ -83,14 +83,16 @@ class RequirementsCheck(object):
             logger.critical("Requirement libsodium not found !!!")
             sys.exit(1)
         self.__checks(self.__linux_require)
-        # self.__linux_check_shadowsocks()
+
+    #   self.__linux_check_shadowsocks()
 
     @staticmethod
     def __linux_check_libsodium() -> bool:
         logger.info("Checking libsodium.")
         if PLATFORM == "MacOS":
-            # logger.warning("MacOS does not support detection of libsodium,
-            # please ensure that libsodium is installed.")
+            logger.warning(
+                "MacOS does not support detection of libsodium, please ensure that libsodium is installed."
+            )
             try:
                 process = subprocess.Popen(
                     "brew info libsodium", shell=True, stdout=subprocess.PIPE
@@ -112,7 +114,6 @@ class RequirementsCheck(object):
             except Exception:
                 logger.error("", exc_info=True)
                 return False
-        # 	return True
         else:
             try:
                 process = subprocess.Popen(
@@ -135,30 +136,30 @@ class RequirementsCheck(object):
                 logger.error("", exc_info=True)
                 return False
 
-    @staticmethod
-    def __linux_check_shadowsocks() -> bool:
-        sslibev = False
-        simpleobfs = False
-        for cmdpath in os.environ["PATH"].split(":"):
-            if not os.path.isdir(cmdpath):
-                continue
-            for filename in os.listdir(cmdpath):
-                if filename == "obfs-local":
-                    logger.info(
-                        f'Obfs-Local found {os.path.join(cmdpath, "obfs-local")}'
-                    )
-                    simpleobfs = True
-                elif filename == "ss-local":
-                    logger.info(
-                        f'Shadowsocks-libev found {os.path.join(cmdpath, "ss-local")}'
-                    )
-                    sslibev = True
-                if simpleobfs and sslibev:
-                    break
-            if simpleobfs and sslibev:
-                break
-        if not simpleobfs:
-            logger.warning("Simple Obfs not found !!!")
-        if not sslibev:
-            logger.warning("Shadowsocks-libev not found !!!")
-        return True if (simpleobfs and sslibev) else False
+    # @staticmethod
+    # def __linux_check_shadowsocks() -> bool:
+    #     sslibev = False
+    #     simpleobfs = False
+    #     for cmdpath in os.environ["PATH"].split(":"):
+    #         if not os.path.isdir(cmdpath):
+    #             continue
+    #         for filename in os.listdir(cmdpath):
+    #             if filename == "obfs-local":
+    #                 logger.info(
+    #                     f'Obfs-Local found {os.path.join(cmdpath, "obfs-local")}'
+    #                 )
+    #                 simpleobfs = True
+    #             elif filename == "ss-local":
+    #                 logger.info(
+    #                     f'Shadowsocks-libev found {os.path.join(cmdpath, "ss-local")}'
+    #                 )
+    #                 sslibev = True
+    #             if simpleobfs and sslibev:
+    #                 break
+    #         if simpleobfs and sslibev:
+    #             break
+    #     if not simpleobfs:
+    #         logger.warning("Simple Obfs not found !!!")
+    #     if not sslibev:
+    #         logger.warning("Shadowsocks-libev not found !!!")
+    #     return True if (simpleobfs and sslibev) else False

@@ -41,21 +41,13 @@ async def parse_location(port):
 
 
 def check_ipv4(ip: str) -> bool:
-    r = re.compile(r"\b((?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:(?<!\.)\b|\.)){4}")
+    r = re.compile(r"\b((?:25[0-5]|2[0-4]\d|[01]?\d\d?)(?:(?<!\.)\b|\.)){4}")
     rm = r.match(ip)
-    if rm:
-        if rm.group(0) == ip:
-            return True
-    return False
+    return True if rm and rm.group(0) == ip else False
 
 
 def domain2ip(domain: str) -> str:
     logger.info(f"Translating {domain} to ipv4.")
-    """
-    if check_ipv4(domain):
-        return domain
-    ip = "N/A"
-    """
     try:
         ip = socket.gethostbyname(domain)
         return ip
@@ -66,11 +58,6 @@ def domain2ip(domain: str) -> str:
 
 async def ip_loc(port):
     try:
-        """
-        if ip != "" and not check_ipv4(ip):
-            logger.error(f"Invalid IP : {ip}")
-            return {}
-        """
         logger.info("Starting Geo IP.")
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
@@ -84,7 +71,7 @@ async def ip_loc(port):
         ) as session:
             async with session.get(url=url) as response:
                 tmp = await response.json()
-                return tmp
+            return tmp
     except aiohttp.ClientOSError:
         logger.error("Geo IP ClientOSError")
         return {}

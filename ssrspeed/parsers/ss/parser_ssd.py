@@ -7,10 +7,10 @@ from loguru import logger
 class ParserShadowsocksD:
     def __init__(self, base_config):
         self.__config_list: list = []
-        self.__baseConfig = base_config
+        self.__base_config = base_config
 
     def __get_shadowsocks_base_config(self):
-        return copy.deepcopy(self.__baseConfig)
+        return copy.deepcopy(self.__base_config)
 
     def parse_subs_config(self, config) -> list:
         ssd_config = json.loads(config)

@@ -5,7 +5,7 @@ import sys
 from loguru import logger
 
 
-async def async_check_port(port: int):
+async def async_check_port(port):
     try:
         loop = asyncio.get_running_loop()
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

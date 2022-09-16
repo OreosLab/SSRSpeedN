@@ -33,7 +33,7 @@ resultJson
 """
 
 
-class ExportResult(object):
+class ExportResult:
     def __init__(self):
         self.__config: dict = ssrconfig["exportResult"]
         self.__addition: str = ssrconfig["exportResult"]["addition"]
@@ -135,26 +135,6 @@ class ExportResult(object):
             len_out = max(len_out, pilmoji.getsize(outres, font=font)[0])
         return max_group_width + 10, max_remark_width + 10, len_in + 20, len_out + 20
 
-    """
-    @staticmethod
-    def __deweighting(result: list) -> list:
-        _result = []
-        for r in result:
-            is_found = False
-            for i in range(0, len(_result)):
-                _r = _result[i]
-                if _r["group"] == r["group"] and _r["remarks"] == r["remarks"]:
-                    is_found = True
-                    if r["dspeed"] > _r["dspeed"]:
-                        _result[i] = r
-                    elif r["ping"] < _r["ping"]:
-                        _result[i] = r
-                    break
-            if not is_found:
-                _result.append(r)
-        return _result
-    """
-
     def __get_base_pos(self, width: float, text: str) -> float:
         font = self.__font
         draw = ImageDraw.Draw(Image.new("RGB", (1, 1), (255, 255, 255)))
@@ -166,7 +146,6 @@ class ExportResult(object):
     def __export_as_png(self, result: list):
         if not self.__color_speed_list:
             self.set_colors()
-        # 	result = self.__deweighting(result)
         result_font = self.__font
         generated_time = time.localtime()
         image_height = len(result) * 30 + 30
@@ -1228,7 +1207,6 @@ class ExportResult(object):
 
     @staticmethod
     def __export_as_json(result: list) -> list:
-        # 	result = self.__deweighting(result)
         filename = (
             RESULTS_DIR + time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime()) + ".json"
         )

@@ -24,16 +24,17 @@ class ParserShadowsocksBasic:
             return None
 
         try:
+            invalid_link = "Not shadowsocks basic link."
             decoded = b64plus.decode(link[5:]).decode("utf-8")
             at_pos = decoded.rfind("@")
             if at_pos == -1:
-                raise ValueError("Not shadowsocks basic link.")
+                raise ValueError(invalid_link)
             mp = decoded[:at_pos]
             ap = decoded[at_pos + 1 :]
             mp_pos = mp.find(":")
             ap_pos = ap.find(":")
             if mp_pos == -1 or ap_pos == -1:
-                raise ValueError("Not shadowsocks basic link.")
+                raise ValueError(invalid_link)
             encryption = mp[:mp_pos]
             password = mp[mp_pos + 1 :]
             server = ap[:ap_pos]
@@ -44,7 +45,7 @@ class ParserShadowsocksBasic:
             _config["password"] = password
             _config["remarks"] = _config["server"]
         except binascii.Error:
-            raise ValueError("Not shadowsocks basic link.")
+            raise ValueError(invalid_link)
         except Exception:
             logger.error(f"Exception link {link}", exc_info=True)
             return None

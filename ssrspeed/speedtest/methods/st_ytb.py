@@ -10,7 +10,6 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 
-# VIDEO_QUALITY = config["Youtube"]["Quality"]
 LOCAL_PORT = 1080
 
 
@@ -39,9 +38,8 @@ def speed_test_ytb(port: int) -> Tuple[int, int, List[int], int]:
         )
         driver.find_element(By.CLASS_NAME, "ytp-large-play-button").click()
         driver.find_element(By.CLASS_NAME, "ytp-fullscreen-button").click()
-        # print(driver.page_source)
-        # print(driver.get_window_rect())
 
+        # print(driver.get_window_rect(), "\n", driver.get_window_size())
         time.sleep(0.5)
         s = driver.find_element(By.CLASS_NAME, "ytp-settings-button")
         s.click()

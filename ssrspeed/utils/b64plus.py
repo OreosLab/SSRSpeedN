@@ -17,5 +17,5 @@ def encode(s: str) -> bytes:
     return base64.urlsafe_b64encode(s.encode("utf-8"))
 
 
-def decode(s) -> bytes:
+def decode(s: str) -> bytes:
     return _url_safe_decode(s)

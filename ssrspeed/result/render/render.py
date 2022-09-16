@@ -11,7 +11,7 @@ RESULTS_DIR = ssrconfig["path"]["results"]
 TEMPLATES_DIR = ssrconfig["path"]["templates"]
 
 
-class ExporterWps(object):
+class ExporterWps:
     def __init__(self, result: list):
         now_time = []
         for item in result:

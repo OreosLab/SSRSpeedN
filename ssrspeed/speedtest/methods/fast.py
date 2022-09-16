@@ -19,14 +19,6 @@ def set_proxy(local_address, local_port):
     socket.socket = socks.socksocket
 
 
-"""
-proxy = {"http":"http://127.0.0.1:1081"}
-proxySupport = urllib.request.ProxyHandler({"http":"http://127.0.0.1:1081"})
-opener = urllib.request.build_opener(proxySupport)
-urllib.request.install_opener(opener)
-"""
-
-
 def get_html_result(url, result, index):
     """
     get the stuff from url in chunks of size CHUNK, and keep writing the number of bytes retrieved into result[index]

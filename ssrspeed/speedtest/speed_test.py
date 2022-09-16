@@ -100,12 +100,6 @@ class SpeedTest:
     def __get_base_result(self):
         return copy.deepcopy(self.__base_result)
 
-    def __get_next_config(self):
-        try:
-            return self.__configs.pop(0)
-        except IndexError:
-            return None
-
     def __get_client(self, client_type, file):
         client = None
         if client_type == "Shadowsocks":

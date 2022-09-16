@@ -53,7 +53,7 @@ class SpeedTestMethods:
                 fast.set_proxy(LOCAL_ADDRESS, port)
                 result = fast.fast_com(verbose=True)
                 self.__init_socket()
-                # print(result)
+                #   print(result)
                 return result, 0, [], 0
             except Exception:
                 logger.error("", exc_info=True)

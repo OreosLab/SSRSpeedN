@@ -1,4 +1,4 @@
-class Sorter(object):
+class Sorter:
     @staticmethod
     def __sort_by_speed(result: dict) -> float:
         return result["dspeed"]

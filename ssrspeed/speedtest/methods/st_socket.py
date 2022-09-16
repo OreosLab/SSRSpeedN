@@ -71,14 +71,10 @@ def speed_test_thread(link: str) -> Optional[int]:
                 logger.warning("Remote host closed connection.")
                 break
             lxx = len(xx)
-            # 	received += len(xx)
             received += lxx
-            # 	TR = 0
             LOCK.acquire()
             TOTAL_RECEIVED += lxx
-            # 	TR = TOTAL_RECEIVED
             LOCK.release()
-            # 	logger.debug(TR)
             if received >= MAX_FILE_SIZE or EXIT_FLAG:
                 break
         end_time = time.time()
@@ -90,7 +86,6 @@ def speed_test_thread(link: str) -> Optional[int]:
             f"Thread {threading.current_thread().ident} done,time : {delta_time}"
         )
         LOCK.acquire()
-        # 	TOTAL_RECEIVED += received
         MAX_TIME = max(MAX_TIME, delta_time)
         LOCK.release()
     except Exception:
@@ -120,10 +115,8 @@ async def speed_test_socket(port):
             nmsl.start()
 
         max_speed_list = []
-        max_speed = 0
         current_speed = 0
         old_received = 0
-        delta_received = 0
         for i in range(1, 11):
             time.sleep(0.5)
             LOCK.acquire()
@@ -152,15 +145,11 @@ async def speed_test_socket(port):
             logger.error("Socket Test Error !")
             return 0, 0, [], 0
 
-        raw_speed_list = copy.deepcopy(max_speed_list)
         max_speed_list.sort()
         if len(max_speed_list) > 12:
             msum = 0
             for i in range(12, len(max_speed_list) - 2):
                 msum += max_speed_list[i]
-            max_speed = msum / (len(max_speed_list) - 2 - 12)
-        else:
-            max_speed = current_speed
         logger.info(
             f"SingleThread: Fetched {TOTAL_RECEIVED / 1024:.2f} KB in {MAX_TIME:.2f} s."
         )
@@ -176,10 +165,8 @@ async def speed_test_socket(port):
         nmsl.start()
 
     max_speed_list = []
-    max_speed = 0
     current_speed = 0
     old_received = 0
-    delta_received = 0
     for i in range(1, 11):
         time.sleep(0.5)
         LOCK.acquire()

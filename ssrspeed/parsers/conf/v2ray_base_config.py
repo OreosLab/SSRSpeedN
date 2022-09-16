@@ -145,45 +145,45 @@ class V2RayBaseConfigs:
         _config["server_port"] = config["server_port"]
 
         # stream settings
-        streamSettings = _config["outbounds"][0]["streamSettings"]
-        streamSettings["network"] = config["network"]
+        stream_settings = _config["outbounds"][0]["streamSettings"]
+        stream_settings["network"] = config["network"]
         if config["network"] == "tcp":
             if config["type"] == "http":
-                tcpSettings = V2RayBaseConfigs.get_tcp_object()
-                tcpSettings["header"]["request"]["path"] = config["path"].split(",")
-                tcpSettings["header"]["request"]["headers"]["Host"] = config[
+                tcp_settings = V2RayBaseConfigs.get_tcp_object()
+                tcp_settings["header"]["request"]["path"] = config["path"].split(",")
+                tcp_settings["header"]["request"]["headers"]["Host"] = config[
                     "host"
                 ].split(",")
-                streamSettings["tcpSettings"] = tcpSettings
+                stream_settings["tcp_settings"] = tcp_settings
         elif config["network"] == "ws":
-            webSocketSettings = V2RayBaseConfigs.get_ws_object()
-            webSocketSettings["path"] = config["path"]
-            webSocketSettings["headers"]["Host"] = config["host"]
+            web_socket_settings = V2RayBaseConfigs.get_ws_object()
+            web_socket_settings["path"] = config["path"]
+            web_socket_settings["headers"]["Host"] = config["host"]
             for h in config.get("headers", []):
-                webSocketSettings["headers"][h["header"]] = h["value"]
-            streamSettings["wsSettings"] = webSocketSettings
+                web_socket_settings["headers"][h["header"]] = h["value"]
+            stream_settings["wsSettings"] = web_socket_settings
         elif config["network"] == "h2":
-            httpSettings = V2RayBaseConfigs.get_http_object()
-            httpSettings["path"] = config["path"]
-            httpSettings["host"] = config["host"].split(",")
-            streamSettings["httpSettings"] = httpSettings
+            http_settings = V2RayBaseConfigs.get_http_object()
+            http_settings["path"] = config["path"]
+            http_settings["host"] = config["host"].split(",")
+            stream_settings["http_settings"] = http_settings
         elif config["network"] == "quic":
-            quicSettings = V2RayBaseConfigs.get_quic_object()
-            quicSettings["security"] = config["host"]
-            quicSettings["key"] = config["path"]
-            quicSettings["header"]["type"] = config["type"]
-            streamSettings["quicSettings"] = quicSettings
+            quic_settings = V2RayBaseConfigs.get_quic_object()
+            quic_settings["security"] = config["host"]
+            quic_settings["key"] = config["path"]
+            quic_settings["header"]["type"] = config["type"]
+            stream_settings["quic_settings"] = quic_settings
 
-        streamSettings["security"] = config["tls"]
+        stream_settings["security"] = config["tls"]
         if config["tls"] == "tls":
-            tlsSettings = V2RayBaseConfigs.get_tls_object()
-            tlsSettings["allowInsecure"] = (
+            tls_settings = V2RayBaseConfigs.get_tls_object()
+            tls_settings["allowInsecure"] = (
                 True if (config.get("allowInsecure", "false") == "true") else False
             )
-            tlsSettings["serverName"] = config.get("tls-host", "")
-            streamSettings["tlsSettings"] = tlsSettings
+            tls_settings["serverName"] = config.get("tls-host", "")
+            stream_settings["tls_settings"] = tls_settings
 
-        _config["outbounds"][0]["streamSettings"] = streamSettings
+        _config["outbounds"][0]["streamSettings"] = stream_settings
 
         outbound = _config["outbounds"][0]["settings"]["vnext"][0]
         outbound["address"] = config["server"]
