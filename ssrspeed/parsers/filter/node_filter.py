@@ -11,29 +11,18 @@ class NodeFilter:
     def filter_node(
         self,
         nodes: list,
-        kwl: Optional[list] = None,
-        gkwl: Optional[list] = None,
-        rkwl: Optional[list] = None,
-        ekwl: Optional[list] = None,
-        egkwl: Optional[list] = None,
-        erkwl: Optional[list] = None,
+        **kwargs: list,
     ) -> list:
-        if not kwl:
-            kwl = []
-        if not gkwl:
-            gkwl = []
-        if not rkwl:
-            rkwl = []
-        if not ekwl:
-            ekwl = []
-        if not egkwl:
-            egkwl = []
-        if not erkwl:
-            erkwl = []
+        kwl = kwargs.get("kwl", [])
+        gkwl = kwargs.get("gkwl", [])
+        rkwl = kwargs.get("rkwl", [])
+        ekwl = kwargs.get("ekwl", [])
+        egkwl = kwargs.get("egkwl", [])
+        erkwl = kwargs.get("erkwl", [])
         self.__node_list.clear()
         self.__node_list = deepcopy(nodes)
-        self.__filter_node(kwl, gkwl, rkwl)
-        self.__exclude_nodes(ekwl, egkwl, erkwl)
+        self.__filter_node(kwl=kwl, gkwl=gkwl, rkwl=rkwl)
+        self.__exclude_nodes(ekwl=ekwl, egkwl=egkwl, erkwl=erkwl)
         return self.__node_list
 
     @staticmethod
@@ -84,16 +73,11 @@ class NodeFilter:
 
     def __filter_node(
         self,
-        kwl: Optional[list] = None,
-        gkwl: Optional[list] = None,
-        rkwl: Optional[list] = None,
+        **kwargs: list,
     ):
-        if not kwl:
-            kwl = []
-        if not gkwl:
-            gkwl = []
-        if not rkwl:
-            rkwl = []
+        kwl = kwargs.get("kwl", [])
+        gkwl = kwargs.get("gkwl", [])
+        rkwl = kwargs.get("rkwl", [])
         _list: list = []
         # 	print(len(self.__node_list))
         # 	print(type(kwl))
@@ -138,17 +122,11 @@ class NodeFilter:
 
     def __exclude_nodes(
         self,
-        kwl: Optional[list] = None,
-        gkwl: Optional[list] = None,
-        rkwl: Optional[list] = None,
+        **kwargs: list,
     ):
-
-        if not kwl:
-            kwl = []
-        if not gkwl:
-            gkwl = []
-        if not rkwl:
-            rkwl = []
+        kwl = kwargs.get("kwl", [])
+        gkwl = kwargs.get("gkwl", [])
+        rkwl = kwargs.get("rkwl", [])
         if kwl:
             for kw in kwl:
                 _list: list = []

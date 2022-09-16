@@ -191,21 +191,17 @@ class UniversalParser:
 
         return result
 
-    def filter_nodes(self, fk=None, fgk=None, frk=None, ek=None, egk=None, erk=None):
-        if not fk:
-            fk = []
-        if not fgk:
-            fgk = []
-        if not frk:
-            frk = []
-        if not ek:
-            ek = []
-        if not egk:
-            egk = []
-        if not erk:
-            erk = []
+    def filter_nodes(self, **kwargs: list):
+        fk = kwargs.get("fk", [])
+        fgk = kwargs.get("fgk", [])
+        frk = kwargs.get("frk", [])
+        ek = kwargs.get("ek", [])
+        egk = kwargs.get("egk", [])
+        erk = kwargs.get("erk", [])
         nf = NodeFilter()
-        self.__nodes = nf.filter_node(self.__nodes, fk, fgk, frk, ek, egk, erk)
+        self.__nodes = nf.filter_node(
+            self.__nodes, fk=fk, fgk=fgk, frk=frk, ek=ek, egk=egk, erk=erk
+        )
 
     def print_nodes(self):
         for item in self.nodes:

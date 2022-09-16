@@ -12,7 +12,6 @@ from ssrspeed.speedtest import SpeedTest
 
 class SSRSpeedCore:
     def __init__(self):
-
         self.test_method: str = "ST_ASYNC"
         self.proxy_type: str = "SSR"
         self.web_mode: bool = False
@@ -85,10 +84,10 @@ class SSRSpeedCore:
         self.sort_method = sort_method
         self.colors = color
         if self.__parser:
-            if cfg_filename:
-                self.__parser.read_gui_config(cfg_filename)
-            elif url:
+            if url:
                 self.__parser.read_subscription(url.split(" "))
+            elif cfg_filename:
+                self.__parser.read_gui_config(cfg_filename)
             else:
                 raise ValueError("Subscription URL or configuration file must be set!")
 
@@ -136,31 +135,14 @@ class SSRSpeedCore:
         }
         return r
 
-    def filter_nodes(
-        self,
-        fk: Optional[list] = None,
-        fgk: Optional[list] = None,
-        frk: Optional[list] = None,
-        ek: Optional[list] = None,
-        egk: Optional[list] = None,
-        erk: Optional[list] = None,
-    ):
-        # 	self.__parser.excludeNode([], [], ssrconfig["excludeRemarks"])
-        if not fk:
-            fk = []
-        if not fgk:
-            fgk = []
-        if not frk:
-            frk = []
-        if not ek:
-            ek = []
-        if not egk:
-            egk = []
-        if not erk:
-            erk = []
-        self.__parser.filter_nodes(
-            fk, fgk, frk, ek, egk, erk + ssrconfig["excludeRemarks"]
-        )
+    def filter_nodes(self, **kwargs: list):
+        fk = kwargs.get("fk", [])
+        fgk = kwargs.get("fgk", [])
+        frk = kwargs.get("frk", [])
+        ek = kwargs.get("ek", [])
+        egk = kwargs.get("egk", [])
+        erk = kwargs.get("erk", []) + ssrconfig["excludeRemarks"]
+        self.__parser.filter_nodes(fk=fk, fgk=fgk, frk=frk, ek=ek, egk=egk, erk=erk)
         self.__parser.print_nodes()
         logger.info(f"{len(self.__parser.nodes)} node(s) will be tested.")
 

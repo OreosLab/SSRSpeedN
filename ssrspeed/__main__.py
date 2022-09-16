@@ -202,12 +202,12 @@ def main():
             sc.set_group(args.group_override)
 
         sc.filter_nodes(
-            filter_keyword,
-            filter_group_keyword,
-            filter_remark_keyword,
-            exclude_keyword,
-            exclude_group_keyword,
-            exclude_remark_keyword,
+            fk=filter_keyword,
+            fgk=filter_group_keyword,
+            frk=filter_remark_keyword,
+            ek=exclude_keyword,
+            egk=exclude_group_keyword,
+            erk=exclude_remark_keyword,
         )
 
         sc.clean_result()
