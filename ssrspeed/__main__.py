@@ -6,10 +6,10 @@ import time
 from loguru import logger
 
 from ssrspeed import __version__ as version
+from ssrspeed.config import generate_config_file, load_path_config, ssrconfig
 from ssrspeed.download import download
 from ssrspeed.paths import JSON_PATH, get_path_json
 from ssrspeed.shell import cli as cli_cfg
-from ssrspeed.config import ssrconfig, generate_config_file, load_path_config
 from ssrspeed.utils import PLATFORM, RequirementsCheck
 
 
@@ -24,9 +24,11 @@ def check_dir(paths):
     for path in paths:
         if not os.path.exists(path):
             os.makedirs(path)
-            flag = True  # 发送文件夹建立行为
+            flag = True  # 发生文件夹建立行为
     if flag:
-        logger.warning("Please download the resource and store it in the specified location!")
+        logger.warning(
+            "Please download the resource and store it in the specified location!"
+        )
         exit(0)
 
 
@@ -79,11 +81,16 @@ def main():
     if download_type := args.download:
         download(download_type, PLATFORM, args.dir)
 
-    # 生成项目路径 json 文件
+    # 生成项目路径 JSON 文件
     generate_path_json(key_path, JSON_PATH)
-    # 导入路径JSON数据拷贝至缓存
-    load_path_config(key_path)
-    # 生成配置文件并将配置文件JSON数据拷贝至缓存
+    # 导入路径 JSON 数据拷贝至缓存
+    load_path_config(
+        {
+            "VERSION": version,
+            "path": key_path,
+        }
+    )
+    # 生成配置文件并将配置文件 JSON 数据拷贝至缓存
     generate_config_file()
     # 配置日志格式及日志文件路径
     handlers = get_handlers(key_path["logs"])
@@ -93,7 +100,7 @@ def main():
     init_dir(
         [key_path["tmp"], key_path["logs"], key_path["custom"], key_path["results"]]
     )
-    if ssrconfig['fastSpeed'] is True:
+    if ssrconfig["fastSpeed"] is True:
         for each in handlers:
             each.update({"enqueue": False})
     # 部署日志模板
@@ -110,16 +117,16 @@ def main():
 
     if not args.skip_requirements_check:
         rc = RequirementsCheck(key_path["clients"], key_path["databases"])
-        rc.check()
+        rc.check(PLATFORM)
     else:
         logger.warning("Requirements check skipped.")
 
     if args.web:
-        
+
         from ssrspeed.web import start_server
-        
+
         start_server(args, key_path)
-        
+
     else:
         config_url = ""
         config_filename = ""

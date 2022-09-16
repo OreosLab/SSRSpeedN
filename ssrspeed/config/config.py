@@ -2,16 +2,15 @@ import json
 import os
 import shutil
 from typing import Any, Dict
-from ssrspeed import __version__ as version
 
-config: Dict[str, Any] = {"VERSION": version}
-
-
-def load_path_config(key_path):
-    config.update({"path": key_path})
+config: Dict[str, Any] = {}
 
 
-def mkdir(data_dir):
+def load_path_config(data: dict):
+    config.update(data)
+
+
+def mkdir(data_dir: str):
     if os.path.exists(data_dir):
         if os.path.isfile(data_dir):
             os.remove(data_dir)

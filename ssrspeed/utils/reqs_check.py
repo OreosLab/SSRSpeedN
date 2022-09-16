@@ -5,8 +5,6 @@ from typing import Dict, Optional
 
 from loguru import logger
 
-from ssrspeed.utils.platform_check import PLATFORM
-
 
 class RequirementsCheck:
     def __init__(self, client_dir: str, databases_dir: str):
@@ -55,11 +53,11 @@ class RequirementsCheck:
             ],
         }
 
-    def check(self):
-        if PLATFORM == "Windows":
+    def check(self, platform: str):
+        if platform == "Windows":
             self.__checks(self.__win_require)
-        elif PLATFORM == "Linux" or PLATFORM == "MacOS":
-            self.__linux_check()
+        elif platform == "Linux" or platform == "MacOS":
+            self.__linux_check(platform)
             self.__checks(self.__linux_require)
         else:
             logger.critical("Unsupported platform !")
@@ -78,8 +76,8 @@ class RequirementsCheck:
                 else:
                     logger.warning(f"Requirement {require} not found !!!")
 
-    def __linux_check(self):
-        if not self.__linux_check_libsodium():
+    def __linux_check(self, platform: str):
+        if not self.__linux_check_libsodium(platform):
             logger.critical("Requirement libsodium not found !!!")
             sys.exit(1)
         self.__checks(self.__linux_require)
@@ -87,9 +85,9 @@ class RequirementsCheck:
     #   self.__linux_check_shadowsocks()
 
     @staticmethod
-    def __linux_check_libsodium() -> bool:
+    def __linux_check_libsodium(platform: str) -> bool:
         logger.info("Checking libsodium.")
-        if PLATFORM == "MacOS":
+        if platform == "MacOS":
             logger.warning(
                 "MacOS does not support detection of libsodium, please ensure that libsodium is installed."
             )

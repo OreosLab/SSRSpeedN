@@ -4,11 +4,11 @@ import os
 import sys
 import time
 
+from loguru import logger
+
 from tests import root
 
 root()
-
-from loguru import logger
 
 from ssrspeed.config import ssrconfig
 
