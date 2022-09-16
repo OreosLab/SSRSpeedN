@@ -2,9 +2,8 @@ import json
 import os
 import shutil
 from typing import Any, Dict
-from ssrspeed import __version__ as version
 
-config: Dict[str, Any] = {"VERSION": version}
+config: Dict[str, Any] = {}
 
 
 def load_path_config(key_path):
