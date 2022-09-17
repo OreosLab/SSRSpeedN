@@ -3,7 +3,6 @@ import socket
 import socks
 from loguru import logger
 
-from ssrspeed.config import ssrconfig
 from ssrspeed.speedtest.methods import (
     fast,
     google_ping,
@@ -17,24 +16,34 @@ from ssrspeed.speedtest.methods import (
     webpage_simulation,
 )
 
-LOCAL_ADDRESS = ssrconfig["localAddress"]
-DEFAULT_SOCKET = socket.socket
-METHOD = ssrconfig["method"]
-
 
 class SpeedTestMethods:
+
+    DEFAULT_SOCKET = socket.socket
+
     def __init__(self):
         self.__init_socket()
 
-    @staticmethod
-    def __init_socket():
-        socket.socket = DEFAULT_SOCKET
+    @classmethod
+    def __init_socket(cls):
+        socket.socket = cls.DEFAULT_SOCKET
 
-    async def start_test(self, port, download_semaphore, method="ST_ASYNC"):
+    async def start_test(self, **kwargs):
+
+        address = kwargs.get("address", "127.0.0.1")
+        port = kwargs.get("port", 10870)
+        download_semaphore = kwargs.get("download_semaphore", 1)
+        file_download = kwargs.get("file_download", {})
+        speed_test = kwargs.get("speed_test", False)
+        method = kwargs.get("method", "ST_ASYNC")
+        socket_method = kwargs.get("socket_method", "SOCKET")
+        st_speed_test = kwargs.get("st_speed_test", False)
+        buffer = kwargs.get("buffer", 4096)
+        workers = kwargs.get("workers", 4)
         logger.info(f"Starting speed test with {method}.")
         if method == "SPEED_TEST_NET":
             try:
-                socks.set_default_proxy(socks.SOCKS5, LOCAL_ADDRESS, port)
+                socks.set_default_proxy(socks.SOCKS5, address, port)
                 socket.socket = socks.socksocket
                 logger.info("Initializing...")
                 s = speedtestnet.Speedtest()
@@ -50,7 +59,7 @@ class SpeedTestMethods:
                 return 0, 0, [], 0
         elif method == "FAST":
             try:
-                fast.set_proxy(LOCAL_ADDRESS, port)
+                fast.set_proxy(address, port)
                 result = fast.fast_com(verbose=True)
                 self.__init_socket()
                 #   print(result)
@@ -60,13 +69,21 @@ class SpeedTestMethods:
                 return 0, 0, [], 0
         elif method == "SOCKET":  # Old speedtest
             try:
-                if METHOD == "SOCKET":
-                    result = await stSocket.speed_test_socket(port)
+                if socket_method == "SOCKET":
+                    result = await stSocket.speed_test_socket(
+                        file_download,
+                        address,
+                        port,
+                        speed_test,
+                        st_speed_test,
+                        buffer,
+                        workers,
+                    )
                     return result
-                if METHOD == "YOUTUBE":
+                if socket_method == "YOUTUBE":
                     result = stYtb.speed_test_ytb(port)
                     return result
-                if METHOD == "NETFLIX":
+                if socket_method == "NETFLIX":
                     result = stNF.speed_test_netflix(port)
                     return result
             except Exception:
@@ -74,14 +91,24 @@ class SpeedTestMethods:
                 return 0, 0, [], 0
         elif method == "YOUTUBE":
             try:
-                result = await stSocket.speed_test_socket(port)
+                result = await stSocket.speed_test_socket(
+                    file_download,
+                    address,
+                    port,
+                    speed_test,
+                    st_speed_test,
+                    buffer,
+                    workers,
+                )
                 return result
             except Exception:
                 logger.error("", exc_info=True)
                 return 0, 0, [], 0
         elif method == "ST_ASYNC":
             try:
-                result = await st_asyncio.start(download_semaphore, LOCAL_ADDRESS, port)
+                result = await st_asyncio.start(
+                    download_semaphore, file_download, address, port, buffer, workers
+                )
                 return result
             except Exception:
                 logger.error("", exc_info=True)
@@ -95,16 +122,16 @@ class SpeedTestMethods:
         return tcp_ping(server, port)
 
     @staticmethod
-    def start_google_ping(port):
+    def start_google_ping(address, port):
         logger.info("Testing latency to google.")
-        return google_ping(LOCAL_ADDRESS, port)
+        return google_ping(address, port)
 
     @staticmethod
     def start_stream_test(port, stream_cfg, outbound_ip):
         return st_stream.start_stream_test(port, stream_cfg, outbound_ip)
 
     @staticmethod
-    def start_wps_test(port):
+    def start_wps_test(wps_config, address, port):
         return webpage_simulation.start_web_page_simulation_test(
-            ssrconfig["webPageSimulation"], LOCAL_ADDRESS, port
+            wps_config, address, port
         )

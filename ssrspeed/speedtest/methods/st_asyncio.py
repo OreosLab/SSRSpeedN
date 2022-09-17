@@ -7,12 +7,8 @@ import aiohttp
 from aiohttp_socks import ProxyConnector
 from loguru import logger
 
-from ssrspeed.config import ssrconfig
 from ssrspeed.utils import ip_loc
 from ssrspeed.utils.rules import DownloadRuleMatch
-
-WORKERS = ssrconfig["fileDownload"]["workers"]
-BUFFER = ssrconfig["fileDownload"]["buffer"]
 
 
 class Statistics:
@@ -92,7 +88,13 @@ class Statistics:
         self._speed_list.append(speed)
 
 
-async def _fetch(url: str, sta: Statistics, host: str = "127.0.0.1", port: int = 10870):
+async def _fetch(
+    url: str,
+    sta: Statistics,
+    host: str,
+    port: int,
+    buffer: int,
+):
     try:
         logger.info(f"Fetching {url} via {host}:{port}.")
         async with aiohttp.ClientSession(
@@ -104,7 +106,7 @@ async def _fetch(url: str, sta: Statistics, host: str = "127.0.0.1", port: int =
             async with session.get(url) as response:
                 logger.debug("Awaiting response.")
                 while not sta.stopped:
-                    chunk = await response.content.read(BUFFER)
+                    chunk = await response.content.read(buffer)
                     if not chunk:
                         logger.info("No chunk, task stopped.")
                         break
@@ -114,13 +116,15 @@ async def _fetch(url: str, sta: Statistics, host: str = "127.0.0.1", port: int =
 
 
 async def start(
-    download_semaphore,
-    proxy_host: str = "127.0.0.1",
-    proxy_port: int = 10870,
-    workers: int = WORKERS,
+    download_semaphore: int,
+    file_download: dict,
+    proxy_host: str,
+    proxy_port: int,
+    buffer: int,
+    workers: int,
 ) -> tuple:
     async with download_semaphore:
-        dlrm = DownloadRuleMatch()
+        dlrm = DownloadRuleMatch(file_download)
         res = dlrm.get_url(await ip_loc(proxy_port))
         url = res[0]
         file_size = res[1]
@@ -128,7 +132,15 @@ async def start(
         logger.info(f"Running st_async, workers: {workers}.")
         _sta = Statistics()
         tasks = [
-            asyncio.create_task(_fetch(url, _sta, proxy_host, proxy_port))
+            asyncio.create_task(
+                _fetch(
+                    url,
+                    _sta,
+                    proxy_host,
+                    proxy_port,
+                    buffer,
+                )
+            )
             for _ in range(workers)
         ]
         await asyncio.wait(tasks)

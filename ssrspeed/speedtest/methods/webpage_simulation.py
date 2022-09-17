@@ -12,7 +12,6 @@ results: list = []
 
 
 async def start_web_page_simulation_test(w_config, local_host, local_port):
-
     while len(results):
         results.pop()
     task_list = []

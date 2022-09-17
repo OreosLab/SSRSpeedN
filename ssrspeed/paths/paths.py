@@ -9,7 +9,6 @@ JSON_PATH = f"{CURRENT_PATH}paths.json"
 SSR_PATH = _.join(CURRENT_PATH.split(_)[0:-2]) + _
 WD_PATH = os.getcwd() + _
 
-
 INNER_PATH = {
     "ssrspeed": f"{SSR_PATH}",
     "static": f"{SSR_PATH}resource{_}static{_}",

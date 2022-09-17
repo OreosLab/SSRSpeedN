@@ -2,13 +2,11 @@ from copy import deepcopy
 
 from loguru import logger
 
-from ssrspeed.config import ssrconfig
-
 
 class DownloadRuleMatch:
-    def __init__(self):
-        self._config: dict = deepcopy(ssrconfig["fileDownload"])
-        self._download_links: dict = deepcopy(self._config["downloadLinks"])
+    def __init__(self, file_download: dict):
+        self._config: dict = deepcopy(file_download)
+        self._download_links: dict = deepcopy(file_download["downloadLinks"])
 
     def _get_download_link(self, tag: str = "") -> tuple:
         default: tuple = tuple()

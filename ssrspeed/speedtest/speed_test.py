@@ -21,18 +21,23 @@ from ssrspeed.utils import async_check_port, domain2ip, get_ip_info, ip_loc
 CLIENTS_DIR = ssrconfig["path"]["clients"]
 DATABASES_DIR = ssrconfig["path"]["databases"]
 TMP_DIR = ssrconfig["path"]["tmp"]
-
-LOCAL_ADDRESS = ssrconfig["localAddress"]
-LOCAL_PORT = int(ssrconfig["localPort"])
-MAX_CONNECTIONS = int(ssrconfig["maxConnections"])
-FAST_SPEED = ssrconfig["fastSpeed"]
-GEOIP_TEST = ssrconfig["geoip"]
-STREAM_TEST = ssrconfig["stream"]
-PING_TEST = ssrconfig["ping"]
+LOCAL_ADDRESS = ssrconfig.get("localAddress", "127.0.0.1")
+LOCAL_PORT = int(ssrconfig.get("localPort", 10870))
+MAX_CONNECTIONS = int(ssrconfig.get("maxConnections", 50))
+FAST_SPEED = ssrconfig.get("fastSpeed", False)
+GEOIP_TEST = ssrconfig.get("geoip", True)
+STREAM_TEST = ssrconfig.get("stream", True)
+PING_TEST = ssrconfig.get("ping", True)
+GOOGLE_PING_TEST = ssrconfig.get("gping", True)
+WPS_CONFIG = ssrconfig.get("webPageSimulation", {})
+WPS_TEST = WPS_CONFIG.get("enabled", False)
+FILE_DOWNLOAD = ssrconfig.get("fileDownload", {})
+SPEED_TEST = ssrconfig.get("speed", False)
+SOCKET_METHOD = ssrconfig.get("method", "SOCKET")
+ST_SPEED_TEST = ssrconfig.get("StSpeed", False)
+BUFFER = ssrconfig["fileDownload"]["buffer"]
+WORKERS = ssrconfig["fileDownload"]["workers"]
 NTT_TEST = ssrconfig["ntt"]["enabled"]
-GOOGLE_PING_TEST = ssrconfig["gping"]
-WPS_TEST = ssrconfig["webPageSimulation"]["enabled"]
-SPEED_TEST = ssrconfig["speed"]
 
 
 class SpeedTest:
@@ -165,7 +170,7 @@ class SpeedTest:
         )
         return outbound_ip, outbound_geo_res, outbound_info
 
-    async def __ping(self, server, server_port, port):
+    async def __ping(self, server, server_port, address, port):
         latency_test = None
         st = SpeedTestMethods()
 
@@ -187,7 +192,7 @@ class SpeedTest:
 
         if ((not PING_TEST) or (latency_test[0] > 0)) and GOOGLE_PING_TEST:
             try:
-                google_ping_test = await st.start_google_ping(port)
+                google_ping_test = await st.start_google_ping(address, port)
                 res["gPing"] = google_ping_test[0]
                 res["gPingLoss"] = 1 - google_ping_test[1]
                 res["rawGooglePingStatus"] = google_ping_test[2]
@@ -223,6 +228,7 @@ class SpeedTest:
         self,
         _item,
         cfg,
+        address,
         port,
         geo_ip_semaphore,
         download_semaphore,
@@ -232,12 +238,12 @@ class SpeedTest:
         geoip_log = ""
         tcp_ping_log = ""
         google_ping_log = ""
-        nat_info = ""
         wps_log = ""
         speed_log = ""
+        nat_info = ""
         outbound_ip = "N/A"
         stream_task = None
-        pint_task = None
+        ping_task = None
         wps_task = None
         speed_task = None
         st = SpeedTestMethods()
@@ -278,13 +284,13 @@ class SpeedTest:
             task_list.append(stream_task)
 
         if kwargs.get("default", False) and PING_TEST or kwargs.get("ping_test", False):
-            pint_task = asyncio.create_task(
-                self.__ping(cfg["server"], cfg["server_port"], port)
+            ping_task = asyncio.create_task(
+                self.__ping(cfg["server"], cfg["server_port"], address, port)
             )
-            task_list.append(pint_task)
+            task_list.append(ping_task)
 
         if kwargs.get("default", False) and WPS_TEST or kwargs.get("wps_test", False):
-            wps_task = asyncio.create_task(st.start_wps_test(port))
+            wps_task = asyncio.create_task(st.start_wps_test(WPS_CONFIG, address, port))
             task_list.append(wps_task)
 
         if (
@@ -293,7 +299,18 @@ class SpeedTest:
             or kwargs.get("speed_test", False)
         ):
             speed_task = asyncio.create_task(
-                st.start_test(port, download_semaphore, self.__test_method)
+                st.start_test(
+                    address=address,
+                    port=port,
+                    download_semaphore=download_semaphore,
+                    file_download=FILE_DOWNLOAD,
+                    speed_test=SPEED_TEST,
+                    method=self.__test_method,
+                    socket_method=SOCKET_METHOD,
+                    st_speed_test=ST_SPEED_TEST,
+                    buffer=BUFFER,
+                    workers=WORKERS,
+                )
             )
             task_list.append(speed_task)
 
@@ -316,8 +333,8 @@ class SpeedTest:
             result = stream_task.result()
             _item.update(result)
 
-        if pint_task:
-            ping_res = pint_task.result()
+        if ping_task:
+            ping_res = ping_task.result()
             tcp_ping_log = (
                 f"* Loss: [{ping_res['loss'] * 100:.2f}%] "
                 f"* TCP Ping: [{ping_res['ping'] * 1000:.2f}] "
@@ -343,7 +360,16 @@ class SpeedTest:
             if int(test_res[0]) == 0:
                 logger.warning("Re-testing node.")
                 test_res = await st.start_test(
-                    port, download_semaphore, self.__test_method
+                    address=address,
+                    port=port,
+                    download_semaphore=download_semaphore,
+                    file_download=FILE_DOWNLOAD,
+                    speed_test=SPEED_TEST,
+                    method=self.__test_method,
+                    socket_method=SOCKET_METHOD,
+                    st_speed_test=ST_SPEED_TEST,
+                    buffer=BUFFER,
+                    workers=WORKERS,
                 )
 
             speed_log = (
@@ -364,15 +390,16 @@ class SpeedTest:
             + geoip_log
             + tcp_ping_log
             + google_ping_log
-            + nat_info
             + wps_log
             + speed_log
+            + nat_info
         )
 
     async def __base_start_test(
         self,
         _item,
         cfg,
+        address,
         port,
         geo_ip_semaphore,
         download_semaphore,
@@ -382,9 +409,9 @@ class SpeedTest:
         geoip_log = ""
         tcp_ping_log = ""
         google_ping_log = ""
-        nat_info = ""
         wps_log = ""
         speed_log = ""
+        nat_info = ""
         outbound_ip = "N/A"
         st = SpeedTestMethods()
 
@@ -425,7 +452,9 @@ class SpeedTest:
             and (PING_TEST or GOOGLE_PING_TEST)
             or kwargs.get("ping_test", False)
         ):
-            ping_res = await self.__ping(cfg["server"], cfg["server_port"], port)
+            ping_res = await self.__ping(
+                cfg["server"], cfg["server_port"], address, port
+            )
 
             tcp_ping_log = (
                 f"- Loss: [{ping_res['loss'] * 100:.2f}%] "
@@ -444,7 +473,7 @@ class SpeedTest:
             _item["rawGooglePingStatus"] = ping_res["rawGooglePingStatus"]
 
         if kwargs.get("default", False) and WPS_TEST or kwargs.get("wps_test", False):
-            res = await st.start_wps_test(port)
+            res = await st.start_wps_test(WPS_CONFIG, address, port)
             wps_log = "[WebPageSimulation] "
             _item["webPageSimulation"]["results"] = res
 
@@ -453,16 +482,36 @@ class SpeedTest:
             and SPEED_TEST
             or kwargs.get("speed_test", False)
         ):
-            test_res = await st.start_test(port, download_semaphore, self.__test_method)
+            test_res = await st.start_test(
+                address=address,
+                port=port,
+                download_semaphore=download_semaphore,
+                file_download=FILE_DOWNLOAD,
+                speed_test=SPEED_TEST,
+                method=self.__test_method,
+                socket_method=SOCKET_METHOD,
+                st_speed_test=ST_SPEED_TEST,
+                buffer=BUFFER,
+                workers=WORKERS,
+            )
             if int(test_res[0]) == 0:
                 logger.warning("Re-testing node.")
                 test_res = await st.start_test(
-                    port, download_semaphore, self.__test_method
+                    address=address,
+                    port=port,
+                    download_semaphore=download_semaphore,
+                    file_download=FILE_DOWNLOAD,
+                    speed_test=SPEED_TEST,
+                    method=self.__test_method,
+                    socket_method=SOCKET_METHOD,
+                    st_speed_test=ST_SPEED_TEST,
+                    buffer=BUFFER,
+                    workers=WORKERS,
                 )
 
             speed_log = (
                 f"- AvgStSpeed: [{test_res[0] / 1024 / 1024:.2f}MB/s] "
-                f"- AvgMtSpeed: [{test_res[1] / 1024 / 1024:.2f}MB/s]"
+                f"- AvgMtSpeed: [{test_res[1] / 1024 / 1024:.2f}MB/s] "
             )
 
             _item["dspeed"] = test_res[0]
@@ -491,9 +540,9 @@ class SpeedTest:
             + geoip_log
             + tcp_ping_log
             + google_ping_log
-            + nat_info
             + wps_log
             + speed_log
+            + nat_info
         )
 
     async def __async__start_test(
@@ -550,7 +599,13 @@ class SpeedTest:
                 return False
 
         await inner_method(
-            _item, cfg, port, geo_ip_semaphore, download_semaphore, **kwargs
+            _item,
+            cfg,
+            LOCAL_ADDRESS,
+            port,
+            geo_ip_semaphore,
+            download_semaphore,
+            **kwargs,
         )
 
         self.__results.append(_item)

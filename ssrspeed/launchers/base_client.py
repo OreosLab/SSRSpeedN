@@ -10,7 +10,6 @@ from ssrspeed.utils import PLATFORM
 
 
 class BaseClient:
-
     _platform: Optional[str] = PLATFORM
 
     def __init__(self, clients_dir: str, clients: Dict[str, str], file: str):

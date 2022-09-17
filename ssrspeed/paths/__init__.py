@@ -1,3 +1,3 @@
-from .paths import get_path_json, ROOT_PATH, JSON_PATH, INNER_PATH  # isort:skip
+from .paths import ROOT_PATH, JSON_PATH, INNER_PATH, get_path_json  # isort:skip
 
-__all__ = ["get_path_json", "ROOT_PATH", "JSON_PATH", "INNER_PATH"]
+__all__ = ["ROOT_PATH", "JSON_PATH", "INNER_PATH", "get_path_json"]

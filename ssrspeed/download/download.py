@@ -23,6 +23,15 @@ def get_terminal_size(platform):
     return width, height
 
 
+def mkdir(data_dir):
+    if os.path.exists(data_dir):
+        if os.path.isfile(data_dir):
+            os.remove(data_dir)
+            os.makedirs(data_dir)
+    else:
+        os.makedirs(data_dir)
+
+
 def download_resource(url, headers, name, size, position, path, cols):
     with tqdm(
         desc=name,
@@ -52,6 +61,7 @@ def download(download_type, platform, download_path=None):
     proxy = "https://ghproxy.com/"
     if download_path is None:
         download_path = os.getcwd()
+    mkdir(download_path)
     work_dir = download_path if download_path.endswith(_) else download_path + _
     terminal_size = get_terminal_size(platform)
     client_resources_url = (

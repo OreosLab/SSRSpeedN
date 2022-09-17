@@ -1,3 +1,3 @@
-from .dl_rule_match import DownloadRuleMatch
+from .matcher import DownloadRuleMatch
 
 __all__ = ["DownloadRuleMatch"]

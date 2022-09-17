@@ -39,10 +39,11 @@ class ExporterWps:
         with open(index_filename, "w+", encoding="utf-8") as f:
             f.writelines(index)
         logger.info(f"Web page simulation result exported as {fileloc}.")
-        
+
 
 if __name__ == "__main__":
-    from ssrspeed.paths import get_path_json, ROOT_PATH
+    from ssrspeed.paths import ROOT_PATH, get_path_json
+
     key_path = get_path_json(ROOT_PATH)
     er = ExporterWps([], key_path["results"], key_path["templates"])
     er.export()

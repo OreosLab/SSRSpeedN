@@ -1,3 +1,4 @@
+import asyncio
 import copy
 import socket
 import threading
@@ -7,33 +8,22 @@ from typing import Optional
 import socks
 from loguru import logger
 
-from ssrspeed.config import ssrconfig
 from ssrspeed.utils import ip_loc
 from ssrspeed.utils.rules import DownloadRuleMatch
 
-SPEED_TEST = ssrconfig["speed"]
-STSPEED_TEST = ssrconfig["StSpeed"]
-MAX_THREAD = ssrconfig["fileDownload"]["workers"]
 DEFAULT_SOCKET = socket.socket
-MAX_FILE_SIZE = 100 * 1024 * 1024
-BUFFER = ssrconfig["fileDownload"]["buffer"]
-EXIT_FLAG = False
-LOCAL_PORT = 1080
-LOCK = threading.Lock()
-TOTAL_RECEIVED = 0
 MAX_TIME = 0
-
-
-def set_proxy_port(port: int):
-    global LOCAL_PORT
-    LOCAL_PORT = port
+TOTAL_RECEIVED = 0
+EXIT_FLAG = False
+LOCK = threading.Lock()
+MAX_FILE_SIZE = 100 * 1024 * 1024
 
 
 def restore_socket():
     socket.socket = DEFAULT_SOCKET
 
 
-def speed_test_thread(link: str) -> Optional[int]:
+def speed_test_thread(link: str, buffer: int) -> Optional[int]:
     global TOTAL_RECEIVED, MAX_TIME
     logger.debug(f"Thread {threading.current_thread().ident} started.")
     link = link.replace("https://", "").replace("http://", "")
@@ -49,13 +39,12 @@ def speed_test_thread(link: str) -> Optional[int]:
             logger.debug(f"Connected to {host}")
         except Exception:
             logger.error(f"Connect to {host} error.")
-            LOCK.acquire()
-            TOTAL_RECEIVED += 0
-            LOCK.release()
+            with LOCK:
+                TOTAL_RECEIVED += 0
             return None
         s.send(
-            b"GET %b HTTP/1.1\r\nHost: %b\r\nUser-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-            b"(KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36\r\n\r\n "
+            b"GET %b HTTP/1.1\r\nHost: %b\r\nUser-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            b"AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36\r\n\r\n "
             % (request_uri.encode("utf-8"), host.encode("utf-8"))
         )
         logger.debug("Request sent.")
@@ -63,7 +52,7 @@ def speed_test_thread(link: str) -> Optional[int]:
         received = 0
         while True:
             try:
-                xx = s.recv(BUFFER)
+                xx = s.recv(buffer)
             except socket.timeout:
                 logger.error("Receive data timeout.")
                 break
@@ -72,9 +61,8 @@ def speed_test_thread(link: str) -> Optional[int]:
                 break
             lxx = len(xx)
             received += lxx
-            LOCK.acquire()
-            TOTAL_RECEIVED += lxx
-            LOCK.release()
+            with LOCK:
+                TOTAL_RECEIVED += lxx
             if received >= MAX_FILE_SIZE or EXIT_FLAG:
                 break
         end_time = time.time()
@@ -85,44 +73,49 @@ def speed_test_thread(link: str) -> Optional[int]:
         logger.debug(
             f"Thread {threading.current_thread().ident} done,time : {delta_time}"
         )
-        LOCK.acquire()
-        MAX_TIME = max(MAX_TIME, delta_time)
-        LOCK.release()
+        with LOCK:
+            MAX_TIME = max(MAX_TIME, delta_time)
     except Exception:
         logger.error("", exc_info=True)
         return 0
 
 
-async def speed_test_socket(port):
-    if not SPEED_TEST:
+async def speed_test_socket(
+    file_download: dict,
+    address: str,
+    port: int,
+    speed_test: bool,
+    st_speed_test: bool,
+    buffer: int,
+    workers: int,
+) -> tuple:
+    if not speed_test:
         return 0, 0, [], 0
+    avg_st_speed = 0
+    global EXIT_FLAG, MAX_TIME, TOTAL_RECEIVED, MAX_FILE_SIZE
 
-    global EXIT_FLAG, LOCAL_PORT, MAX_TIME, TOTAL_RECEIVED, MAX_FILE_SIZE
-
-    dlrm = DownloadRuleMatch()
+    dlrm = DownloadRuleMatch(file_download)
     res = dlrm.get_url(await ip_loc(port))
 
     MAX_FILE_SIZE = res[1] * 1024 * 1024
     MAX_TIME = 0
     TOTAL_RECEIVED = 0
     EXIT_FLAG = False
-    socks.set_default_proxy(socks.SOCKS5, "127.0.0.1", port)
+    socks.set_default_proxy(socks.SOCKS5, address, port)
     socket.socket = socks.socksocket
 
-    if STSPEED_TEST:
+    if st_speed_test:
         for i in range(0, 1):
-            nmsl = threading.Thread(target=speed_test_thread, args=(res[0],))
+            nmsl = threading.Thread(target=speed_test_thread, args=(res[0], buffer))
             nmsl.start()
 
         max_speed_list = []
-        current_speed = 0
         old_received = 0
         for i in range(1, 11):
-            time.sleep(0.5)
-            LOCK.acquire()
-            delta_received = TOTAL_RECEIVED - old_received
-            old_received = TOTAL_RECEIVED
-            LOCK.release()
+            await asyncio.sleep(0.5)
+            with LOCK:
+                delta_received = TOTAL_RECEIVED - old_received
+                old_received = TOTAL_RECEIVED
             current_speed = delta_received / 0.5
             max_speed_list.append(current_speed)
             print(
@@ -132,10 +125,12 @@ async def speed_test_socket(port):
                 end="",
             )
             if EXIT_FLAG:
+                print(
+                    "\r["
+                    + "=" * i
+                    + f"] [100%/100%] [{current_speed / 1024 / 1024:.2f} MB/s]"
+                )
                 break
-        print(
-            "\r[" + "=" * i + f"] [100%/100%] [{current_speed / 1024 / 1024:.2f} MB/s]"
-        )
         EXIT_FLAG = True
         for i in range(0, 10):
             time.sleep(0.1)
@@ -160,8 +155,8 @@ async def speed_test_socket(port):
         TOTAL_RECEIVED = 0
         EXIT_FLAG = False
 
-    for i in range(0, MAX_THREAD):
-        nmsl = threading.Thread(target=speed_test_thread, args=(res[0],))
+    for i in range(0, workers):
+        nmsl = threading.Thread(target=speed_test_thread, args=(res[0], buffer))
         nmsl.start()
 
     max_speed_list = []
@@ -169,10 +164,9 @@ async def speed_test_socket(port):
     old_received = 0
     for i in range(1, 11):
         time.sleep(0.5)
-        LOCK.acquire()
-        delta_received = TOTAL_RECEIVED - old_received
-        old_received = TOTAL_RECEIVED
-        LOCK.release()
+        with LOCK:
+            delta_received = TOTAL_RECEIVED - old_received
+            old_received = TOTAL_RECEIVED
         current_speed = delta_received / 0.5
         max_speed_list.append(current_speed)
         print(
@@ -182,8 +176,12 @@ async def speed_test_socket(port):
             end="",
         )
         if EXIT_FLAG:
+            print(
+                "\r["
+                + "=" * i
+                + f"] [100%/100%] [{current_speed / 1024 / 1024:.2f} MB/s]"
+            )
             break
-    print("\r[" + "=" * i + f"] [100%/100%] [{current_speed / 1024 / 1024:.2f} MB/s]")
     EXIT_FLAG = True
     for i in range(0, 10):
         time.sleep(0.1)
@@ -208,7 +206,7 @@ async def speed_test_socket(port):
     )
     avg_speed = TOTAL_RECEIVED / MAX_TIME
 
-    if not STSPEED_TEST:
+    if not st_speed_test:
         avg_st_speed = avg_speed
         avg_speed = max_speed
 
