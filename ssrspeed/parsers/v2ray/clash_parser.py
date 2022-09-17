@@ -84,7 +84,7 @@ class ParserV2RayClash:
 
 
 if __name__ == "__main__":
-    from ssrspeed.config import ssrconfig
-
+    from ssrspeed.paths import get_path_json, ROOT_PATH
+    key_path = get_path_json(ROOT_PATH)
     cvp = ParserV2RayClash()
-    cvp.parse_gui_config(ssrconfig["path"]["tmp"] + "config.example.yml")
+    cvp.parse_gui_config(key_path["tmp"] + "config.example.yml")

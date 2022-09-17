@@ -1,21 +1,14 @@
 import requests
 from loguru import logger
 
-from ssrspeed.config import ssrconfig
 
-UPLOAD_RESULT = ssrconfig["uploadResult"]
-TEST_PNG = ssrconfig["path"]["tmp"] + "test.png"
-
-
-def push2server(filename: str) -> dict:
+def push2server(filename: str, server: str, token: str, remark: str) -> dict:
     result = {"status": -1, "code": -1}
     try:
         logger.info(f"Pushing {filename} to server.")
         files = {"file": open(filename, "rb")}
-        param = {"token": UPLOAD_RESULT["apiToken"], "remark": UPLOAD_RESULT["remark"]}
-        rep = requests.post(
-            UPLOAD_RESULT["server"], files=files, data=param, timeout=10
-        )
+        param = {"token": token, "remark": remark}
+        rep = requests.post(server, files=files, data=param, timeout=10)
         result["status"] = rep.status_code
         if rep.status_code == 200 and rep.text == "ok":
             result["code"] = 0
@@ -24,9 +17,5 @@ def push2server(filename: str) -> dict:
         logger.error("Connect to server timeout.")
         return result
     except Exception:
-        logger.error("Pushing result to server error.", exc_info=True)
+        logger.exception("Pushing result to server error.")
         return result
-
-
-if __name__ == "__main__":
-    print(push2server(TEST_PNG))

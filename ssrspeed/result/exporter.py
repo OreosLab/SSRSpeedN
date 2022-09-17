@@ -18,6 +18,7 @@ if not os.path.exists(TMP_DIR):
 TEST_TXT = TMP_DIR + "test.txt"
 LOGOS_DIR = ssrconfig["path"]["logos"]
 RESULTS_DIR = ssrconfig["path"]["results"]
+TEMPLATES_DIR = ssrconfig["path"]["templates"]
 
 """
 resultJson
@@ -112,7 +113,7 @@ class ExportResult:
     def export_wps_result(self, result: list, export_type: int = 0):
         if not export_type:
             result = self.__export_as_json(result)
-        epwps = ExporterWps(result)
+        epwps = ExporterWps(result, RESULTS_DIR, TEMPLATES_DIR)
         epwps.export()
 
     def __get_max_width(self, result: list) -> tuple:
@@ -1141,9 +1142,11 @@ class ExportResult:
         logger.info("Result image saved as %s" % filename)
 
         for _file in files:
-            if not self.__config["uploadResult"]:
+            if not (u := self.__config.get("uploadResult", {})):
                 break
-            push2server(_file)
+            push2server(
+                _file, u.get("server", ""), u.get("token", ""), u.get("remark", "")
+            )
 
     @staticmethod
     def __parse_traffic(traffic: float) -> str:

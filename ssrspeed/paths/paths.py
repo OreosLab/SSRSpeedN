@@ -3,18 +3,20 @@ import os
 import sys
 
 _ = os.sep
-WD_PATH = os.getcwd() + _
 CURRENT_PATH = os.path.dirname(__file__) + _
+ROOT_PATH = _.join(os.path.realpath(__file__).split(_)[0:-3]) + _
 JSON_PATH = f"{CURRENT_PATH}paths.json"
-ROOT_PATH = _.join(CURRENT_PATH.split(_)[0:-2]) + _
+SSR_PATH = _.join(CURRENT_PATH.split(_)[0:-2]) + _
+WD_PATH = os.getcwd() + _
+
 
 INNER_PATH = {
-    "ssrspeed": f"{ROOT_PATH}",
-    "static": f"{ROOT_PATH}resource{_}static{_}",
-    "fonts": f"{ROOT_PATH}resource{_}static{_}fonts{_}",
-    "logos": f"{ROOT_PATH}resource{_}static{_}logos{_}",
-    "templates": f"{ROOT_PATH}resource{_}templates{_}",
-    "ssrspeed.example.json": f"{ROOT_PATH}resource{_}ssrspeed.example.json",
+    "ssrspeed": f"{SSR_PATH}",
+    "static": f"{SSR_PATH}resource{_}static{_}",
+    "fonts": f"{SSR_PATH}resource{_}static{_}fonts{_}",
+    "logos": f"{SSR_PATH}resource{_}static{_}logos{_}",
+    "templates": f"{SSR_PATH}resource{_}templates{_}",
+    "ssrspeed.example.json": f"{SSR_PATH}resource{_}ssrspeed.example.json",
 }
 
 
@@ -45,7 +47,8 @@ def root():
 
 if __name__ == "__main__":
     print(CURRENT_PATH)
-    print(JSON_PATH)
     print(ROOT_PATH)
+    print(JSON_PATH)
+    print(SSR_PATH)
     print(WD_PATH)
     print(json.dumps(get_path_json(), indent=4))
