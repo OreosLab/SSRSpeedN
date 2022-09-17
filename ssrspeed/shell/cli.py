@@ -110,13 +110,6 @@ def set_opts(parser: ArgumentParser):
         help="Exclude nodes by remarks using keyword.",
     )
     parser.add_argument(
-        "--use-ssr-cs",
-        action="store_true",
-        dest="use_ssr_cs",
-        default=False,
-        help="Replace the ShadowsocksR-libev with the ShadowsocksR-C# (Only Windows).",
-    )
-    parser.add_argument(
         "-g",
         action="store",
         dest="group_override",

@@ -1,45 +1,71 @@
+import json
 import signal
-from abc import ABCMeta, abstractmethod
-from typing import Any, Dict, List
+import subprocess
+from typing import Any, Dict, List, Optional
 
+import aiofiles
 from loguru import logger
 
-from ssrspeed.config import ssrconfig
 from ssrspeed.utils import PLATFORM
 
 
-class BaseClient(metaclass=ABCMeta):
-    _platform = PLATFORM
+class BaseClient:
 
-    def __init__(self):
-        self._localAddress: str = ssrconfig.get("localAddress", "127.0.0.1")
-        self._localPort: int = ssrconfig.get("localPort", 1087)
+    _platform: Optional[str] = PLATFORM
+
+    def __init__(self, clients_dir: str, clients: Dict[str, str], file: str):
+        self._clients_dir: str = clients_dir
+        self._clients: Dict[str, str] = clients
+        self._config_file: str = file
         self._config_list: List[Dict[str, Any]] = []
         self._config: Dict[str, Any] = {}
-        self._process = None
+        self._process: Optional[subprocess.Popen[bytes]] = None
+        self._cmd: Dict[str, List[str]] = {}
 
-    @abstractmethod
     async def start_client(self, config: Dict[str, Any], debug: bool = False):
-        pass
+        self._config = config
+        async with aiofiles.open(self._config_file, "w+", encoding="utf-8") as f:
+            await f.write(json.dumps(self._config))
+
+        if self._process is None:
+
+            if BaseClient._platform == "Windows":
+                if debug:
+                    self._process = subprocess.Popen(self._cmd["win_debug"])
+                else:
+                    self._process = subprocess.Popen(
+                        self._cmd["win"],
+                        stdout=subprocess.DEVNULL,
+                        stderr=subprocess.DEVNULL,
+                    )
+                logger.info(
+                    f'Starting {self._clients["win"]} with server {config["server"]}:{config["server_port"]}'
+                )
+
+            else:
+                if debug:
+                    self._process = subprocess.Popen(self._cmd["unix"])
+                else:
+                    self._process = subprocess.Popen(
+                        self._cmd["unix_debug"],
+                        stdout=subprocess.DEVNULL,
+                        stderr=subprocess.DEVNULL,
+                    )
+                logger.info(
+                    f'Starting {self._clients["unix"]} with server {config["server"]}:{config["server_port"]}'
+                )
 
     def check_alive(self) -> bool:
-        return self._process.poll() is None
-
-    def test_process_terminate(self):
-        self._process.terminate()
-
-    def _before_stop_client(self):
-        pass
+        return self._process.poll() is None  # type: ignore[union-attr]
 
     # fmt: off
     def stop_client(self):
-        self._before_stop_client()
         if self._process is not None:
             if BaseClient._platform == "Windows":
                 self._process.terminate()
             else:
                 self._process.send_signal(signal.SIGINT)
-        # 	print(self.__process.returncode)
+        # 	print(self._process.returncode)
             self._process = None
             logger.info("Client terminated.")
     # fmt: on

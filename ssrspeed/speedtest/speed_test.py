@@ -18,6 +18,7 @@ from ssrspeed.launchers import (
 from ssrspeed.speedtest.methodology import SpeedTestMethods
 from ssrspeed.utils import async_check_port, domain2ip, get_ip_info, ip_loc
 
+CLIENTS_DIR = ssrconfig["path"]["clients"]
 DATABASES_DIR = ssrconfig["path"]["databases"]
 TMP_DIR = ssrconfig["path"]["tmp"]
 
@@ -37,7 +38,6 @@ SPEED_TEST = ssrconfig["speed"]
 class SpeedTest:
     def __init__(self, args, parser, method="ST_ASYNC"):
         self.__configs = parser.nodes
-        self.__use_ssr_cs = args.use_ssr_cs
         self.__debug = args.debug
         self.__connection = args.max_connections or MAX_CONNECTIONS
         self.__test_method = method
@@ -103,15 +103,13 @@ class SpeedTest:
     def __get_client(self, client_type, file):
         client = None
         if client_type == "Shadowsocks":
-            client = ShadowsocksClient(file)
+            client = ShadowsocksClient(CLIENTS_DIR, file)
         elif client_type == "ShadowsocksR":
-            client = ShadowsocksRClient(file)
-            if self.__use_ssr_cs:
-                client.useSsrCSharp = True
+            client = ShadowsocksRClient(CLIENTS_DIR, file)
         elif client_type == "Trojan":
-            client = TrojanClient(file)
+            client = TrojanClient(CLIENTS_DIR, file)
         elif client_type == "V2Ray":
-            client = V2RayClient(file)
+            client = V2RayClient(CLIENTS_DIR, file)
         return client
 
     def reset_status(self):

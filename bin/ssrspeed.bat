@@ -69,10 +69,9 @@ if %errorlevel%==1 ( goto :yw )
 
 echo.
 echo usage: ssrspeed [-h] [--version] [-d DIR] [-u URL] [-i IMPORT_FILE] [-c GUICONFIG] [-mc MAX_CONNECTIONS] [-M {default,pingonly,stream,all,wps}]
-echo                 [-m {stasync,socket,speedtestnet,fast}] [--include FILTER [FILTER ...]] [--include-group GROUP [GROUP ...]]
-echo                 [--include-remark REMARKS [REMARKS ...]] [--exclude EFILTER [EFILTER ...]] [--exclude-group EGFILTER [EGFILTER ...]]
-echo                 [--exclude-remark ERFILTER [ERFILTER ...]] [--use-ssr-cs] [-g GROUP_OVERRIDE] [-C RESULT_COLOR] [-s {speed,rspeed,ping,rping}]
-echo                 [--skip-requirements-check] [-w] [-l LISTEN] [-p PORT] [--download {all,client,database}] [--debug] [--paolu]
+echo                [-m {stasync,socket,speedtestnet,fast}] [--include FILTER [FILTER ...]] [--include-group GROUP [GROUP ...]] [--include-remark REMARKS [REMARKS ...]]
+echo                [--exclude EFILTER [EFILTER ...]] [--exclude-group EGFILTER [EGFILTER ...]] [--exclude-remark ERFILTER [ERFILTER ...]] [-g GROUP_OVERRIDE] [-C RESULT_COLOR]
+echo                [-s {speed,rspeed,ping,rping}] [--skip-requirements-check] [-w] [-l LISTEN] [-p PORT] [--download {all,client,database}] [--debug]
 echo.
 echo optional arguments:
 echo  -h, --help            show this help message and exit
@@ -101,7 +100,6 @@ echo  --exclude-group EGFILTER [EGFILTER ...]
 echo                        Exclude nodes by group using keyword.
 echo  --exclude-remark ERFILTER [ERFILTER ...]
 echo                        Exclude nodes by remarks using keyword.
-echo  --use-ssr-cs          Replace the ShadowsocksR-libev with the ShadowsocksR-C# (Only Windows).
 echo  -g GROUP_OVERRIDE     Manually set group.
 echo  -C RESULT_COLOR, --color RESULT_COLOR
 echo                        Set the colors when exporting images..
@@ -139,10 +137,9 @@ goto :start
 
 echo.
 echo 用法：ssrspeed [-h] [--version] [-d DIR] [-u URL] [-i IMPORT_FILE] [-c GUICONFIG] [-mc MAX_CONNECTIONS] [-M {default,pingonly,stream,all,wps}]
-echo                 [-m {stasync,socket,speedtestnet,fast}] [--include FILTER [FILTER ...]] [--include-group GROUP [GROUP ...]]
-echo                 [--include-remark REMARKS [REMARKS ...]] [--exclude EFILTER [EFILTER ...]] [--exclude-group EGFILTER [EGFILTER ...]]
-echo                 [--exclude-remark ERFILTER [ERFILTER ...]] [--use-ssr-cs] [-g GROUP_OVERRIDE] [-C RESULT_COLOR] [-s {speed,rspeed,ping,rping}]
-echo                 [--skip-requirements-check] [-w] [-l LISTEN] [-p PORT] [--download {all,client,database}] [--debug] [--paolu]
+echo                [-m {stasync,socket,speedtestnet,fast}] [--include FILTER [FILTER ...]] [--include-group GROUP [GROUP ...]] [--include-remark REMARKS [REMARKS ...]]
+echo                [--exclude EFILTER [EFILTER ...]] [--exclude-group EGFILTER [EGFILTER ...]] [--exclude-remark ERFILTER [ERFILTER ...]] [-g GROUP_OVERRIDE] [-C RESULT_COLOR]
+echo                [-s {speed,rspeed,ping,rping}] [--skip-requirements-check] [-w] [-l LISTEN] [-p PORT] [--download {all,client,database}] [--debug]
 echo.
 echo 可选参数：
 echo.
@@ -172,7 +169,6 @@ echo  --exclude-group EGFILTER [EGFILTER ...]
 echo                        通过组名排除节点.
 echo  --exclude-remark ERFILTER [ERFILTER ...]
 echo                        通过节点标识排除节点.
-echo  --use-ssr-cs          替换 SSR 内核 ShadowsocksR-libev 为 ShadowsocksR-C# (Only Windows)
 echo  -g GROUP_OVERRIDE     自定义测速组名.
 echo  -C RESULT_COLOR, --color RESULT_COLOR
 echo                        设定测速结果展示配色.

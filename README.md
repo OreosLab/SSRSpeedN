@@ -134,7 +134,6 @@ ssrspeed
 
                         通过节点标识排除节点.       
 
-  --use-ssr-cs          替换 SSR 内核 ShadowsocksR-libev 为 ShadowsocksR-C# (Only Windows)
   -g GROUP_OVERRIDE     自定义测速组名.
   -C RESULT_COLOR, --color RESULT_COLOR
 
