@@ -57,20 +57,23 @@ class ParserShadowsocksBasic:
     def parse_subs_config(self, links: list) -> list:
         for link in links:
             link = link.strip()
-            cfg = self.__parse_link(link)
-            if cfg:
+            if cfg := self.__parse_link(link):
                 self.__config_list.append(cfg)
         logger.info(f"Read {len(self.__config_list)} config(s).")
         return self.__config_list
 
     @staticmethod
     def __get_ssd_group(ssd_subs: list, sub_url: str) -> str:
-        if len(ssd_subs) == 0 or sub_url == "":
+        if not ssd_subs or not sub_url:
             return "N/A"
-        for item in ssd_subs:
-            if item.get("url", "") == sub_url:
-                return item.get("airport", "N/A")
-        return "N/A"
+        return next(
+            (
+                item.get("airport", "N/A")
+                for item in ssd_subs
+                if item.get("url", "") == sub_url
+            ),
+            "N/A",
+        )
 
     def parse_gui_data(self, data: dict) -> list:
         shadowsocksd_conf = False
@@ -91,12 +94,12 @@ class ParserShadowsocksBasic:
             _dict["remarks"] = item.get("remarks", item["server"])
             if not _dict["remarks"]:
                 _dict["remarks"] = _dict["server"]
-            if not shadowsocksd_conf:
-                _dict["group"] = item.get("group", "N/A")
-            else:
-                _dict["group"] = self.__get_ssd_group(
-                    ssd_subs, item.get("subscription_url", "")
-                )
+            _dict["group"] = (
+                self.__get_ssd_group(ssd_subs, item.get("subscription_url", ""))
+                if shadowsocksd_conf
+                else item.get("group", "N/A")
+            )
+
             _dict["fast_open"] = False
             self.__config_list.append(_dict)
         return self.__config_list

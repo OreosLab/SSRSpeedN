@@ -11,7 +11,7 @@ class ParserV2RayClash:
     def __clash_config_convert(clash_cfg: dict) -> dict:
         server = clash_cfg["server"]
         remarks = clash_cfg.get("name", server)
-        remarks = remarks if remarks else server
+        remarks = remarks or server
         group = "N/A"
         port = int(clash_cfg["port"])
         uuid = clash_cfg["uuid"]
@@ -25,10 +25,12 @@ class ParserV2RayClash:
         host = ws_header.get(
             "Host", ""
         )  # http host, web socket host, h2 host, quic encrypt method
-        headers = {}
-        for header in ws_header.keys():
-            if header != "Host":
-                headers[header] = ws_header[header]
+        headers = {
+            header: ws_header[header]
+            for header in ws_header.keys()
+            if header != "Host"
+        }
+
         tls_host = host
         path = clash_cfg.get(
             "ws-path", ""

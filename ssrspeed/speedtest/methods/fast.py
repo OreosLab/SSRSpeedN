@@ -50,8 +50,7 @@ def find_ipv4(fqdn):
     find IPv4 address of fqdn
     """
 
-    ipv4 = socket.getaddrinfo(fqdn, 80, socket.AF_INET)[0][4][0]
-    return ipv4
+    return socket.getaddrinfo(fqdn, 80, socket.AF_INET)[0][4][0]
 
 
 def find_ipv6(fqdn):
@@ -59,8 +58,7 @@ def find_ipv6(fqdn):
     find IPv6 address of fqdn
     """
 
-    ipv6 = socket.getaddrinfo(fqdn, 80, socket.AF_INET6)[0][4][0]
-    return ipv6
+    return socket.getaddrinfo(fqdn, 80, socket.AF_INET6)[0][4][0]
 
 
 def fast_com(verbose=False, max_time=15, force_ipv4=False, force_ipv6=False):
@@ -86,9 +84,9 @@ def fast_com(verbose=False, max_time=15, force_ipv4=False, force_ipv6=False):
             jsname = line.split('"')[1]  # At time of writing: '/app-40647a.js'
 
     # From that javascript file, get the token:
-    url = "https://fast.com" + jsname
+    url = f"https://fast.com{jsname}"
     if verbose:
-        logger.debug("javascript url is" + url)
+        logger.debug(f"javascript url is{url}")
     try:
         url_result = urllib.request.urlopen(url)
     except Exception:
@@ -105,10 +103,10 @@ def fast_com(verbose=False, max_time=15, force_ipv4=False, force_ipv6=False):
     for line in all_js_stuff.split(","):
         if line.find("token:") >= 0:
             if verbose:
-                logger.debug("line is" + line)
+                logger.debug(f"line is{line}")
             token = line.split('"')[1]
             if verbose:
-                logger.debug("token is" + token)
+                logger.debug(f"token is{token}")
             if token:
                 break
 
@@ -117,19 +115,15 @@ def fast_com(verbose=False, max_time=15, force_ipv4=False, force_ipv6=False):
     if force_ipv4:
         # force IPv4 by connecting to an IPv4 address of api.fast.com (over ... HTTP)
         ipv4 = find_ipv4("api.fast.com")
-        baseurl = (
-            "http://" + ipv4 + "/"
-        )  # HTTPS does not work IPv4 addresses, thus use HTTP
+        baseurl = f"http://{ipv4}/"
     elif force_ipv6:
         # force IPv6
         ipv6 = find_ipv6("api.fast.com")
-        baseurl = "http://[" + ipv6 + "]/"
+        baseurl = f"http://[{ipv6}]/"
 
-    url = (
-        baseurl + "netflix/speedtest?https=true&token=" + token + "&urlCount=3"
-    )  # Not more than 3 possible
+    url = f"{baseurl}netflix/speedtest?https=true&token={token}&urlCount=3"
     if verbose:
-        logger.debug("API url is" + url)
+        logger.debug(f"API url is{url}")
     try:
         url_result = urllib.request.urlopen(url=url, timeout=2)  # 2 second time-out
     except Exception:
@@ -146,17 +140,14 @@ def fast_com(verbose=False, max_time=15, force_ipv4=False, force_ipv6=False):
     # Prepare for getting those URLs in a threaded way:
     amount = len(parsed_json)
     if verbose:
-        logger.debug("Number of URLs:" + str(amount))
+        logger.debug(f"Number of URLs:{amount}")
     threads = [None] * amount
     results = [0] * amount
     urls = [None] * amount
-    i = 0
-    for json_element in parsed_json:
+    for i, json_element in enumerate(parsed_json):
         urls[i] = json_element["url"]  # fill out speed test url from the json format
         if verbose:
             logger.debug(json_element["url"])
-        i += 1
-
     # Let's check whether it's IPv6:
     for url in urls:
         fqdn = url.split("/")[2]
@@ -181,10 +172,7 @@ def fast_com(verbose=False, max_time=15, force_ipv4=False, force_ipv6=False):
     highest_speed_kbps = 0
     nr_loops = int(max_time / sleep_secs)
     for loop in range(nr_loops):
-        total = 0
-        for i in range(len(threads)):
-            # print(i, results[i])
-            total += results[i]
+        total = sum(results[i] for i in range(len(threads)))
         delta = total - last_total
         speed_kbps = (delta / sleep_secs) / 1024
         if verbose:
@@ -202,8 +190,9 @@ def fast_com(verbose=False, max_time=15, force_ipv4=False, force_ipv6=False):
     mbps = round(application_bytes_to_networkbits(highest_speed_kbps) / 1024, 1)
     if verbose:
         logger.info(
-            "Highest Speed (kB/s):" + str(highest_speed_kbps) + "aka Mbps " + str(mbps)
+            f"Highest Speed (kB/s):{str(highest_speed_kbps)}aka Mbps {str(mbps)}"
         )
+
 
     return mbps
 

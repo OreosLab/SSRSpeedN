@@ -82,9 +82,7 @@ async def tcp_ping(address: str, port: int) -> tuple:
         alt += result["alt"]
         fac += result["fac"]
         suc += result["suc"]
-    if suc == 0:
-        return 0, 0, _list
-    return alt / suc, suc / (suc + fac), _list
+    return (0, 0, _list) if suc == 0 else (alt / suc, suc / (suc + fac), _list)
 
 
 async def google_ping(address: str, port: int) -> tuple:
@@ -101,9 +99,7 @@ async def google_ping(address: str, port: int) -> tuple:
         alt += result["alt"]
         fac += result["fac"]
         suc += result["suc"]
-    if suc == 0:
-        return 0, 0, _list
-    return alt / suc, suc / (suc + fac), _list
+    return (0, 0, _list) if suc == 0 else (alt / suc, suc / (suc + fac), _list)
 
 
 if __name__ == "__main__":

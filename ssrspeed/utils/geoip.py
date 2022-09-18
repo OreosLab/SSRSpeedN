@@ -48,14 +48,13 @@ async def parse_location(port):
 def check_ipv4(ip: str) -> bool:
     r = re.compile(r"\b((?:25[0-5]|2[0-4]\d|[01]?\d\d?)(?:(?<!\.)\b|\.)){4}")
     rm = r.match(ip)
-    return bool(rm and rm.group(0) == ip)
+    return bool(rm and rm[0] == ip)
 
 
 def domain2ip(domain: str) -> str:
     logger.info(f"Translating {domain} to ipv4.")
     try:
-        ip = socket.gethostbyname(domain)
-        return ip
+        return socket.gethostbyname(domain)
     except Exception:
         logger.exception(f"Translate {domain} to ipv4 failed.")
         return "N/A"

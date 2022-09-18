@@ -603,7 +603,6 @@ class SpeedTest:
             os.remove(file_)
 
     async def __run(self, **kwargs):
-        task_list = []
         lock = asyncio.Lock()
         geo_ip_semaphore = asyncio.Semaphore()
         download_semaphore = asyncio.Semaphore(
@@ -612,30 +611,27 @@ class SpeedTest:
         port_queue = asyncio.Queue()
         dic = {"done_nodes": 0, "total_nodes": len(self.__configs)}
         # 根据配置文件是否选择极速模式
-        if FAST_SPEED:
-            fast_method = self.__fast_start_test
-        else:
-            fast_method = self.__base_start_test
+        fast_method = self.__fast_start_test if FAST_SPEED else self.__base_start_test
         # 初始化端口范围
 
         for i in range(LOCAL_PORT, LOCAL_PORT + self.__connection):
             port_queue.put_nowait(i)
-        # 布置异步任务
-        for node in self.__configs:
-            task_list.append(
-                asyncio.create_task(
-                    self.__async__start_test(
-                        node,
-                        dic,
-                        lock,
-                        port_queue,
-                        fast_method,
-                        geo_ip_semaphore,
-                        download_semaphore,
-                        **kwargs,
-                    )
+        task_list = [
+            asyncio.create_task(
+                self.__async__start_test(
+                    node,
+                    dic,
+                    lock,
+                    port_queue,
+                    fast_method,
+                    geo_ip_semaphore,
+                    download_semaphore,
+                    **kwargs,
                 )
             )
+            for node in self.__configs
+        ]
+
         await asyncio.wait(task_list)
 
     def __start_test(self, **kwargs):

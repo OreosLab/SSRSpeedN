@@ -73,11 +73,7 @@ def main():
     args = cli_cfg.init(version)
 
     # 生成项目路径字典
-    if args.dir:
-        key_path = get_path_json(work_path=args.dir)
-    else:
-        key_path = get_path_json()
-
+    key_path = get_path_json(work_path=args.dir) if args.dir else get_path_json()
     if download_type := args.download:
         download(download_type, PLATFORM, args.dir)
 
@@ -103,9 +99,7 @@ def main():
         for each in handlers:
             each.update({"level": "DEBUG"})
         logger.debug("Program running in debug mode.")
-        logger.configure(handlers=handlers)
-    else:
-        logger.configure(handlers=handlers)
+    logger.configure(handlers=handlers)
     logger.enable("__main__")
 
     logger.info(f"SSRSpeed {version}")
@@ -196,7 +190,7 @@ def main():
         elif args.import_file and config_load_mode == 1:
             import_filename = args.import_file
             sc.colors = result_image_color
-            sc.sort_method = sort_method if sort_method else ""
+            sc.sort_method = sort_method or ""
             sc.import_and_export(import_filename)
             sys.exit(0)
         else:

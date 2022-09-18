@@ -4,9 +4,9 @@ import sys
 
 _ = os.sep
 CURRENT_PATH = os.path.dirname(__file__) + _
-ROOT_PATH = _.join(os.path.realpath(__file__).split(_)[0:-3]) + _
+ROOT_PATH = _.join(os.path.realpath(__file__).split(_)[:-3]) + _
 JSON_PATH = f"{CURRENT_PATH}paths.json"
-SSR_PATH = _.join(CURRENT_PATH.split(_)[0:-2]) + _
+SSR_PATH = _.join(CURRENT_PATH.split(_)[:-2]) + _
 WD_PATH = os.getcwd() + _
 
 INNER_PATH = {
@@ -34,7 +34,7 @@ def get_path_json(work_path: str = WD_PATH) -> dict:
         "databases": f"{work_dir}resources{_}databases{_}",
         "custom": f"{work_dir}resources{_}custom{_}",
     }
-    inner_dict.update(INNER_PATH)
+    inner_dict |= INNER_PATH
     return inner_dict
 
 

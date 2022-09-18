@@ -39,22 +39,17 @@ class SSRSpeedCore:
 
     @staticmethod
     def __generate_web_configs(nodes: list) -> list:
-        result = []
-        for node in nodes:
-            result.append({"type": node.node_type, "config": node.config})
-        return result
+        return [{"type": node.node_type, "config": node.config} for node in nodes]
 
     def web_read_subscription(self, url: str) -> list:
-        parser = UniversalParser()
-        urls = url.split(" ")
-        if parser:
+        if parser := UniversalParser():
+            urls = url.split(" ")
             parser.read_subscription(urls)
             return self.__generate_web_configs(parser.nodes)
         return []
 
     def web_read_config_file(self, filename: str) -> list:
-        parser = UniversalParser()
-        if parser:
+        if parser := UniversalParser():
             parser.read_gui_config(filename)
             return self.__generate_web_configs(parser.nodes)
         return []
@@ -120,20 +115,16 @@ class SSRSpeedCore:
 
     def web_get_results(self) -> dict:
         if self.__status == "running":
-            if self.__stc:
-                status = "running"
-            else:
-                status = "pending"
+            status = "running" if self.__stc else "pending"
         else:
             status = self.__status
-        r = {
+        return {
             "status": status,
             "current": self.__stc.get_current()
             if (self.__stc and status == "running")
             else {},
             "results": self.__stc.get_result() if self.__stc else [],
         }
-        return r
 
     def filter_nodes(self, **kwargs: list):
         fk = kwargs.get("fk", [])

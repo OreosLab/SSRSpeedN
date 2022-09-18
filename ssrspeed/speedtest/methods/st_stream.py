@@ -16,23 +16,23 @@ class StreamTest:
         try:
             sum_ = 0
             async with aiohttp.ClientSession(
-                headers=headers,
-                connector=ProxyConnector(host=host, port=port),
-                timeout=aiohttp.ClientTimeout(connect=10),
-            ) as session:
+                        headers=headers,
+                        connector=ProxyConnector(host=host, port=port),
+                        timeout=aiohttp.ClientTimeout(connect=10),
+                    ) as session:
                 async with session.get(
-                    url="https://www.netflix.com/title/70242311"
-                ) as response1:
+                                url="https://www.netflix.com/title/70242311"
+                            ) as response1:
                     netflix_ip = "N/A"
                     if response1.status == 200:
                         sum_ += 1
                         netflix_ip = nf_ip_re.findall(str(await response1.read()))[
                             0
                         ].split(",")[0]
-                        logger.info("Netflix IP : " + netflix_ip)
+                        logger.info(f"Netflix IP : {netflix_ip}")
                     async with session.get(
-                        url="https://www.netflix.com/title/70143836"
-                    ) as response2:
+                                        url="https://www.netflix.com/title/70143836"
+                                    ) as response2:
                         rg = ""
                         if response2.status == 200:
                             sum_ += 1
@@ -50,12 +50,12 @@ class StreamTest:
                             inner_dict["Ntype"] = "Only Original"
                         elif outbound_ip == netflix_ip:
                             logger.info("Netflix test result: Full Native.")
-                            inner_dict["Ntype"] = "Full Native" + rg
+                            inner_dict["Ntype"] = f"Full Native{rg}"
                         else:
                             logger.info("Netflix test result: Full DNS.")
-                            inner_dict["Ntype"] = "Full DNS" + rg
+                            inner_dict["Ntype"] = f"Full DNS{rg}"
         except Exception as e:
-            logger.error("Netflix exception: " + str(e))
+            logger.error(f"Netflix exception: {str(e)}")
             return {}
 
     @classmethod
@@ -63,19 +63,16 @@ class StreamTest:
         logger.info(f"Performing HBO max test LOCAL_PORT: {port}.")
         try:
             async with aiohttp.ClientSession(
-                headers=headers,
-                connector=ProxyConnector(host=host, port=port),
-                timeout=aiohttp.ClientTimeout(connect=10),
-            ) as session:
+                        headers=headers,
+                        connector=ProxyConnector(host=host, port=port),
+                        timeout=aiohttp.ClientTimeout(connect=10),
+                    ) as session:
                 async with session.get(
-                    url="https://www.hbomax.com/", allow_redirects=False
-                ) as response:
-                    if response.status == 200:
-                        inner_dict["Htype"] = True
-                    else:
-                        inner_dict["Htype"] = False
+                                url="https://www.hbomax.com/", allow_redirects=False
+                            ) as response:
+                    inner_dict["Htype"] = response.status == 200
         except Exception as e:
-            logger.error("HBO max exception: " + str(e))
+            logger.error(f"HBO max exception: {str(e)}")
 
     @classmethod
     async def disneyplus(cls, host, headers, inner_dict, port):
@@ -103,7 +100,7 @@ class StreamTest:
                     else:
                         inner_dict["Dtype"] = False
         except Exception as e:
-            logger.error("Disney plus exception: " + str(e))
+            logger.error(f"Disney plus exception: {str(e)}")
 
     @classmethod
     async def youtube(cls, host, headers, inner_dict, port):
@@ -124,59 +121,53 @@ class StreamTest:
                     else:
                         inner_dict["Ytype"] = False
         except Exception as e:
-            logger.error("Youtube Premium exception: " + str(e))
+            logger.error(f"Youtube Premium exception: {str(e)}")
 
     @classmethod
     async def abema(cls, host, headers, inner_dict, port):
         logger.info(f"Performing Abema test LOCAL_PORT: {port}.")
         try:
             async with aiohttp.ClientSession(
-                headers=headers,
-                connector=ProxyConnector(host=host, port=port),
-                timeout=aiohttp.ClientTimeout(connect=10),
-            ) as session:
+                        headers=headers,
+                        connector=ProxyConnector(host=host, port=port),
+                        timeout=aiohttp.ClientTimeout(connect=10),
+                    ) as session:
                 async with session.get(
-                    url="https://api.abema.io/v1/ip/check?device=android",
-                    allow_redirects=False,
-                ) as response:
+                                url="https://api.abema.io/v1/ip/check?device=android",
+                                allow_redirects=False,
+                            ) as response:
                     text = await response.text()
-                    if text.count("Country") > 0:
-                        inner_dict["Atype"] = True
-                    else:
-                        inner_dict["Atype"] = False
+                    inner_dict["Atype"] = text.count("Country") > 0
         except Exception as e:
-            logger.error("Abema exception: " + str(e))
+            logger.error(f"Abema exception: {str(e)}")
 
     @classmethod
     async def bahamut(cls, host, headers, inner_dict, port):
         logger.info(f"Performing Bahamut test LOCAL_PORT: {port}.")
         try:
             async with aiohttp.ClientSession(
-                headers=headers,
-                connector=ProxyConnector(host=host, port=port),
-                timeout=aiohttp.ClientTimeout(connect=10),
-            ) as session:
+                        headers=headers,
+                        connector=ProxyConnector(host=host, port=port),
+                        timeout=aiohttp.ClientTimeout(connect=10),
+                    ) as session:
                 async with session.get(
-                    url="https://ani.gamer.com.tw/ajax/token.php?adID=89422&sn=14667",
-                    allow_redirects=False,
-                ) as response:
+                                url="https://ani.gamer.com.tw/ajax/token.php?adID=89422&sn=14667",
+                                allow_redirects=False,
+                            ) as response:
                     text = await response.text()
-                    if text.count("animeSn") > 0:
-                        inner_dict["Btype"] = True
-                    else:
-                        inner_dict["Btype"] = False
+                    inner_dict["Btype"] = text.count("animeSn") > 0
         except Exception as e:
-            logger.error("Bahamut exception: " + str(e))
+            logger.error(f"Bahamut exception: {str(e)}")
 
     @classmethod
     async def indazn(cls, host, headers, inner_dict, port):
         logger.info(f"Performing Dazn test LOCAL_PORT: {port}.")
         try:
             async with aiohttp.ClientSession(
-                headers=headers,
-                connector=ProxyConnector(host=host, port=port, verify_ssl=False),
-                timeout=aiohttp.ClientTimeout(connect=10),
-            ) as session:
+                        headers=headers,
+                        connector=ProxyConnector(host=host, port=port, verify_ssl=False),
+                        timeout=aiohttp.ClientTimeout(connect=10),
+                    ) as session:
                 payload = {
                     "LandingPageKey": "generic",
                     "Languages": "zh-CN,zh,en",
@@ -187,36 +178,30 @@ class StreamTest:
                     "Version": "2",
                 }
                 async with session.post(
-                    url="https://startup.core.indazn.com/misl/v5/Startup",
-                    json=payload,
-                    allow_redirects=False,
-                ) as response:
-                    if response.status == 200:
-                        inner_dict["Dztype"] = True
-                    else:
-                        inner_dict["Dztype"] = False
+                                url="https://startup.core.indazn.com/misl/v5/Startup",
+                                json=payload,
+                                allow_redirects=False,
+                            ) as response:
+                    inner_dict["Dztype"] = response.status == 200
         except Exception as e:
-            logger.error("Dazn exception: " + str(e))
+            logger.error(f"Dazn exception: {str(e)}")
 
     @classmethod
     async def mytvsuper(cls, host, headers, inner_dict, port):
         logger.info(f"Performing TVB test LOCAL_PORT: {port}.")
         try:
             async with aiohttp.ClientSession(
-                headers=headers,
-                connector=ProxyConnector(host=host, port=port),
-                timeout=aiohttp.ClientTimeout(connect=10),
-            ) as session:
+                        headers=headers,
+                        connector=ProxyConnector(host=host, port=port),
+                        timeout=aiohttp.ClientTimeout(connect=10),
+                    ) as session:
                 async with session.get(
-                    url="https://www.mytvsuper.com/iptest.php", allow_redirects=False
-                ) as response:
+                                url="https://www.mytvsuper.com/iptest.php", allow_redirects=False
+                            ) as response:
                     text = await response.text()
-                    if text.count("HK") > 0:
-                        inner_dict["Ttype"] = True
-                    else:
-                        inner_dict["Ttype"] = False
+                    inner_dict["Ttype"] = text.count("HK") > 0
         except Exception as e:
-            logger.error("TVB exception: " + str(e))
+            logger.error(f"TVB exception: {str(e)}")
 
     @classmethod
     async def bilibili(cls, host, headers, inner_dict, port):
@@ -274,7 +259,7 @@ class StreamTest:
                                 else:
                                     inner_dict["Bltype"] = "N/A"
         except Exception as e:
-            logger.error("Bilibili exception: " + str(e))
+            logger.error(f"Bilibili exception: {str(e)}")
 
 
 async def start_stream_test(port, stream_cfg, outbound_ip):

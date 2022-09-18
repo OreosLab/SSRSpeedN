@@ -105,7 +105,7 @@ async def speed_test_socket(
     socket.socket = socks.socksocket
 
     if st_speed_test:
-        for i in range(0, 1):
+        for _ in range(1):
             nmsl = threading.Thread(target=speed_test_thread, args=(res[0], buffer))
             nmsl.start()
 
@@ -132,7 +132,7 @@ async def speed_test_socket(
                 )
                 break
         EXIT_FLAG = True
-        for i in range(0, 10):
+        for _ in range(10):
             time.sleep(0.1)
             if MAX_TIME != 0:
                 break
@@ -142,9 +142,7 @@ async def speed_test_socket(
 
         max_speed_list.sort()
         if len(max_speed_list) > 12:
-            msum = 0
-            for i in range(12, len(max_speed_list) - 2):
-                msum += max_speed_list[i]
+            msum = sum(max_speed_list[i] for i in range(12, len(max_speed_list) - 2))
         logger.info(
             f"SingleThread: Fetched {TOTAL_RECEIVED / 1024:.2f} KB in {MAX_TIME:.2f} s."
         )
@@ -155,7 +153,7 @@ async def speed_test_socket(
         TOTAL_RECEIVED = 0
         EXIT_FLAG = False
 
-    for i in range(0, workers):
+    for _ in range(workers):
         nmsl = threading.Thread(target=speed_test_thread, args=(res[0], buffer))
         nmsl.start()
 
@@ -183,7 +181,7 @@ async def speed_test_socket(
             )
             break
     EXIT_FLAG = True
-    for i in range(0, 10):
+    for _ in range(10):
         time.sleep(0.1)
         if MAX_TIME != 0:
             break
@@ -195,9 +193,7 @@ async def speed_test_socket(
     raw_speed_list = copy.deepcopy(max_speed_list)
     max_speed_list.sort()
     if len(max_speed_list) > 7:
-        msum = 0
-        for i in range(7, len(max_speed_list) - 2):
-            msum += max_speed_list[i]
+        msum = sum(max_speed_list[i] for i in range(7, len(max_speed_list) - 2))
         max_speed = msum / (len(max_speed_list) - 2 - 7)
     else:
         max_speed = current_speed
