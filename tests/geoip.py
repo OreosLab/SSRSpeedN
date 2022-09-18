@@ -7,12 +7,7 @@ root()
 
 
 def geo_info(ip):
-    country, country_code, city, organization = (
-        "N/A",
-        "N/A",
-        "Unknown City",
-        "N/A",
-    )
+    country, country_code, city, organization = ("N/A", "N/A", "Unknown City", "N/A")
     try:
         # This creates a Reader object. You should use the same object
         # across multiple requests as creation of it is expensive.

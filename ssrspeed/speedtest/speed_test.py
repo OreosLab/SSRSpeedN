@@ -143,11 +143,7 @@ class SpeedTest:
             logger.error(e)
         except AddressNotFoundError as e:
             logger.error(e)
-        return {
-            "country": country,
-            "city": city,
-            "organization": organization,
-        }
+        return {"country": country, "city": city, "organization": organization}
 
     def __geo_ip_inbound(self, config):
         inbound_ip = domain2ip(config["server"])
@@ -226,14 +222,7 @@ class SpeedTest:
             s.close()
 
     async def __fast_start_test(
-        self,
-        _item,
-        cfg,
-        address,
-        port,
-        geo_ip_semaphore,
-        download_semaphore,
-        **kwargs,
+        self, _item, cfg, address, port, geo_ip_semaphore, download_semaphore, **kwargs
     ):
         node_info = f"[{_item['group']}] - [{_item['remarks']}] "
         geoip_log = ""
@@ -399,14 +388,7 @@ class SpeedTest:
         )
 
     async def __base_start_test(
-        self,
-        _item,
-        cfg,
-        address,
-        port,
-        geo_ip_semaphore,
-        download_semaphore,
-        **kwargs,
+        self, _item, cfg, address, port, geo_ip_semaphore, download_semaphore, **kwargs
     ):
         node_info = f"[{_item['group']}] - [{_item['remarks']}] "
         geoip_log = ""

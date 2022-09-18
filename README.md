@@ -184,7 +184,7 @@ ssrspeed -u "https://home.yoyu.dev/subscriptionlink" --include 香港 Azure --in
 
 ## 自由配置
 
-* **修改测速内容**
+### 修改测速内容
 
   在 `data/ssrspeed.json` 文件下第 15 行至第 31 行，默认允许。
 
@@ -209,16 +209,16 @@ ssrspeed -u "https://home.yoyu.dev/subscriptionlink" --include 香港 Azure --in
     "bilibili": true,    // 是否测 Bilibili 解锁
   ```
 
-* **修改结果输出**
+### 修改结果输出
 
   ```jsonc
     "port": true,       // 是否输出端口
     "multiplex": true,  // 是否输出复用检测
     "exportResult": {
-        "addition": "OreosLab ©",   // 自定义附加信息
+        "addition": "OreosLab ©",              // 自定义附加信息
         "uploadResult": false,
         "hide_max_speed": false,               // 是否隐藏最高速度
-        "font": "SourceHanSansCN-Medium.otf",  // 自定义字体，见下方说明
+        "font": "LXGWBright-Medium.otf",       // 自定义字体，见下方说明
         "colors": [                            // 自定义配色，见下方说明
             {
                 "name": "origin",
@@ -248,28 +248,28 @@ ssrspeed -u "https://home.yoyu.dev/subscriptionlink" --include 香港 Azure --in
     },
   ```
 
-  * **自定义附加信息**
+### 自定义附加信息
 
-    修改为你自己的频道或群组等信息
+修改为你自己的频道或群组等信息
 
-  * **自定义字体**
+### 自定义字体
 
-    下载字体文件放入 `resources/custom/` 文件夹下，修改 `data/ssrspeed.json` 文件下第 44 行为字体文件名，本项目自带两个字体
+下载字体文件放入 `resources/custom/` 文件夹下，修改 `data/ssrspeed.json` 文件下第 44 行为字体文件名，本项目自带两个字体
 
-  * **自定义颜色**
+### 自定义颜色
 
-    采用速度 (MB/s) 对应输出颜色 (RGB 256) 方式
+采用速度 (MB/s) 对应输出颜色 (RGB 256) 方式
 
 ## 项目结构
 
 ```tree
 SSRSpeedN
 ├── LICENSE
+├── MANIFEST.in
 ├── README.md
 ├── bin
 │   ├── ssrspeed.bat
 │   ├── ssrspeed.sh
-│   └── st.bat
 ├── pyproject.toml
 ├── requirements-dev.txt
 ├── requirements.txt
@@ -346,15 +346,17 @@ SSRSpeedN
 │       └── web.py
 ├── tests
 │   ├── __init__.py
+│   ├── cov
+│   ├── dis
 │   ├── geoip.py
 │   ├── lint
 │   ├── pf
+│   ├── pkg
 │   ├── print_stats.py
 │   ├── root.py
 │   ├── spy
-│   ├── tree
-│   ├── trojan_test.py
-│   └── wpstest.py
+│   ├── tdis
+│   └── tree
 ```
 
 ## 致谢

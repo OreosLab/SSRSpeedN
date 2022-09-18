@@ -130,10 +130,7 @@ class BaseParser(metaclass=ABCMeta):
                     _list.append(item)
             self._config_list = _list
 
-    def exclude_node(
-        self,
-        **kwargs: list,
-    ):
+    def exclude_node(self, **kwargs: list):
         #   print(kwargs, "\n", len(self._config_list), "\n", self._config_list)
         kwl = kwargs.get("kwl", [])
         gkwl = kwargs.get("gkwl", [])

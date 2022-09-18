@@ -63,7 +63,7 @@ def speed_test_netflix(port: int) -> Tuple[float, float, List[float], float]:
         )
 
     except Exception as e:
-        logger.error("Netflix speedtest ERROR : Re-test node " + str(e.args))
+        logger.error("Netflix speedtest ERROR : Re-test node\n" + repr(e))
         return 0, 0, [], 0
 
     finally:

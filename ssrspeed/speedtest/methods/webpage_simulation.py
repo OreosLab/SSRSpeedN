@@ -26,12 +26,7 @@ async def start_web_page_simulation_test(w_config, local_host, local_port):
     for url in urls:
         task_list.append(
             asyncio.create_task(
-                execute(
-                    url=url,
-                    host=local_host,
-                    port=local_port,
-                    semaphore=semaphore,
-                )
+                execute(url=url, host=local_host, port=local_port, semaphore=semaphore)
             )
         )
     await asyncio.wait(task_list)
@@ -58,8 +53,14 @@ async def execute(url, host, port, semaphore):
                     )
     except asyncio.TimeoutError:
         logger.error(f"Url: {url} timeout.")
+    except ConnectionResetError:
+        logger.error(f"Connection reset by peer on : {url}")
+    except aiohttp.TooManyRedirects:
+        logger.error(f"Too many redirects on : {url}")
     except aiohttp.ClientSSLError:
         logger.error(f"SSL Error on : {url}")
+    except aiohttp.ServerDisconnectedError:
+        logger.error(f"Server disconnected on : {url}")
     except Exception:
         logger.exception(f"Unknown Error on : {url}")
     finally:

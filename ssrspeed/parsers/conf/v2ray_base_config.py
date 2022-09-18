@@ -12,12 +12,7 @@ V2RayBaseConfig: dict = {
             "listen": "127.0.0.1",
             "protocol": "socks",
             "sniffing": {"enabled": True, "destOverride": ["http", "tls"]},
-            "settings": {
-                "auth": "noauth",
-                "udp": True,
-                "ip": None,
-                "clients": None,
-            },
+            "settings": {"auth": "noauth", "udp": True, "ip": None, "clients": None},
             "streamSettings": None,
         }
     ],
@@ -31,12 +26,7 @@ V2RayBaseConfig: dict = {
                         "address": "",
                         "port": 1,
                         "users": [
-                            {
-                                "id": "",
-                                "alterId": 0,
-                                "email": "",
-                                "security": "auto",
-                            }
+                            {"id": "", "alterId": 0, "email": "", "security": "auto"}
                         ],
                     }
                 ],
@@ -65,11 +55,7 @@ V2RayBaseConfig: dict = {
         {
             "tag": "block",
             "protocol": "blackhole",
-            "settings": {
-                "vnext": None,
-                "servers": None,
-                "response": {"type": "http"},
-            },
+            "settings": {"vnext": None, "servers": None, "response": {"type": "http"}},
             "streamSettings": {},
             "mux": {},
         },

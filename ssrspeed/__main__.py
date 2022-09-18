@@ -84,12 +84,7 @@ def main():
     # 生成项目路径 JSON 文件
     generate_path_json(key_path, JSON_PATH)
     # 导入路径 JSON 数据拷贝至缓存
-    load_path_config(
-        {
-            "VERSION": version,
-            "path": key_path,
-        }
-    )
+    load_path_config({"VERSION": version, "path": key_path})
     # 生成配置文件并将配置文件 JSON 数据拷贝至缓存
     generate_config_file()
     # 配置日志格式及日志文件路径
@@ -98,12 +93,7 @@ def main():
     check_dir([key_path["clients"], key_path["databases"]])
     # 初始化临时文件、日志和结果集目录(非项目依赖项)
     init_dir(
-        [
-            key_path["tmp"],
-            key_path["logs"],
-            key_path["custom"],
-            key_path["results"],
-        ]
+        [key_path["tmp"], key_path["logs"], key_path["custom"], key_path["results"]]
     )
     if ssrconfig["fastSpeed"] is True:
         for each in handlers:
@@ -201,11 +191,7 @@ def main():
 
         if args.url and config_load_mode == 0:
             sc.console_setup(
-                test_mode,
-                test_method,
-                result_image_color,
-                sort_method,
-                url=config_url,
+                test_mode, test_method, result_image_color, sort_method, url=config_url
             )
         elif args.import_file and config_load_mode == 1:
             import_filename = args.import_file

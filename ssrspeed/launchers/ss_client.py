@@ -4,12 +4,7 @@ from ssrspeed.launchers.base_client import BaseClient
 class Shadowsocks(BaseClient):
     def __init__(self, clients_dir: str, file: str):
         super().__init__(
-            clients_dir,
-            {
-                "win": "shadowsocks-libev",
-                "unix": "shadowsocks-libev",
-            },
-            file,
+            clients_dir, {"win": "shadowsocks-libev", "unix": "shadowsocks-libev"}, file
         )
         self._cmd: dict = {
             "win_debug": [

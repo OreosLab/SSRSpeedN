@@ -148,11 +148,7 @@ def get_stun_response(sock, addr, trans_id=None, send_data=b"", max_timeouts=6):
                     attr_length % 4 != 0
                 ):  # If not on a 32-bit boundary, add padding bytes
                     i += 4 - (attr_length % 4)
-                if attr_type in [
-                    MAPPED_ADDRESS,
-                    SOURCE_ADDRESS,
-                    CHANGED_ADDRESS,
-                ]:
+                if attr_type in [MAPPED_ADDRESS, SOURCE_ADDRESS, CHANGED_ADDRESS]:
                     family, port = ord_(attr_value[1]), int(
                         codecs.encode(attr_value[2:4], "hex"), 16
                     )
@@ -172,10 +168,7 @@ def get_stun_response(sock, addr, trans_id=None, send_data=b"", max_timeouts=6):
                         elif attr_type == SOURCE_ADDRESS:
                             response["src_ip"], response["src_port"] = ip, port
                         elif attr_type == CHANGED_ADDRESS:
-                            response["change_ip"], response["change_port"] = (
-                                ip,
-                                port,
-                            )
+                            response["change_ip"], response["change_port"] = (ip, port)
                     else:  # family == 0x02:  # IPv6
                         ip = socket.inet_ntop(socket.AF_INET6, attr_value[4:20])
                         if attr_type == XOR_MAPPED_ADDRESS:
@@ -185,8 +178,7 @@ def get_stun_response(sock, addr, trans_id=None, send_data=b"", max_timeouts=6):
                                 cookie_int << 96 | trans_id
                             )
                             ip = socket.inet_ntop(
-                                socket.AF_INET6,
-                                ip.to_bytes(32, byteorder="big"),
+                                socket.AF_INET6, ip.to_bytes(32, byteorder="big")
                             )
                             response["xor_ip"], response["xor_port"] = ip, port
                         elif attr_type == MAPPED_ADDRESS:
@@ -194,10 +186,7 @@ def get_stun_response(sock, addr, trans_id=None, send_data=b"", max_timeouts=6):
                         elif attr_type == SOURCE_ADDRESS:
                             response["src_ip"], response["src_port"] = ip, port
                         elif attr_type == CHANGED_ADDRESS:
-                            response["change_ip"], response["change_port"] = (
-                                ip,
-                                port,
-                            )
+                            response["change_ip"], response["change_port"] = (ip, port)
             # Prefer, when possible, to use XORed IPs and ports
             xor_ip, xor_port = response.get("xor_ip", None), response.get(
                 "xor_port", None
@@ -239,18 +228,14 @@ def stun_test_1(sock, addr):
 # Get a STUN binding response from a server, asking it to change both the IP & port from which it replies
 def stun_test_2(sock, addr):
     return get_stun_response(
-        sock,
-        addr,
-        send_data=CHANGE_REQUEST + b"\x00\x04" + b"\x00\x00\x00\x06",
+        sock, addr, send_data=CHANGE_REQUEST + b"\x00\x04" + b"\x00\x00\x00\x06"
     )
 
 
 # Get a STUN binding response from a server, asking it to change just the port from which it replies
 def stun_test_3(sock, addr):
     return get_stun_response(
-        sock,
-        addr,
-        send_data=CHANGE_REQUEST + b"\x00\x04" + b"\x00\x00\x00\x02",
+        sock, addr, send_data=CHANGE_REQUEST + b"\x00\x04" + b"\x00\x00\x00\x02"
     )
 
 
@@ -358,10 +343,7 @@ def get_ip_info(
                 raise PynatError("Error querying STUN server with changed address.")
             # Symmetric, restricted cone, or restricted port NAT
             else:
-                recv_ext_ip, recv_ext_port = (
-                    response["ext_ip"],
-                    response["ext_port"],
-                )
+                recv_ext_ip, recv_ext_port = (response["ext_ip"], response["ext_port"])
                 # Some type of restricted NAT, do test 3 to the change_addr with a CHANGE_REQUEST for the port
                 if recv_ext_ip == ext_ip and recv_ext_port == ext_port:
                     response = stun_test_3(sock, change_addr)
@@ -391,10 +373,7 @@ def main():
             default="0.0.0.0",
         )
         parser.add_argument(
-            "--source-port",
-            help="The source port to bind to.",
-            type=int,
-            default=54320,
+            "--source-port", help="The source port to bind to.", type=int, default=54320
         )
         parser.add_argument(
             "--stun-host", help="The STUN host to use for queries.", type=str

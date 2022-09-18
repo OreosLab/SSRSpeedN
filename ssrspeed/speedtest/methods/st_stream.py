@@ -208,8 +208,7 @@ class StreamTest:
                 timeout=aiohttp.ClientTimeout(connect=10),
             ) as session:
                 async with session.get(
-                    url="https://www.mytvsuper.com/iptest.php",
-                    allow_redirects=False,
+                    url="https://www.mytvsuper.com/iptest.php", allow_redirects=False
                 ) as response:
                     text = await response.text()
                     if text.count("HK") > 0:
@@ -282,7 +281,7 @@ async def start_stream_test(port, stream_cfg, outbound_ip):
     host = "127.0.0.1"
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/64.0.3282.119 Safari/537.36 ",
+        "Chrome/64.0.3282.119 Safari/537.36 "
     }
     test_list = []
     inner_dict = {

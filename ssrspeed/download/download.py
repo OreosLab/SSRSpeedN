@@ -72,21 +72,12 @@ def download(download_type, platform, download_path=None):
     )
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/64.0.3282.119 Safari/537.36 ",
+        "Chrome/64.0.3282.119 Safari/537.36 "
     }
     client_file_info = {
-        "Windows": {
-            "url": client_resources_url,
-            "files": ["clients_win_64.zip"],
-        },
-        "Linux": {
-            "url": client_resources_url,
-            "files": ["clients_linux_amd64.zip"],
-        },
-        "MacOS": {
-            "url": client_resources_url,
-            "files": ["clients_darwin_64.zip"],
-        },
+        "Windows": {"url": client_resources_url, "files": ["clients_win_64.zip"]},
+        "Linux": {"url": client_resources_url, "files": ["clients_linux_amd64.zip"]},
+        "MacOS": {"url": client_resources_url, "files": ["clients_darwin_64.zip"]},
     }
     database_file_info = {
         "url": database_resources_url,
@@ -119,10 +110,7 @@ def download(download_type, platform, download_path=None):
         for kwargs in file_info:
             task_list.append(
                 pool.submit(
-                    download_resource,
-                    **kwargs,
-                    headers=headers,
-                    cols=terminal_size[0],
+                    download_resource, **kwargs, headers=headers, cols=terminal_size[0]
                 )
             )
         done, _ = wait(task_list)

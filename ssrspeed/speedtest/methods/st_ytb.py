@@ -79,7 +79,7 @@ def speed_test_ytb(port: int) -> Tuple[int, int, List[int], int]:
         return st_speed * 128, max_speed * 128, speed_list, total_received
 
     except Exception as e:
-        logger.error("Youtube test ERROR : Re-testing node " + str(e.args))
+        logger.error("Youtube test ERROR : Re-testing node\n" + repr(e))
         return 0, 0, [], 0
 
     finally:

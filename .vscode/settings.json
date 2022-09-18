@@ -198,6 +198,7 @@
         "SUPPRESSHELP",
         "taskkill",
         "tcping",
+        "tdis",
         "testlength",
         "testmethod",
         "textsize",

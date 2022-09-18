@@ -107,12 +107,7 @@ class SpeedTestMethods:
         elif method == "ST_ASYNC":
             try:
                 result = await st_asyncio.start(
-                    download_semaphore,
-                    file_download,
-                    address,
-                    port,
-                    buffer_,
-                    workers,
+                    download_semaphore, file_download, address, port, buffer_, workers
                 )
                 return result
             except Exception:

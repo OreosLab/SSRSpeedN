@@ -5,10 +5,7 @@ class ShadowsocksR(BaseClient):
     def __init__(self, clients_dir: str, file: str):
         super().__init__(
             clients_dir,
-            {
-                "win": "shadowsocksr-libev",
-                "unix": "shadowsocksr-Python",
-            },
+            {"win": "shadowsocksr-libev", "unix": "shadowsocksr-Python"},
             file,
         )
         self._cmd: dict = {

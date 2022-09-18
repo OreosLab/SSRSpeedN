@@ -39,9 +39,7 @@ class RequirementsCheck:
                 f"{client_dir}shadowsocks-libev/simple-obfs",
                 f"{client_dir}shadowsocks-libev/ss-local",
             ],
-            "ShadowsocksR-Python": [
-                f"{client_dir}shadowsocksr/shadowsocks/local.py",
-            ],
+            "ShadowsocksR-Python": [f"{client_dir}shadowsocksr/shadowsocks/local.py"],
             "Trojan": [f"{client_dir}trojan/trojan"],
             "V2Ray-Core": [
                 f"{client_dir}v2ray-core/v2ctl",
@@ -101,8 +99,7 @@ class RequirementsCheck:
                     process.terminate()
                     out, errs = process.communicate()
                     logger.error(
-                        out.decode("utf-8") + errs.decode("utf-8"),
-                        exc_info=True,
+                        out.decode("utf-8") + errs.decode("utf-8"), exc_info=True
                     )
                     return False
                 logger.debug(f"brew info libsodium : {out!r}")
@@ -116,9 +113,7 @@ class RequirementsCheck:
         else:
             try:
                 process = subprocess.Popen(
-                    "ldconfig -p | grep libsodium",
-                    shell=True,
-                    stdout=subprocess.PIPE,
+                    "ldconfig -p | grep libsodium", shell=True, stdout=subprocess.PIPE
                 )
                 try:
                     out = process.communicate(timeout=15)[0]
@@ -126,8 +121,7 @@ class RequirementsCheck:
                     process.terminate()
                     out, errs = process.communicate()
                     logger.error(
-                        out.decode("utf-8") + errs.decode("utf-8"),
-                        exc_info=True,
+                        out.decode("utf-8") + errs.decode("utf-8"), exc_info=True
                     )
                     return False
                 logger.debug(f"ldconfig : {out!r}")

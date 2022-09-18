@@ -141,11 +141,7 @@ def set_opts(parser: ArgumentParser):
         help="Skip requirements check.",
     )
     parser.add_argument(
-        "-w",
-        "--web",
-        action="store_true",
-        dest="web",
-        help="Start web server.",
+        "-w", "--web", action="store_true", dest="web", help="Start web server."
     )
     parser.add_argument(
         "-l",

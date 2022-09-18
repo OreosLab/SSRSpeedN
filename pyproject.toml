@@ -1,5 +1,6 @@
 [tool.black]
 line-length = 88
+skip-magic-trailing-comma = true
 
 [tool.isort]
 profile = "black"

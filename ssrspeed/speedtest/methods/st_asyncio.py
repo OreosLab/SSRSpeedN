@@ -74,9 +74,9 @@ class Statistics:
             "\r["
             + "=" * self._count
             + "] ["
-            + f"{mb_red / self._time_used:.2f}" if self._time_used else "0"
+            + (f"{mb_red / self._time_used:.2f}" if self._time_used else "0")
             + "MB/s]"
-            )
+        )
         logger.info(f"Fetched {mb_red:.2f} MB in {self._time_used:.2f}s.")
 
     def _show_progress(self, delta_time: Union[int, float]):
@@ -88,13 +88,7 @@ class Statistics:
         self._speed_list.append(speed)
 
 
-async def _fetch(
-    url: str,
-    sta: Statistics,
-    host: str,
-    port: int,
-    buffer: int,
-):
+async def _fetch(url: str, sta: Statistics, host: str, port: int, buffer: int):
     try:
         logger.info(f"Fetching {url} via {host}:{port}.")
         async with aiohttp.ClientSession(
@@ -132,15 +126,7 @@ async def start(
         logger.info(f"Running st_async, workers: {workers}.")
         _sta = Statistics()
         tasks = [
-            asyncio.create_task(
-                _fetch(
-                    url,
-                    _sta,
-                    proxy_host,
-                    proxy_port,
-                    buffer,
-                )
-            )
+            asyncio.create_task(_fetch(url, _sta, proxy_host, proxy_port, buffer))
             for _ in range(workers)
         ]
         await asyncio.wait(tasks)

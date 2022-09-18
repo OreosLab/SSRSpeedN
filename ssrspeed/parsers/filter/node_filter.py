@@ -7,11 +7,7 @@ class NodeFilter:
     def __init__(self):
         self.__node_list: list = []
 
-    def filter_node(
-        self,
-        nodes: list,
-        **kwargs: list,
-    ) -> list:
+    def filter_node(self, nodes: list, **kwargs: list) -> list:
         kwl = kwargs.get("kwl", [])
         gkwl = kwargs.get("gkwl", [])
         rkwl = kwargs.get("rkwl", [])
@@ -70,10 +66,7 @@ class NodeFilter:
                     _list.append(item)
         self.__node_list = _list
 
-    def __filter_node(
-        self,
-        **kwargs: list,
-    ):
+    def __filter_node(self, **kwargs: list):
         kwl = kwargs.get("kwl", [])
         gkwl = kwargs.get("gkwl", [])
         rkwl = kwargs.get("rkwl", [])
@@ -119,10 +112,7 @@ class NodeFilter:
                     _list.append(item)
             self.__node_list = _list
 
-    def __exclude_nodes(
-        self,
-        **kwargs: list,
-    ):
+    def __exclude_nodes(self, **kwargs: list):
         kwl = kwargs.get("kwl", [])
         gkwl = kwargs.get("gkwl", [])
         rkwl = kwargs.get("rkwl", [])

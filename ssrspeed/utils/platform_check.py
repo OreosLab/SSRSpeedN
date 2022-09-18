@@ -1,10 +1,9 @@
 import platform
 
-PLATFORM = None
-
 
 def check_platform() -> str:
     tmp = platform.platform()
+    # print(tmp)
     if "Windows" in tmp:
         return "Windows"
     if "Linux" in tmp:
@@ -14,5 +13,4 @@ def check_platform() -> str:
     return "Unknown"
 
 
-if not PLATFORM:
-    PLATFORM = check_platform()
+PLATFORM = check_platform()

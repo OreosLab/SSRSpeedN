@@ -13,7 +13,7 @@ async def parse_location(port):
         logger.info("Starting parse location.")
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
-            "Chrome/104.0.0.0 Safari/537.36",
+            "Chrome/104.0.0.0 Safari/537.36"
         }
         url = "https://api.ip.sb/geoip"
         async with aiohttp.ClientSession(
@@ -36,8 +36,8 @@ async def parse_location(port):
             )
     except asyncio.TimeoutError:
         logger.error("Parse location timeout.")
-    except Exception:
-        logger.exception("Parse location failed.")
+    except Exception as e:
+        logger.error(f"Parse location failed.\n{repr(e)}")
         try:
             logger.error(response.content)
         except Exception:
@@ -66,7 +66,7 @@ async def ip_loc(port):
         logger.info("Starting Geo IP.")
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
-            "Chrome/104.0.0.0 Safari/537.36",
+            "Chrome/104.0.0.0 Safari/537.36"
         }
         url = "https://api.ip.sb/geoip"
         async with aiohttp.ClientSession(
@@ -77,20 +77,20 @@ async def ip_loc(port):
             async with session.get(url=url) as response:
                 tmp = await response.json()
             return tmp
-    except aiohttp.ClientOSError:
-        logger.error("Geo IP ClientOSError")
-        return {}
-    except python_socks._errors.ProxyTimeoutError:
-        logger.error("Geo IP Proxy Timeout.")
-        return {}
-    except python_socks._errors.ProxyConnectionError:
-        logger.error("Geo IP Proxy Connection Error.")
-        return {}
     except asyncio.TimeoutError:
         logger.error("Geo IP Timeout.")
         return {}
+    except python_socks.ProxyTimeoutError:
+        logger.error("Geo IP Proxy Timeout.")
+        return {}
     except ConnectionResetError:
         logger.error("Geo IP Reset.")
+        return {}
+    except python_socks.ProxyConnectionError:
+        logger.error("Geo IP Proxy Connection Error.")
+        return {}
+    except aiohttp.ClientOSError:
+        logger.error("Geo IP ClientOSError.")
         return {}
     except aiohttp.ContentTypeError:
         logger.error("Geo IP Connection closed.")
