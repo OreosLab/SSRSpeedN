@@ -69,8 +69,14 @@ class Statistics:
             self._stopped = True
 
     def show_progress_full(self):
-        mb_red = self._total_red / 1024 / 1024 if self._time_used != 0 else 0
-        print("\r[" + "=" * self._count + f"] [{mb_red / self._time_used:.2f} MB/s]")
+        mb_red = self._total_red / 1024 / 1024
+        print(
+            "\r["
+            + "=" * self._count
+            + "] ["
+            + f"{mb_red / self._time_used:.2f}" if self._time_used else "0"
+            + "MB/s]"
+            )
         logger.info(f"Fetched {mb_red:.2f} MB in {self._time_used:.2f}s.")
 
     def _show_progress(self, delta_time: Union[int, float]):
