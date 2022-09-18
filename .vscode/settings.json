@@ -33,6 +33,7 @@
         "colorlog",
         "configxml",
         "dazn",
+        "dbar",
         "decos",
         "deweighting",
         "DGRAM",
@@ -79,6 +80,7 @@
         "gping",
         "gsub",
         "guiconfig",
+        "Gxmbn",
         "hbomax",
         "highestspeed",
         "hosthost",
@@ -224,7 +226,8 @@
         "xmlrpclib",
         "xtension",
         "Ytype",
-        "yyds"
+        "yyds",
+        "Zmhr"
     ],
     "cSpell.language": "en,en-GB,en-US,lorem"
 }

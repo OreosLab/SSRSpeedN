@@ -105,7 +105,8 @@ class SpeedTest:
     def __get_base_result(self):
         return copy.deepcopy(self.__base_result)
 
-    def __get_client(self, client_type, file):
+    @staticmethod
+    def __get_client(client_type, file):
         client = None
         if client_type == "Shadowsocks":
             client = ShadowsocksClient(CLIENTS_DIR, file)
@@ -197,7 +198,7 @@ class SpeedTest:
                 res["gPingLoss"] = 1 - google_ping_test[1]
                 res["rawGooglePingStatus"] = google_ping_test[2]
             except Exception:
-                logger.error("", exc_info=True)
+                logger.exception("")
 
         return res
 
@@ -216,10 +217,10 @@ class SpeedTest:
             )
             return t, eip, eport, sip, sport
         except socket.gaierror:
-            logger.error("", exc_info=True)
+            logger.exception("")
             return None, None, None, None, None
         except Exception:
-            logger.error("", exc_info=True)
+            logger.exception("")
             return None, None, None, None, None
         finally:
             s.close()
@@ -255,9 +256,11 @@ class SpeedTest:
             or kwargs.get("geoip_test", False)
         ):
             inbound_ip, inbound_geo_res, inbound_info = self.__geo_ip_inbound(cfg)
-            outbound_ip, outbound_geo_res, outbound_info = await self.__geo_ip_outbound(
-                port, geo_ip_semaphore
-            )
+            (
+                outbound_ip,
+                outbound_geo_res,
+                outbound_info,
+            ) = await self.__geo_ip_outbound(port, geo_ip_semaphore)
 
             geoip_log = (
                 f"* Inbound IP : {inbound_ip}, Geo : {inbound_info} "
@@ -421,9 +424,11 @@ class SpeedTest:
             or kwargs.get("geoip_test", False)
         ):
             inbound_ip, inbound_geo_res, inbound_info = self.__geo_ip_inbound(cfg)
-            outbound_ip, outbound_geo_res, outbound_info = await self.__geo_ip_outbound(
-                port, geo_ip_semaphore
-            )
+            (
+                outbound_ip,
+                outbound_geo_res,
+                outbound_info,
+            ) = await self.__geo_ip_outbound(port, geo_ip_semaphore)
 
             geoip_log = (
                 f"- Inbound IP : {inbound_ip}, Geo : {inbound_info} "

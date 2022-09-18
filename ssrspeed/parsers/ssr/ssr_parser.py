@@ -5,9 +5,6 @@ from ssrspeed.utils import b64plus
 
 
 class ShadowsocksRParser(BaseParser):
-    def __init__(self):
-        super(ShadowsocksRParser, self).__init__()
-
     def _parse_link(self, link: str) -> dict:
         _config = self._get_shadowsocks_base_config()
         # 	print(self._baseShadowsocksConfig["remarks"])
@@ -20,13 +17,13 @@ class ShadowsocksRParser(BaseParser):
         decoded1 = decoded.split("/?")[0].split(":")[::-1]
         if len(decoded1) != 6:
             return {}
-        """
-            addr = ""
-            for i in range(5, len(decoded1) - 1):
-                addr += decoded1[i] + ":"
-            addr += decoded1[len(decoded1) - 1]
-            decoded1[5] = addr
-        """
+
+        # addr = ""
+        # for i in range(5, len(decoded1) - 1):
+        #     addr += decoded1[i] + ":"
+        # addr += decoded1[len(decoded1) - 1]
+        # decoded1[5] = addr
+
         decoded2 = decoded.split("/?")[1].split("&")
         _config["server"] = decoded1[5]
         _config["server_port"] = int(decoded1[4])

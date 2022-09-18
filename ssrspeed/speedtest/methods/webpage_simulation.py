@@ -12,7 +12,7 @@ results: list = []
 
 
 async def start_web_page_simulation_test(w_config, local_host, local_port):
-    while len(results):
+    while results:
         results.pop()
     task_list = []
     semaphore = asyncio.Semaphore(w_config.get("maxWorkers", 4))
@@ -26,7 +26,12 @@ async def start_web_page_simulation_test(w_config, local_host, local_port):
     for url in urls:
         task_list.append(
             asyncio.create_task(
-                execute(url=url, host=local_host, port=local_port, semaphore=semaphore)
+                execute(
+                    url=url,
+                    host=local_host,
+                    port=local_port,
+                    semaphore=semaphore,
+                )
             )
         )
     await asyncio.wait(task_list)
@@ -56,13 +61,13 @@ async def execute(url, host, port, semaphore):
     except aiohttp.ClientSSLError:
         logger.error(f"SSL Error on : {url}")
     except Exception:
-        logger.error(f"Unknown Error on : {url}", exc_info=True)
+        logger.exception(f"Unknown Error on : {url}")
     finally:
         results.append(res)
 
 
 if __name__ == "__main__":
-    w_config = {
+    W_CONFIG = {
         "enabled": True,
         "maxWorkers": 4,
         "urls": [
@@ -79,4 +84,4 @@ if __name__ == "__main__":
         ],
     }
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-    print(asyncio.run(start_web_page_simulation_test(w_config, "127.0.0.1", 7890)))
+    print(asyncio.run(start_web_page_simulation_test(W_CONFIG, "127.0.0.1", 7890)))

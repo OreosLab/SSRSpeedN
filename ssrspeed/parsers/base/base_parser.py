@@ -212,5 +212,4 @@ class BaseParser(metaclass=ABCMeta):
     def get_next_config(self) -> Optional[list]:
         if self._config_list:
             return self._config_list.pop(0)
-        else:
-            return None
+        return None

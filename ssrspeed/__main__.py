@@ -29,7 +29,7 @@ def check_dir(paths):
         logger.warning(
             "Please download the resource and store it in the specified location!"
         )
-        exit(0)
+        sys.exit(0)
 
 
 def generate_path_json(data, file):
@@ -98,7 +98,12 @@ def main():
     check_dir([key_path["clients"], key_path["databases"]])
     # 初始化临时文件、日志和结果集目录(非项目依赖项)
     init_dir(
-        [key_path["tmp"], key_path["logs"], key_path["custom"], key_path["results"]]
+        [
+            key_path["tmp"],
+            key_path["logs"],
+            key_path["custom"],
+            key_path["results"],
+        ]
     )
     if ssrconfig["fastSpeed"] is True:
         for each in handlers:
@@ -196,7 +201,11 @@ def main():
 
         if args.url and config_load_mode == 0:
             sc.console_setup(
-                test_mode, test_method, result_image_color, sort_method, url=config_url
+                test_mode,
+                test_method,
+                result_image_color,
+                sort_method,
+                url=config_url,
             )
         elif args.import_file and config_load_mode == 1:
             import_filename = args.import_file

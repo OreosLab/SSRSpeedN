@@ -18,7 +18,7 @@ class ParserV2RayClash:
         aid = int(clash_cfg["alterId"])
         security = clash_cfg.get("cipher", "auto")
         tls = "tls" if (clash_cfg.get("tls", False)) else ""  # TLS
-        allow_insecure = True if (clash_cfg.get("skip-cert-verify", False)) else False
+        allow_insecure = bool(clash_cfg.get("skip-cert-verify", False))
         net = clash_cfg.get("network", "tcp")  # ws, tcp
         _type = clash_cfg.get("type", "none")  # Obfs type
         ws_header = clash_cfg.get("ws-headers", {})
@@ -67,7 +67,7 @@ class ParserV2RayClash:
         try:
             clash_cfg = yaml.load(config, Loader=yaml.FullLoader)
         except Exception:
-            logger.error("Not Clash config.", exc_info=True)
+            logger.exception("Not Clash config.")
             return []
         self.__parse_config(clash_cfg)
         return self.__decoded_configs
@@ -77,7 +77,7 @@ class ParserV2RayClash:
             try:
                 clash_cfg = yaml.load(f, Loader=yaml.FullLoader)
             except Exception:
-                logger.error("Not Clash config.", exc_info=True)
+                logger.exception("Not Clash config.")
                 return []
         self.__parse_config(clash_cfg)
         return self.__decoded_configs

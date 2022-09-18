@@ -1,18 +1,18 @@
-def parse_qs_plus(_dict) -> dict:
+def parse_qs_plus(dict_) -> dict:
     data: dict = {}
-    if type(_dict) != dict:
-        return _dict
-    for k, v in _dict.items():
-        if type(v) == list:
+    if not isinstance(dict_, dict):
+        return dict_
+    for k, v in dict_.items():
+        if isinstance(v, list):
             if len(v) == 0:
                 data[k] = []
             elif len(v) == 1:
                 data[k] = v[0]
             else:
-                _list = []
+                list_ = []
                 for item in v:
-                    _list.append(parse_qs_plus(item))
-                data[k] = _list
+                    list_.append(parse_qs_plus(item))
+                data[k] = list_
         else:
             data[k] = v
     return data

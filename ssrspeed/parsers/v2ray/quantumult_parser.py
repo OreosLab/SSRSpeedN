@@ -23,8 +23,8 @@ class ParserV2RayQuantumult:
                 while text.count('"') % 2 != 0:
                     try:
                         text += f", {link_split.pop(0)}"
-                    except IndexError:
-                        raise ValueError("Invalid Quantumult URL.")
+                    except IndexError as error:
+                        raise ValueError("Invalid Quantumult URL.") from error
                 new_list.append(text)
             link_split = new_list
 
@@ -45,7 +45,7 @@ class ParserV2RayQuantumult:
             if link_split[6].split("=")[1] == "true":
                 tls = "tls"
                 tls_host = link_split[7].split("=")[1]
-                allow_insecure = False if (link_split[8].split("=")[1] == "1") else True
+                allow_insecure = not bool(link_split[8].split("=")[1] == "1")
             else:
                 allow_insecure = True
             i = 7
@@ -94,5 +94,5 @@ class ParserV2RayQuantumult:
             }
             return _config
         except Exception:
-            logger.error(f"Parse {raw_link} failed. (Quantumult Method)", exc_info=True)
+            logger.exception(f"Parse {raw_link} failed. (Quantumult Method)")
             return None

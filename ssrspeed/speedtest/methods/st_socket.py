@@ -76,7 +76,7 @@ def speed_test_thread(link: str, buffer: int) -> Optional[int]:
         with LOCK:
             MAX_TIME = max(MAX_TIME, delta_time)
     except Exception:
-        logger.error("", exc_info=True)
+        logger.exception("")
         return 0
 
 

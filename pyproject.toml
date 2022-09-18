@@ -4,23 +4,30 @@ line-length = 88
 [tool.isort]
 profile = "black"
 multi_line_output = 3
-verbose = true
+src_paths = ["ssrspeed", "tests"]
 
-[tool.pylint.messages_control]
-max-line-length = 88
+[tool.pylint.master]
+job = 0
+suggestion-mode = "yes"
+
+[tool.pylint.basic]
+argument-naming-style = "any"
+variable-naming-style = "any"
+
+[tool.pylint.format]
+max-line-length = 120
+
+[tool.pylint.message_control]
 disable = [
-  "fixme",
-  "line-too-long",
+  "broad-except",
+  "consider-using-with",
+  "import-outside-toplevel",
   "missing-docstring",
-  "no-else-return",
-  "no-member",
-  "no-value-for-parameter",
-  "protected-access",
-  "too-few-public-methods",
-  "unused-argument",
+  "pointless-string-statement",
 ]
 
 [tool.pylint.design]
+min-public-methods = 0
 max-returns = 8
 
 [tool.mypy]

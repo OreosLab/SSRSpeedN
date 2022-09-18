@@ -37,8 +37,8 @@ class ParserShadowsocksD:
         logger.info(f"Read {len(self.__config_list)} config(s).")
         return self.__config_list
 
-    def parse_gui_config(self, filename: str):
-        # In BasicParser.py
+    @staticmethod
+    def parse_gui_config(filename: str):
         raise AttributeError(
-            "'parseGuiConfig' built-in 'BasicParser.py' with basic shadowsocks parser."
+            "'parse_gui_config' built-in 'parser_basic.py' with basic shadowsocks parser."
         )

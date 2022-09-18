@@ -34,7 +34,7 @@ class ParserShadowsocksClash:
 
             p_opts = {}
             plugin = ""
-            if cfg.__contains__("plugin"):
+            if "plugin" in cfg:
                 plugin = cfg.get("plugin", "")
                 if plugin == "obfs":
                     plugin = "obfs-local"
@@ -43,7 +43,7 @@ class ParserShadowsocksClash:
                     logger.info(f'Skip {_dict["group"]} - {_dict["remarks"]}')
                     continue
                 p_opts = cfg.get("plugin-opts", {})
-            elif cfg.__contains__("obfs"):
+            elif "obfs" in cfg:
                 raw_plugin = cfg.get("obfs", "")
                 if raw_plugin:
                     if raw_plugin == "http":
@@ -86,7 +86,7 @@ class ParserShadowsocksClash:
         try:
             clash_cfg = yaml.load(config, Loader=yaml.FullLoader)
         except Exception:
-            logger.error("Not Clash Subscription.", exc_info=True)
+            logger.exception("Not Clash Subscription.")
             return []
 
         self.__parse_config(clash_cfg)
@@ -98,7 +98,7 @@ class ParserShadowsocksClash:
             try:
                 clash_cfg = yaml.load(f, Loader=yaml.FullLoader)
             except Exception:
-                logger.error("Not Clash config.", exc_info=True)
+                logger.exception("Not Clash config.")
                 return []
 
         self.__parse_config(clash_cfg)

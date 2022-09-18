@@ -38,7 +38,7 @@ class SpeedTestMethods:
         method = kwargs.get("method", "ST_ASYNC")
         socket_method = kwargs.get("socket_method", "SOCKET")
         st_speed_test = kwargs.get("st_speed_test", False)
-        buffer = kwargs.get("buffer", 4096)
+        buffer_ = kwargs.get("buffer", 4096)
         workers = kwargs.get("workers", 4)
         logger.info(f"Starting speed test with {method}.")
         if method == "SPEED_TEST_NET":
@@ -55,7 +55,7 @@ class SpeedTestMethods:
                 self.__init_socket()
                 return result["download"] / 8, 0, [], 0  # bits to bytes
             except Exception:
-                logger.error("", exc_info=True)
+                logger.exception("")
                 return 0, 0, [], 0
         elif method == "FAST":
             try:
@@ -65,7 +65,7 @@ class SpeedTestMethods:
                 #   print(result)
                 return result, 0, [], 0
             except Exception:
-                logger.error("", exc_info=True)
+                logger.exception("")
                 return 0, 0, [], 0
         elif method == "SOCKET":  # Old speedtest
             try:
@@ -76,7 +76,7 @@ class SpeedTestMethods:
                         port,
                         speed_test,
                         st_speed_test,
-                        buffer,
+                        buffer_,
                         workers,
                     )
                     return result
@@ -87,7 +87,7 @@ class SpeedTestMethods:
                     result = stNF.speed_test_netflix(port)
                     return result
             except Exception:
-                logger.error("", exc_info=True)
+                logger.exception("")
                 return 0, 0, [], 0
         elif method == "YOUTUBE":
             try:
@@ -97,21 +97,26 @@ class SpeedTestMethods:
                     port,
                     speed_test,
                     st_speed_test,
-                    buffer,
+                    buffer_,
                     workers,
                 )
                 return result
             except Exception:
-                logger.error("", exc_info=True)
+                logger.exception("")
                 return 0, 0, [], 0
         elif method == "ST_ASYNC":
             try:
                 result = await st_asyncio.start(
-                    download_semaphore, file_download, address, port, buffer, workers
+                    download_semaphore,
+                    file_download,
+                    address,
+                    port,
+                    buffer_,
+                    workers,
                 )
                 return result
             except Exception:
-                logger.error("", exc_info=True)
+                logger.exception("")
                 return 0, 0, [], 0
         else:
             raise ValueError(f"Invalid test method {method}.")

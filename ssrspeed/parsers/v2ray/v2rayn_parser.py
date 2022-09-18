@@ -70,7 +70,7 @@ class ParserV2RayN:
             }
             return _config
         except Exception:
-            logger.error(f"Parse {raw_link} failed. (V2RayN Method)", exc_info=True)
+            logger.exception(f"Parse {raw_link} failed. (V2RayN Method)")
             return None
 
     def parse_gui_data(self, data: dict) -> list:
@@ -107,6 +107,6 @@ class ParserV2RayN:
             try:
                 config = json.load(f)
             except Exception:
-                logger.error("Not V2RayN Config.", exc_info=True)
+                logger.exception("Not V2RayN Config.")
                 return False
         return self.parse_gui_data(config)

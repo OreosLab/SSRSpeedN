@@ -58,6 +58,7 @@ def server_method(app, sc):
             if not subscription_url:
                 return "invalid url."
             return json.dumps(sc.web_read_subscription(subscription_url))
+        return "invalid method"
 
     @app.route("/readfileconfig", methods=["POST"])
     def read_file_config():
@@ -72,12 +73,11 @@ def server_method(app, sc):
                     ufile.save(tmp_filename)
                     logger.info(f"Tmp config file saved as {tmp_filename}.")
                     return json.dumps(sc.web_read_config_file(tmp_filename))
-                else:
-                    logger.error(f"Disallowed file {ufile.filename}.")
-                    return FileNotAllowed.err_msg
-            else:
-                logger.error("File upload failed or unknown error.")
-                return WebFileCommonError.err_msg
+                logger.error(f"Disallowed file {ufile.filename}.")
+                return FileNotAllowed.err_msg
+            logger.error("File upload failed or unknown error.")
+            return WebFileCommonError.err_msg
+        return "invalid method"
 
     @app.route("/getcolors", methods=["GET"])
     def get_colors():

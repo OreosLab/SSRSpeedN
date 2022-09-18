@@ -53,8 +53,7 @@ class DownloadRuleMatch:
         try:
             if data and not self._config["skipRuleMatch"]:
                 return self._check_rule(data)
-            else:
-                return self._get_download_link()
+            return self._get_download_link()
         except Exception:
-            logger.error("", exc_info=True)
+            logger.exception("")
             return self._get_download_link()

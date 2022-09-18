@@ -609,7 +609,10 @@ def build_opener(source_address=None, timeout=10):
 
     if source_address:
         source_address_tuple = (source_address, 0)
-        printer("Binding to source address: %r" % (source_address_tuple,), debug=True)
+        printer(
+            "Binding to source address: %r" % (source_address_tuple,),
+            debug=True,
+        )
     else:
         source_address_tuple = None
 
@@ -911,7 +914,14 @@ class HTTPUploader(threading.Thread):
     """Thread class for putting a URL"""
 
     def __init__(
-        self, i, request, start, size, timeout, opener=None, shutdown_event=None
+        self,
+        i,
+        request,
+        start,
+        size,
+        timeout,
+        opener=None,
+        shutdown_event=None,
     ):
         threading.Thread.__init__(self)
         self.request = request
@@ -944,7 +954,8 @@ class HTTPUploader(threading.Thread):
                     # This also causes issues with Ctrl-C, but we will concede
                     # for the moment that Ctrl-C on PY24 isn't immediate
                     request = build_request(
-                        self.request.get_full_url(), data=request.data.read(self.size)
+                        self.request.get_full_url(),
+                        data=request.data.read(self.size),
                     )
                     f = self._opener(request)
                 f.read(11)
@@ -1254,14 +1265,28 @@ class Speedtest(object):
         up_sizes = [32768, 65536, 131072, 262144, 524288, 1048576, 7340032]
         sizes = {
             "upload": up_sizes[ratio - 1 :],
-            "download": [350, 500, 750, 1000, 1500, 2000, 2500, 3000, 3500, 4000],
+            "download": [
+                350,
+                500,
+                750,
+                1000,
+                1500,
+                2000,
+                2500,
+                3000,
+                3500,
+                4000,
+            ],
         }
 
         size_count = len(sizes["upload"])
 
         upload_count = int(math.ceil(upload_max / size_count))
 
-        counts = {"upload": upload_count, "download": int(download["threadsperurl"])}
+        counts = {
+            "upload": upload_count,
+            "download": int(download["threadsperurl"]),
+        }
 
         threads = {
             "upload": int(upload["threads"]),
@@ -1403,7 +1428,10 @@ class Speedtest(object):
                     try:
                         d = distance(
                             self.lat_lon,
-                            (float(attrib.get("lat")), float(attrib.get("lon"))),
+                            (
+                                float(attrib.get("lat")),
+                                float(attrib.get("lon")),
+                            ),
                         )
                     except Exception:
                         continue
@@ -1680,7 +1708,10 @@ class Speedtest(object):
             requests.append(
                 (
                     build_request(
-                        self.best["url"], data, secure=self._secure, headers=headers
+                        self.best["url"],
+                        data,
+                        secure=self._secure,
+                        headers=headers,
                     ),
                     size,
                 )
@@ -1845,7 +1876,10 @@ def parse_args():
         help="Single character delimiter to use in CSV " 'output. Default ","',
     )
     parser.add_argument(
-        "--csv-header", action="store_true", default=False, help="Print CSV headers"
+        "--csv-header",
+        action="store_true",
+        default=False,
+        help="Print CSV headers",
     )
     parser.add_argument(
         "--json",
@@ -1899,7 +1933,9 @@ def parse_args():
         "MemoryError",
     )
     parser.add_argument(
-        "--version", action="store_true", help="Show the version number and exit"
+        "--version",
+        action="store_true",
+        help="Show the version number and exit",
     )
     parser.add_argument(
         "--debug", action="store_true", help=ARG_SUPPRESS, default=ARG_SUPPRESS
@@ -2003,7 +2039,9 @@ def shell():
     printer("Retrieving speedtest.net configuration...", quiet)
     try:
         speedtest = Speedtest(
-            source_address=args.source, timeout=args.timeout, secure=args.secure
+            source_address=args.source,
+            timeout=args.timeout,
+            secure=args.secure,
         )
     except (ConfigRetrievalError,) + HTTP_ERRORS:
         printer("Cannot retrieve speedtest configuration", error=True)
@@ -2070,7 +2108,10 @@ def shell():
         speedtest.download(callback=callback, threads=(None, 1)[args.single])
         printer(
             "Download: %0.2f M%s/s"
-            % ((results.download / 1000.0 / 1000.0) / args.units[1], args.units[0]),
+            % (
+                (results.download / 1000.0 / 1000.0) / args.units[1],
+                args.units[0],
+            ),
             quiet,
         )
     else:
@@ -2085,7 +2126,10 @@ def shell():
         )
         printer(
             "Upload: %0.2f M%s/s"
-            % ((results.upload / 1000.0 / 1000.0) / args.units[1], args.units[0]),
+            % (
+                (results.upload / 1000.0 / 1000.0) / args.units[1],
+                args.units[0],
+            ),
             quiet,
         )
     else:

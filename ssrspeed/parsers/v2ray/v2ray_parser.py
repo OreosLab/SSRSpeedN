@@ -8,9 +8,6 @@ from ssrspeed.utils import b64plus
 
 
 class V2RayParser(BaseParser):
-    def __init__(self):
-        super(V2RayParser, self).__init__()
-
     def __generate_config(self, config: dict) -> dict:
         _config = V2RayBaseConfigs.get_config()
 
@@ -56,8 +53,8 @@ class V2RayParser(BaseParser):
         stream_settings["security"] = config["tls"]
         if config["tls"] == "tls":
             tls_settings = V2RayBaseConfigs.get_tls_object()
-            tls_settings["allowInsecure"] = (
-                True if (config.get("allowInsecure", "false") == "true") else False
+            tls_settings["allowInsecure"] = bool(
+                config.get("allowInsecure", "false") == "true"
             )
             tls_settings["serverName"] = config["tls-host"]
             stream_settings["tlsSettings"] = tls_settings

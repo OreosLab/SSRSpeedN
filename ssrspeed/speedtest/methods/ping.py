@@ -31,7 +31,7 @@ async def tcp_ping_task(loop, _list, address, port):
         _list.append(0)
         fac += 1
     except Exception:
-        logger.error("TCP Ping Exception:", exc_info=True)
+        logger.exception("TCP Ping Exception:")
         _list.append(0)
         fac += 1
     return {"alt": alt, "fac": fac, "suc": suc}
@@ -63,7 +63,7 @@ async def google_ping_task(loop, _list, address, port):
         _list.append(0)
         logger.error(f"Google Ping Timeout {fac} times.")
     except Exception:
-        logger.error("Google Ping Exception:", exc_info=True)
+        logger.exception("Google Ping Exception:")
         _list.append(0)
         fac += 1
     return {"alt": alt, "fac": fac, "suc": suc}
@@ -76,7 +76,7 @@ async def tcp_ping(address: str, port: int) -> tuple:
     test_ping = [
         asyncio.create_task(tcp_ping_task(loop, _list, address, port)) for _ in range(3)
     ]
-    done, pending = await asyncio.wait(test_ping, timeout=5)
+    done, _ = await asyncio.wait(test_ping, timeout=5)
     for each in done:
         result = each.result()
         alt += result["alt"]
@@ -95,7 +95,7 @@ async def google_ping(address: str, port: int) -> tuple:
         asyncio.create_task(google_ping_task(loop, _list, address, port))
         for _ in range(3)
     ]
-    done, pending = await asyncio.wait(test_ping, timeout=5)
+    done, _ = await asyncio.wait(test_ping, timeout=5)
     for each in done:
         result = each.result()
         alt += result["alt"]

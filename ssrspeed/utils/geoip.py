@@ -28,11 +28,16 @@ async def parse_location(port):
                     f'Continent Code : {tmp["continent_code"]}, '
                     f'ISP : {tmp["organization"]}'
                 )
-            return True, tmp["country_code"], tmp["continent_code"], tmp["organization"]
+            return (
+                True,
+                tmp["country_code"],
+                tmp["continent_code"],
+                tmp["organization"],
+            )
     except asyncio.TimeoutError:
         logger.error("Parse location timeout.")
     except Exception:
-        logger.error("Parse location failed.", exc_info=True)
+        logger.exception("Parse location failed.")
         try:
             logger.error(response.content)
         except Exception:
@@ -43,7 +48,7 @@ async def parse_location(port):
 def check_ipv4(ip: str) -> bool:
     r = re.compile(r"\b((?:25[0-5]|2[0-4]\d|[01]?\d\d?)(?:(?<!\.)\b|\.)){4}")
     rm = r.match(ip)
-    return True if rm and rm.group(0) == ip else False
+    return bool(rm and rm.group(0) == ip)
 
 
 def domain2ip(domain: str) -> str:
@@ -52,7 +57,7 @@ def domain2ip(domain: str) -> str:
         ip = socket.gethostbyname(domain)
         return ip
     except Exception:
-        logger.error(f"Translate {domain} to ipv4 failed.", exc_info=True)
+        logger.exception(f"Translate {domain} to ipv4 failed.")
         return "N/A"
 
 
@@ -63,7 +68,7 @@ async def ip_loc(port):
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
             "Chrome/104.0.0.0 Safari/537.36",
         }
-        url = f"https://api.ip.sb/geoip"
+        url = "https://api.ip.sb/geoip"
         async with aiohttp.ClientSession(
             headers=headers,
             connector=ProxyConnector(host="127.0.0.1", port=port),
@@ -94,7 +99,7 @@ async def ip_loc(port):
         logger.error("Geo IP Incomplete Read.")
         return {}
     except Exception:
-        logger.error("Geo IP Failed.", exc_info=True)
+        logger.exception("Geo IP Failed.")
         try:
             logger.error(response.content)
         except Exception:

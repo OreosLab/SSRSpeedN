@@ -49,7 +49,6 @@ def find_ipv4(fqdn):
     """
     find IPv4 address of fqdn
     """
-    import socket
 
     ipv4 = socket.getaddrinfo(fqdn, 80, socket.AF_INET)[0][4][0]
     return ipv4
@@ -59,7 +58,6 @@ def find_ipv6(fqdn):
     """
     find IPv6 address of fqdn
     """
-    import socket
 
     ipv6 = socket.getaddrinfo(fqdn, 80, socket.AF_INET6)[0][4][0]
     return ipv6
@@ -77,7 +75,7 @@ def fast_com(verbose=False, max_time=15, force_ipv4=False, force_ipv6=False):
     try:
         url_result = urllib.request.urlopen(url)
     except Exception:
-        logger.error("No connection at all", exc_info=True)
+        logger.exception("No connection at all")
         # no connection at all?
         return 0
     response = url_result.read().decode().strip()
@@ -170,11 +168,11 @@ def fast_com(verbose=False, max_time=15, force_ipv4=False, force_ipv6=False):
             pass
 
     # Now start the threads
-    for i in range(len(threads)):
+    for i, t in enumerate(threads):
         # print("Thread: i is", i)
-        threads[i] = Thread(target=get_html_result, args=(urls[i], results, i))
-        threads[i].daemon = True
-        threads[i].start()
+        t = Thread(target=get_html_result, args=(urls[i], results, i))
+        t.daemon = True
+        t.start()
 
     # Monitor the amount of bytes (and speed) of the threads
     time.sleep(1)
@@ -190,34 +188,18 @@ def fast_com(verbose=False, max_time=15, force_ipv4=False, force_ipv6=False):
         delta = total - last_total
         speed_kbps = (delta / sleep_secs) / 1024
         if verbose:
-            """
             logger.info(
-                "Loop" + loop + "Total MB",
-                total / (1024 * 1024),
-                "Delta MB",
-                delta / (1024 * 1024),
-                "Speed kB/s:",
-                speed_kbps,
-                "aka Mbps %.1f" % (application_bytes_to_networkbits(speed_kbps) / 1024),
-            )
-            """
-            logger.info(
-                "Loop %s Total %s MB,Delta %s MB,Speed %s KB/s aka %.1f Mbps"
-                % (
-                    str(loop),
-                    str(total / (1024 * 1024)),
-                    str(delta / (1024 * 1024)),
-                    str(speed_kbps),
-                    application_bytes_to_networkbits(speed_kbps) / 1024,
-                )
+                f"Loop {loop} Total {total / (1024 * 1024)} MB, "
+                f"Delta {delta / (1024 * 1024)} MB, "
+                f"Speed {speed_kbps} KB/s "
+                f"aka {application_bytes_to_networkbits(speed_kbps) / 1024:.1f} Mbps "
             )
         last_total = total
         if speed_kbps > highest_speed_kbps:
             highest_speed_kbps = speed_kbps
         time.sleep(sleep_secs)
 
-    mbps = application_bytes_to_networkbits(highest_speed_kbps) / 1024
-    mbps = float("%.1f" % mbps)
+    mbps = round(application_bytes_to_networkbits(highest_speed_kbps) / 1024, 1)
     if verbose:
         logger.info(
             "Highest Speed (kB/s):" + str(highest_speed_kbps) + "aka Mbps " + str(mbps)

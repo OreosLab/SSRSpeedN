@@ -28,7 +28,7 @@ class ClashParser:
 
         p_opts = {}
         plugin = ""
-        if cfg.__contains__("plugin"):
+        if "plugin" in cfg:
             plugin = cfg.get("plugin", "")
             if plugin == "obfs":
                 plugin = "obfs-local"
@@ -37,7 +37,7 @@ class ClashParser:
                 logger.info(f'Skip {_dict["group"]} - {_dict["remarks"]}')
                 return {}
             p_opts = cfg.get("plugin-opts", {})
-        elif cfg.__contains__("obfs"):
+        elif "obfs" in cfg:
             raw_plugin = cfg.get("obfs", "")
             if raw_plugin:
                 if raw_plugin == "http":
@@ -81,7 +81,7 @@ class ClashParser:
         aid = int(cfg["alterId"])
         security = cfg.get("cipher", "auto")
         tls = "tls" if (cfg.get("tls", False)) else ""  # TLS
-        allow_insecure = True if (cfg.get("skip-cert-verify", False)) else False
+        allow_insecure = bool(cfg.get("skip-cert-verify", False))
         net = cfg.get("network", "tcp")  # ws,tcp
         _type = cfg.get("type", "none")  # Obfs type
         ws_header = cfg.get("ws-headers", {})
@@ -125,7 +125,7 @@ class ClashParser:
         group = cfg.get("peer", "N/A")
         sni = cfg.get("sni", "")
         port = int(cfg["port"])
-        allow_insecure = True if (cfg.get("skip-cert-verify", False)) else False
+        allow_insecure = bool(cfg.get("skip-cert-verify", False))
         _type = cfg.get("type", "none")  # Obfs type
         logger.debug(cfg)
         return {
@@ -187,4 +187,4 @@ class ClashParser:
             try:
                 self.parse_config(f.read())
             except Exception:
-                logger.error("Not Clash config.", exc_info=True)
+                logger.exception("Not Clash config.")

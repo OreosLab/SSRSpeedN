@@ -208,7 +208,8 @@ class StreamTest:
                 timeout=aiohttp.ClientTimeout(connect=10),
             ) as session:
                 async with session.get(
-                    url="https://www.mytvsuper.com/iptest.php", allow_redirects=False
+                    url="https://www.mytvsuper.com/iptest.php",
+                    allow_redirects=False,
                 ) as response:
                     text = await response.text()
                     if text.count("HK") > 0:

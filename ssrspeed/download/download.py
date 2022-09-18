@@ -43,13 +43,13 @@ def download_resource(url, headers, name, size, position, path, cols):
         leave=False,
         unit_scale=True,
         ncols=cols - 10,
-    ) as bar, open(file=path, mode="wb") as f:
-        content = requests.get(url=url, headers=headers, stream=True).iter_content(
-            chunk_size=1024
-        )
+    ) as dbar, open(file=path, mode="wb") as f:
+        content = requests.get(
+            url=url, headers=headers, timeout=10, stream=True
+        ).iter_content(chunk_size=1024)
         for chunk in content:
             length = f.write(chunk)
-            bar.update(length)
+            dbar.update(length)
     return f"已保存至: {path}"
 
 
@@ -75,9 +75,18 @@ def download(download_type, platform, download_path=None):
         "Chrome/64.0.3282.119 Safari/537.36 ",
     }
     client_file_info = {
-        "Windows": {"url": client_resources_url, "files": ["clients_win_64.zip"]},
-        "Linux": {"url": client_resources_url, "files": ["clients_linux_amd64.zip"]},
-        "MacOS": {"url": client_resources_url, "files": ["clients_darwin_64.zip"]},
+        "Windows": {
+            "url": client_resources_url,
+            "files": ["clients_win_64.zip"],
+        },
+        "Linux": {
+            "url": client_resources_url,
+            "files": ["clients_linux_amd64.zip"],
+        },
+        "MacOS": {
+            "url": client_resources_url,
+            "files": ["clients_darwin_64.zip"],
+        },
     }
     database_file_info = {
         "url": database_resources_url,
@@ -92,7 +101,7 @@ def download(download_type, platform, download_path=None):
     elif download_type == "client":
         urls_info.append(client_file_info[platform])
     for url_info in urls_info:
-        response = requests.get(url=url_info["url"], headers=headers).json()
+        response = requests.get(url=url_info["url"], headers=headers, timeout=10).json()
         for index, each in enumerate(response["assets"], 1):
             if each["name"] in url_info["files"]:
                 file_info.append(
@@ -116,7 +125,7 @@ def download(download_type, platform, download_path=None):
                     cols=terminal_size[0],
                 )
             )
-        done, pending = wait(task_list)
+        done, _ = wait(task_list)
         print("\n")
         for each in done:
             print(each.result())

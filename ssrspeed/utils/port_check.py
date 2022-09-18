@@ -36,6 +36,6 @@ def sync_check_port(port: int):
     except Exception:
         logger.error(f"Port {port} already in use, ")
         logger.error(
-            f"please change the local port in ssrspeed.json or terminate the application."
+            "please change the local port in ssrspeed.json or terminate the application."
         )
         sys.exit(1)

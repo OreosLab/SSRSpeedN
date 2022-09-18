@@ -7,9 +7,6 @@ from ssrspeed.parsers.base import BaseParser
 
 
 class TrojanParser(BaseParser):
-    def __init__(self):
-        super(TrojanParser, self).__init__()
-
     # From: https://github.com/NyanChanMeow/SSRSpeed/issues/105
     def _parse_link(self, link: str) -> dict:
         if not link.startswith("trojan://"):

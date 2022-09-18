@@ -44,7 +44,9 @@ class UniversalParser:
         configs: List[dict],
     ) -> List[
         Union[
-            Optional[NodeShadowsocks], Optional[NodeShadowsocksR], Optional[NodeV2Ray]
+            Optional[NodeShadowsocks],
+            Optional[NodeShadowsocksR],
+            Optional[NodeV2Ray],
         ]
     ]:
         result: list = []

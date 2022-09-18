@@ -12,7 +12,12 @@ V2RayBaseConfig: dict = {
             "listen": "127.0.0.1",
             "protocol": "socks",
             "sniffing": {"enabled": True, "destOverride": ["http", "tls"]},
-            "settings": {"auth": "noauth", "udp": True, "ip": None, "clients": None},
+            "settings": {
+                "auth": "noauth",
+                "udp": True,
+                "ip": None,
+                "clients": None,
+            },
             "streamSettings": None,
         }
     ],
@@ -26,7 +31,12 @@ V2RayBaseConfig: dict = {
                         "address": "",
                         "port": 1,
                         "users": [
-                            {"id": "", "alterId": 0, "email": "", "security": "auto"}
+                            {
+                                "id": "",
+                                "alterId": 0,
+                                "email": "",
+                                "security": "auto",
+                            }
                         ],
                     }
                 ],
@@ -55,7 +65,11 @@ V2RayBaseConfig: dict = {
         {
             "tag": "block",
             "protocol": "blackhole",
-            "settings": {"vnext": None, "servers": None, "response": {"type": "http"}},
+            "settings": {
+                "vnext": None,
+                "servers": None,
+                "response": {"type": "http"},
+            },
             "streamSettings": {},
             "mux": {},
         },
@@ -177,8 +191,8 @@ class V2RayBaseConfigs:
         stream_settings["security"] = config["tls"]
         if config["tls"] == "tls":
             tls_settings = V2RayBaseConfigs.get_tls_object()
-            tls_settings["allowInsecure"] = (
-                True if (config.get("allowInsecure", "false") == "true") else False
+            tls_settings["allowInsecure"] = bool(
+                config.get("allowInsecure", "false") == "true"
             )
             tls_settings["serverName"] = config.get("tls-host", "")
             stream_settings["tls_settings"] = tls_settings

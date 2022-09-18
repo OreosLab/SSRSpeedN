@@ -12,13 +12,12 @@ def get_post_data() -> dict:
     if request.content_type.startswith("application/json"):
         _data = request.get_data()
         return json.loads(_data.decode("utf-8"))
-    elif request.content_type.startswith("application/x-www-form-urlencoded"):
+    if request.content_type.startswith("application/x-www-form-urlencoded"):
         # print(urllib.parse.parse_qs(request.get_data().decode("utf-8")))
         return parse_qs_plus(urllib.parse.parse_qs(request.get_data().decode("utf-8")))
-    else:
-        for key, value in request.form.items():
-            if key.endswith("[]"):
-                data[key[:-2]] = request.form.getlist(key)
-            else:
-                data[key] = value
-        return data
+    for key, value in request.form.items():
+        if key.endswith("[]"):
+            data[key[:-2]] = request.form.getlist(key)
+        else:
+            data[key] = value
+    return data

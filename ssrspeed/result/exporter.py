@@ -74,7 +74,7 @@ class ExportResult:
     def set_colors(self, name: str = "origin"):
         for color in self.__config["colors"]:
             if color["name"] == name:
-                logger.info("Set colors as {}.".format(name))
+                logger.info(f"Set colors as {name}.")
                 self.__colors = color["colors"]
                 self.__color_speed_list.append(0)
                 for speed in self.__colors.keys():
@@ -84,7 +84,7 @@ class ExportResult:
                         continue
                 self.__color_speed_list.sort()
                 return
-        logger.warning("Color {} not found in config.".format(name))
+        logger.warning(f"Color {name} not found in config.")
 
     @staticmethod
     def set_font(
@@ -94,15 +94,20 @@ class ExportResult:
         custom_font = ssrconfig["path"]["custom"] + name
         if os.path.isfile(font):
             return ImageFont.truetype(font, size)
-        elif os.path.isfile(custom_font):
+        if os.path.isfile(custom_font):
             return ImageFont.truetype(custom_font, size)
+        raise FileNotFoundError(f"Font {name} not found.")
 
     def set_time_used(self, time_used: float):
         self.__time_used = time.strftime("%H:%M:%S", time.gmtime(time_used))
-        logger.info("Time Used : {}".format(self.__time_used))
+        logger.info(f"Time Used : {self.__time_used}")
 
     def export(
-        self, result: list, split: int = 0, export_type: int = 0, sort_method: str = ""
+        self,
+        result: list,
+        split: int = 0,
+        export_type: int = 0,
+        sort_method: str = "",
     ):
         if not export_type:
             self.__export_as_json(result)
@@ -134,14 +139,19 @@ class ExportResult:
             )
             len_in = max(len_in, pilmoji.getsize(inres, font=font)[0])
             len_out = max(len_out, pilmoji.getsize(outres, font=font)[0])
-        return max_group_width + 10, max_remark_width + 10, len_in + 20, len_out + 20
+        return (
+            max_group_width + 10,
+            max_remark_width + 10,
+            len_in + 20,
+            len_out + 20,
+        )
 
     def __get_base_pos(self, width: float, text: str) -> float:
         font = self.__font
         draw = ImageDraw.Draw(Image.new("RGB", (1, 1), (255, 255, 255)))
         text_size = draw.textsize(text, font=font)[0]
         base_pos = (width - text_size) / 2
-        logger.debug("Base Position {}".format(base_pos))
+        logger.debug(f"Base Position {base_pos}")
         return base_pos
 
     def __export_as_png(self, result: list):
@@ -155,14 +165,11 @@ class ExportResult:
         remark_width = weight[1]
         in_width = weight[2]
         out_width = weight[3]
-        if group_width < 60:
-            group_width = 60
+        group_width = max(group_width, 60)
         if remark_width < 60:
             remark_width = 90
-        if in_width < 180:
-            in_width = 180
-        if out_width < 180:
-            out_width = 180
+        in_width = max(in_width, 180)
+        out_width = max(out_width, 180)
         other_width = 100
 
         abema_logo = Image.open(f"{LOGOS_DIR}Abema.png")
@@ -259,9 +266,7 @@ class ExportResult:
         # )
 
         try:
-            text = "\u2708\uFE0F 机场测评图 with SSRSpeed N ( v{} )".format(
-                ssrconfig["VERSION"]
-            )
+            text = f'\u2708\uFE0F 机场测评图 with SSRSpeed N ( v{ssrconfig["VERSION"]} )'
             pilmoji.text(
                 (int(self.__get_base_pos(image_right_position, text)), 4),
                 text,
@@ -269,30 +274,49 @@ class ExportResult:
                 fill=(0, 0, 0),
             )
         except Exception:
-            text = "机场测评图 with SSRSpeed N ( v{} )".format(ssrconfig["VERSION"])
+            text = f'机场测评图 with SSRSpeed N ( v{ssrconfig["VERSION"]} )'
             draw.text(
                 (self.__get_base_pos(image_right_position, text), 4),
                 text,
                 font=result_font,
                 fill=(0, 0, 0),
             )
-        draw.line((0, 30, image_right_position - 1, 30), fill=(127, 127, 127), width=1)
+        draw.line(
+            (0, 30, image_right_position - 1, 30),
+            fill=(127, 127, 127),
+            width=1,
+        )
 
         draw.line((1, 0, 1, new_image_height - 1), fill=(127, 127, 127), width=1)
         draw.line(
-            (group_right_position, 30, group_right_position, image_height + 30 - 1),
+            (
+                group_right_position,
+                30,
+                group_right_position,
+                image_height + 30 - 1,
+            ),
             fill=(127, 127, 127),
             width=1,
         )
         draw.line(
-            (remark_right_position, 30, remark_right_position, image_height + 30 - 1),
+            (
+                remark_right_position,
+                30,
+                remark_right_position,
+                image_height + 30 - 1,
+            ),
             fill=(127, 127, 127),
             width=1,
         )
 
         if not self.__hide_gping:
             draw.line(
-                (loss_right_position, 30, loss_right_position, image_height + 30 - 1),
+                (
+                    loss_right_position,
+                    30,
+                    loss_right_position,
+                    image_height + 30 - 1,
+                ),
                 fill=(127, 127, 127),
                 width=1,
             )
@@ -323,7 +347,12 @@ class ExportResult:
 
         if not self.__hide_port:
             draw.line(
-                (port_right_position, 30, port_right_position, image_height + 30 - 1),
+                (
+                    port_right_position,
+                    30,
+                    port_right_position,
+                    image_height + 30 - 1,
+                ),
                 fill=(127, 127, 127),
                 width=1,
             )
@@ -353,7 +382,12 @@ class ExportResult:
 
         if not self.__hide_ntt:
             draw.line(
-                (ntt_right_position, 30, ntt_right_position, image_height + 30 - 1),
+                (
+                    ntt_right_position,
+                    30,
+                    ntt_right_position,
+                    image_height + 30 - 1,
+                ),
                 fill=(127, 127, 127),
                 width=1,
             )
@@ -431,7 +465,12 @@ class ExportResult:
             )
 
         draw.line(
-            (image_right_position, 0, image_right_position, new_image_height - 1),
+            (
+                image_right_position,
+                0,
+                image_right_position,
+                new_image_height - 1,
+            ),
             fill=(127, 127, 127),
             width=1,
         )
@@ -506,7 +545,8 @@ class ExportResult:
                 (
                     google_ping_right_position
                     + self.__get_base_pos(
-                        port_right_position - google_ping_right_position, "Port"
+                        port_right_position - google_ping_right_position,
+                        "Port",
                     ),
                     30 + 4,
                 ),
@@ -521,7 +561,8 @@ class ExportResult:
                     (
                         port_right_position
                         + self.__get_base_pos(
-                            dspeed_right_position - port_right_position, "EndSpeed"
+                            dspeed_right_position - port_right_position,
+                            "EndSpeed",
                         ),
                         30 + 4,
                     ),
@@ -534,7 +575,8 @@ class ExportResult:
                     (
                         port_right_position
                         + self.__get_base_pos(
-                            dspeed_right_position - port_right_position, "StSpeed"
+                            dspeed_right_position - port_right_position,
+                            "StSpeed",
                         ),
                         30 + 4,
                     ),
@@ -561,7 +603,8 @@ class ExportResult:
                     (
                         port_right_position
                         + self.__get_base_pos(
-                            dspeed_right_position - port_right_position, "EndSpeed"
+                            dspeed_right_position - port_right_position,
+                            "EndSpeed",
                         ),
                         30 + 4,
                     ),
@@ -574,7 +617,8 @@ class ExportResult:
                     (
                         port_right_position
                         + self.__get_base_pos(
-                            dspeed_right_position - port_right_position, "StSpeed"
+                            dspeed_right_position - port_right_position,
+                            "StSpeed",
                         ),
                         30 + 4,
                     ),
@@ -587,7 +631,8 @@ class ExportResult:
                     (
                         port_right_position
                         + self.__get_base_pos(
-                            dspeed_right_position - port_right_position, "AvgSpeed"
+                            dspeed_right_position - port_right_position,
+                            "AvgSpeed",
                         ),
                         30 + 4,
                     ),
@@ -602,7 +647,8 @@ class ExportResult:
                     (
                         dspeed_right_position
                         + self.__get_base_pos(
-                            max_dspeed_right_position - dspeed_right_position, "多线程"
+                            max_dspeed_right_position - dspeed_right_position,
+                            "多线程",
                         ),
                         30 + 4,
                     ),
@@ -630,7 +676,8 @@ class ExportResult:
                 (
                     max_dspeed_right_position
                     + self.__get_base_pos(
-                        ntt_right_position - max_dspeed_right_position, "UDP NAT Type"
+                        ntt_right_position - max_dspeed_right_position,
+                        "UDP NAT Type",
                     ),
                     30 + 4,
                 ),
@@ -644,7 +691,8 @@ class ExportResult:
                 (
                     ntt_right_position
                     + self.__get_base_pos(
-                        netflix_right_position - ntt_right_position, "Netfilx 解锁"
+                        netflix_right_position - ntt_right_position,
+                        "Netfilx 解锁",
                     ),
                     30 + 4,
                 ),
@@ -658,7 +706,8 @@ class ExportResult:
                 (
                     netflix_right_position
                     + self.__get_base_pos(
-                        bilibili_right_position - netflix_right_position, "Netfilx 解锁"
+                        bilibili_right_position - netflix_right_position,
+                        "Netfilx 解锁",
                     ),
                     30 + 4,
                 ),
@@ -672,7 +721,8 @@ class ExportResult:
                 (
                     bilibili_right_position
                     + self.__get_base_pos(
-                        stream_right_position - bilibili_right_position, "流媒体解锁"
+                        stream_right_position - bilibili_right_position,
+                        "流媒体解锁",
                     ),
                     30 + 4,
                 ),
@@ -680,14 +730,19 @@ class ExportResult:
                 font=result_font,
                 fill=(0, 0, 0),
             )
-        draw.line((0, 60, image_right_position - 1, 60), fill=(127, 127, 127), width=1)
+        draw.line(
+            (0, 60, image_right_position - 1, 60),
+            fill=(127, 127, 127),
+            width=1,
+        )
 
         if not self.__hide_geoip:
             draw.text(
                 (
                     stream_right_position
                     + self.__get_base_pos(
-                        inbound_right_position - stream_right_position, "Inbound Geo"
+                        inbound_right_position - stream_right_position,
+                        "Inbound Geo",
                     ),
                     30 + 4,
                 ),
@@ -701,7 +756,8 @@ class ExportResult:
                 (
                     inbound_right_position
                     + self.__get_base_pos(
-                        outbound_right_position - inbound_right_position, "Outbound Geo"
+                        outbound_right_position - inbound_right_position,
+                        "Outbound Geo",
                     ),
                     30 + 4,
                 ),
@@ -715,7 +771,8 @@ class ExportResult:
                 (
                     outbound_right_position
                     + self.__get_base_pos(
-                        multiplex_right_position - outbound_right_position, "复用检测"
+                        multiplex_right_position - outbound_right_position,
+                        "复用检测",
                     ),
                     30 + 4,
                 ),
@@ -726,13 +783,9 @@ class ExportResult:
 
         total_traffic = 0
         online_node = 0
-        for i in range(0, len(result)):
-            total_traffic += (
-                result[i]["trafficUsed"] if (result[i]["trafficUsed"] > 0) else 0
-            )
-            if (result[i]["ping"] > 0 and result[i]["gPing"] > 0) or (
-                result[i]["dspeed"] > 0
-            ):
+        for i, r in enumerate(result):
+            total_traffic += r["trafficUsed"] if (r["trafficUsed"] > 0) else 0
+            if (r["ping"] > 0 and r["gPing"] > 0) or (r["dspeed"] > 0):
                 online_node += 1
 
             j = i + 1
@@ -741,13 +794,15 @@ class ExportResult:
                 fill=(127, 127, 127),
                 width=1,
             )
-            item = result[i]
 
-            group = item["group"]
-            remarks = item["remarks"]
+            group = r["group"]
+            remarks = r["remarks"]
             try:
                 pilmoji.text(
-                    (5, 30 * j + 30 + 4), group, font=result_font, fill=(0, 0, 0)
+                    (5, 30 * j + 30 + 4),
+                    group,
+                    font=result_font,
+                    fill=(0, 0, 0),
                 )
                 pilmoji.text(
                     (group_right_position + 5, 30 * j + 30 + 4),
@@ -756,7 +811,12 @@ class ExportResult:
                     fill=(0, 0, 0, 0),
                 )
             except Exception:
-                draw.text((5, 30 * j + 30 + 4), group, font=result_font, fill=(0, 0, 0))
+                draw.text(
+                    (5, 30 * j + 30 + 4),
+                    group,
+                    font=result_font,
+                    fill=(0, 0, 0),
+                )
                 draw.text(
                     (group_right_position + 5, 30 * j + 30 + 4),
                     remarks,
@@ -765,49 +825,65 @@ class ExportResult:
                 )
 
             if not self.__hide_gping:
-                loss = "%.2f" % (item["gPingLoss"] * 100) + "%"
+                loss = f'{r["gPingLoss"] * 100:.2f}%'
                 pos = remark_right_position + self.__get_base_pos(
                     loss_right_position - remark_right_position, loss
                 )
                 draw.text(
-                    (pos, 30 * j + 30 + 4), loss, font=result_font, fill=(0, 0, 0)
+                    (pos, 30 * j + 30 + 4),
+                    loss,
+                    font=result_font,
+                    fill=(0, 0, 0),
                 )
 
             if not self.__hide_ping:
-                ping = "%.2f" % (item["ping"] * 1000)
+                ping = f'{r["ping"] * 1000:.2f}'
                 pos = loss_right_position + self.__get_base_pos(
                     tcp_ping_right_position - loss_right_position, ping
                 )
                 draw.text(
-                    (pos, 30 * j + 30 + 4), ping, font=result_font, fill=(0, 0, 0)
+                    (pos, 30 * j + 30 + 4),
+                    ping,
+                    font=result_font,
+                    fill=(0, 0, 0),
                 )
 
             if not self.__hide_gping:
-                g_ping = "%.2f" % (item["gPing"] * 1000)
+                g_ping = f'{r["gPing"] * 1000:.2f}'
                 pos = tcp_ping_right_position + self.__get_base_pos(
-                    google_ping_right_position - tcp_ping_right_position, g_ping
+                    google_ping_right_position - tcp_ping_right_position,
+                    g_ping,
                 )
                 draw.text(
-                    (pos, 30 * j + 30 + 4), g_ping, font=result_font, fill=(0, 0, 0)
+                    (pos, 30 * j + 30 + 4),
+                    g_ping,
+                    font=result_font,
+                    fill=(0, 0, 0),
                 )
 
             if not self.__hide_port:
-                port = "%d" % (item["port"])
+                port = str(r["port"])
                 pos = google_ping_right_position + self.__get_base_pos(
                     port_right_position - google_ping_right_position, port
                 )
                 draw.text(
-                    (pos, 30 * j + 30 + 4), port, font=result_font, fill=(0, 0, 0)
+                    (pos, 30 * j + 30 + 4),
+                    port,
+                    font=result_font,
+                    fill=(0, 0, 0),
                 )
 
             if not self.__hide_speed:
-                speed = item["dspeed"]
+                speed = r["dspeed"]
                 if speed == -1:
                     pos = port_right_position + self.__get_base_pos(
                         dspeed_right_position - port_right_position, "N/A"
                     )
                     draw.text(
-                        (pos, 30 * j + 30 + 1), "N/A", font=result_font, fill=(0, 0, 0)
+                        (pos, 30 * j + 30 + 1),
+                        "N/A",
+                        font=result_font,
+                        fill=(0, 0, 0),
                     )
                 else:
                     draw.rectangle(
@@ -824,17 +900,24 @@ class ExportResult:
                         dspeed_right_position - port_right_position, speed
                     )
                     draw.text(
-                        (pos, 30 * j + 30 + 1), speed, font=result_font, fill=(0, 0, 0)
+                        (pos, 30 * j + 30 + 1),
+                        speed,
+                        font=result_font,
+                        fill=(0, 0, 0),
                     )
 
             if not (self.__hide_max_speed or self.__hide_speed):
-                max_speed = item["maxDSpeed"]
+                max_speed = r["maxDSpeed"]
                 if max_speed == -1:
                     pos = dspeed_right_position + self.__get_base_pos(
-                        max_dspeed_right_position - dspeed_right_position, "N/A"
+                        max_dspeed_right_position - dspeed_right_position,
+                        "N/A",
                     )
                     draw.text(
-                        (pos, 30 * j + 30 + 1), "N/A", font=result_font, fill=(0, 0, 0)
+                        (pos, 30 * j + 30 + 1),
+                        "N/A",
+                        font=result_font,
+                        fill=(0, 0, 0),
                     )
                 else:
                     draw.rectangle(
@@ -848,7 +931,8 @@ class ExportResult:
                     )
                     max_speed = self.__parse_speed(max_speed)
                     pos = dspeed_right_position + self.__get_base_pos(
-                        max_dspeed_right_position - dspeed_right_position, max_speed
+                        max_dspeed_right_position - dspeed_right_position,
+                        max_speed,
                     )
                     draw.text(
                         (pos, 30 * j + 30 + 1),
@@ -858,10 +942,11 @@ class ExportResult:
                     )
 
             if not self.__hide_ntt:
-                nat_type = item["ntt"]["type"]
+                nat_type = r["ntt"]["type"]
                 if not nat_type:
                     pos = max_dspeed_right_position + self.__get_base_pos(
-                        ntt_right_position - max_dspeed_right_position, "Unknown"
+                        ntt_right_position - max_dspeed_right_position,
+                        "Unknown",
                     )
                     draw.text(
                         (pos, 30 * j + 30 + 1),
@@ -871,7 +956,8 @@ class ExportResult:
                     )
                 else:
                     pos = max_dspeed_right_position + self.__get_base_pos(
-                        ntt_right_position - max_dspeed_right_position, nat_type
+                        ntt_right_position - max_dspeed_right_position,
+                        nat_type,
                     )
                     draw.text(
                         (pos, 30 * j + 30 + 1),
@@ -881,7 +967,7 @@ class ExportResult:
                     )
 
             if not self.__hide_netflix:
-                netflix_type = item["Ntype"]
+                netflix_type = r["Ntype"]
                 pos = ntt_right_position + self.__get_base_pos(
                     netflix_right_position - ntt_right_position, netflix_type
                 )
@@ -893,9 +979,10 @@ class ExportResult:
                 )
 
             if not self.__hide_bilibili:
-                bilibili_type = item["Bltype"]
+                bilibili_type = r["Bltype"]
                 pos = netflix_right_position + self.__get_base_pos(
-                    bilibili_right_position - netflix_right_position, bilibili_type
+                    bilibili_right_position - netflix_right_position,
+                    bilibili_type,
                 )
                 draw.text(
                     (pos, 30 * j + 30 + 1),
@@ -905,23 +992,17 @@ class ExportResult:
                 )
 
             if not self.__hide_stream:
-                netflix_type = item["Ntype"]
-                hbo_type = item["Htype"]
-                disney_type = item["Dtype"]
-                youtube_type = item["Ytype"]
-                abema_type = item["Atype"]
-                bahamut_type = item["Btype"]
-                dazn_type = item["Dztype"]
-                tvb_type = item["Ttype"]
-                bilibili_type = item["Bltype"]
-                if netflix_type[:4] == "Full":
-                    n_type = True
-                else:
-                    n_type = False
-                if bilibili_type == "N/A":
-                    bl_type = False
-                else:
-                    bl_type = True
+                netflix_type = r["Ntype"]
+                hbo_type = r["Htype"]
+                disney_type = r["Dtype"]
+                youtube_type = r["Ytype"]
+                abema_type = r["Atype"]
+                bahamut_type = r["Btype"]
+                dazn_type = r["Dztype"]
+                tvb_type = r["Ttype"]
+                bilibili_type = r["Bltype"]
+                n_type = bool(netflix_type[:4] == "Full")
+                bl_type = bool(bilibili_type != "N/A")
                 sums = (
                     n_type
                     + hbo_type
@@ -966,7 +1047,7 @@ class ExportResult:
                     pos += 35
 
             if not self.__hide_geoip:
-                inbound_geo = item["InRes"]
+                inbound_geo = r["InRes"]
                 pos = stream_right_position + self.__get_base_pos(
                     inbound_right_position - stream_right_position, inbound_geo
                 )
@@ -978,9 +1059,10 @@ class ExportResult:
                 )
 
             if not self.__hide_geoip:
-                outbound_geo = item["OutRes"]
+                outbound_geo = r["OutRes"]
                 pos = inbound_right_position + self.__get_base_pos(
-                    outbound_right_position - inbound_right_position, outbound_geo
+                    outbound_right_position - inbound_right_position,
+                    outbound_geo,
                 )
                 draw.text(
                     (pos, 30 * j + 30 + 1),
@@ -990,16 +1072,15 @@ class ExportResult:
                 )
 
             if not self.__hide_geoip:
-                inbound_ip = item["InIP"]
-                outbound_ip = item["OutIP"]
+                inbound_ip = r["InIP"]
+                outbound_ip = r["OutIP"]
                 multiplex_res = ""
                 if outbound_ip != "N/A":
                     inbound_mul = -1
                     outbound_mul = -1
                     if inbound_ip == "N/A":
                         inbound_mul = 0
-                    for ip in range(0, len(result)):
-                        ipitem = result[ip]
+                    for _, ipitem in enumerate(result):
                         if ipitem["InIP"] == inbound_ip and inbound_ip != "N/A":
                             inbound_mul += 1
                         if ipitem["OutIP"] == outbound_ip:
@@ -1016,7 +1097,8 @@ class ExportResult:
                     multiplex_res = "未知"
 
                 pos = outbound_right_position + self.__get_base_pos(
-                    multiplex_right_position - outbound_right_position, multiplex_res
+                    multiplex_right_position - outbound_right_position,
+                    multiplex_res,
                 )
                 draw.text(
                     (pos, 30 * j + 30 + 1),
@@ -1032,12 +1114,12 @@ class ExportResult:
             traffic_used = self.__parse_traffic(total_traffic)
 
         if not self.__hide_speed:
-            t1 = "Traffic used : {}. ".format(traffic_used)
+            t1 = f"Traffic used : {traffic_used}. "
         else:
             t1 = ""
 
         if not self.__hide_gping:
-            t2 = " Online Node(s) : [{}/{}]".format(online_node, len(result))
+            t2 = f" Online Node(s) : [{online_node}/{len(result)}]"
         else:
             t2 = ""
 
@@ -1062,7 +1144,7 @@ class ExportResult:
                 sum_ = 0
             avgrate = (sum_ - sum0) / total_traffic if total_traffic else 0
             if (sum_ - sum0) > 0:
-                t3 = ".  AvgRate : {:.2f}".format(avgrate)
+                t3 = f".  AvgRate : {avgrate:.2f}"
             else:
                 t3 = ""
         else:
@@ -1070,12 +1152,7 @@ class ExportResult:
 
         draw.text(
             (5, image_height + 30 + 4),
-            t1
-            + "Time used: {}.".format(
-                self.__time_used,
-            )
-            + t2
-            + t3,
+            t1 + f"Time used: {self.__time_used}." + t2 + t3,
             font=result_font,
             fill=(0, 0, 0),
         )
@@ -1093,9 +1170,7 @@ class ExportResult:
 
         draw.text(
             (5, image_height + 30 * 2 + 4),
-            "{}  Generated at {}".format(
-                self.__addition, time.strftime("%Y-%m-%d %H:%M:%S", generated_time)
-            ),
+            f'{self.__addition}  Generated at {time.strftime("%Y-%m-%d %H:%M:%S", generated_time)}',
             font=result_font,
             fill=(0, 0, 0),
         )
@@ -1110,27 +1185,30 @@ class ExportResult:
             width=1,
         )
 
-        """
+        # draw.line(
+        #     (
+        #         0,
+        #         new_image_height - 30 - 1,
+        #         image_right_position,
+        #         new_image_height - 30 - 1,
+        #     ),
+        #     fill=(127, 127, 127),
+        #     width=1,
+        # )
+        # draw.text(
+        #     (5, image_height + 30 * 2 + 4),
+        #     f'By SSRSpeed {ssrconfig["VERSION"]}.',
+        #     font=result_font,
+        #     fill=(0, 0, 0),
+        # )
+
         draw.line(
             (
                 0,
-                new_image_height - 30 - 1,
+                new_image_height - 1,
                 image_right_position,
-                new_image_height - 30 - 1,
+                new_image_height - 1,
             ),
-            fill=(127, 127, 127),
-            width=1,
-        )
-        draw.text(
-            (5, image_height + 30 * 2 + 4),
-            "By SSRSpeed {}.".format(ssrconfig["VERSION"]),
-            font=result_font,
-            fill=(0, 0, 0),
-        )
-        """
-
-        draw.line(
-            (0, new_image_height - 1, image_right_position, new_image_height - 1),
             fill=(127, 127, 127),
             width=1,
         )
@@ -1139,36 +1217,38 @@ class ExportResult:
         )
         result_img.save(filename)
         files.append(filename)
-        logger.info("Result image saved as %s" % filename)
+        logger.info(f"Result image saved as {filename}")
 
         for _file in files:
             if not (u := self.__config.get("uploadResult", {})):
                 break
             push2server(
-                _file, u.get("server", ""), u.get("token", ""), u.get("remark", "")
+                _file,
+                u.get("server", ""),
+                u.get("token", ""),
+                u.get("remark", ""),
             )
 
     @staticmethod
     def __parse_traffic(traffic: float) -> str:
         traffic = traffic / 1024 / 1024
         if traffic < 1:
-            return "%.2f KB" % (traffic * 1024)
+            return f"{traffic * 1024:.2f} KB"
         gb_traffic = traffic / 1024
         if gb_traffic < 1:
-            return "%.2f MB" % traffic
-        return "%.2f GB" % gb_traffic
+            return f"{traffic:.2f} MB"
+        return f"{gb_traffic:.2f} GB"
 
     @staticmethod
     def __parse_speed(speed: float) -> str:
         speed = speed / 1024 / 1024
         if speed < 1:
-            return "%.2fKB" % (speed * 1024)
-        else:
-            return "%.2fMB" % speed
+            return f"{speed * 1024:.2f}KB"
+        return f"{speed:.2fMB}"
 
     @staticmethod
     def __new_mix_color(lc: dict, rc: dict, rt: int) -> tuple:
-        # print("RGB1 : {}, RGB2 : {}, RT : {}".format(lc, rc, rt))
+        #   print("RGB1 : {lc}, RGB2 : {rc}, RT : {rt}")
         return (
             int(lc[0] * (1 - rt) + rc[0] * rt),
             int(lc[1] * (1 - rt) + rc[1] * rt),
@@ -1186,24 +1266,22 @@ class ExportResult:
                 self.__colors[str(cur_speed)][1],
                 self.__colors[str(cur_speed)][2],
             )
-        for i in range(0, len(self.__color_speed_list)):
-            cur_speed = self.__color_speed_list[i] * 1024 * 1024
+        for i, s in enumerate(self.__color_speed_list):
+            cur_speed = s * 1024 * 1024
             if i > 0:
                 back_speed = self.__color_speed_list[i - 1]
             back_speed_str = str(back_speed)
-            # print("{} {}".format(data / 1024 / 1024, back_speed))
+            #   print(f"{data / 1024 / 1024} {back_speed}")
             if data < cur_speed:
                 rgb1 = (
                     self.__colors[back_speed_str] if back_speed > 0 else (255, 255, 255)
                 )
-                rgb2 = self.__colors[str(self.__color_speed_list[i])]
+                rgb2 = self.__colors[str(s)]
                 rt = (data - back_speed * 1024 * 1024) / (
                     cur_speed - back_speed * 1024 * 1024
                 )
                 logger.debug(
-                    "Speed : {}, RGB1 : {}, RGB2 : {}, RT : {}".format(
-                        data / 1024 / 1024, rgb1, rgb2, rt
-                    )
+                    f"Speed : {data / 1024 / 1024}, RGB1 : {rgb1}, RGB2 : {rgb2}, RT : {rt}"
                 )
                 return self.__new_mix_color(rgb1, rgb2, rt)
         return 255, 255, 255
@@ -1217,5 +1295,5 @@ class ExportResult:
             f.writelines(
                 json.dumps(result, sort_keys=True, indent=4, separators=(",", ":"))
             )
-        logger.info("Result exported as %s" % filename)
+        logger.info(f"Result exported as {filename}")
         return result

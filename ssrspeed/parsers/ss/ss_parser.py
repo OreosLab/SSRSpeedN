@@ -12,9 +12,6 @@ from ssrspeed.utils import b64plus
 
 
 class ShadowsocksParser(BaseParser):
-    def __init__(self):
-        super(ShadowsocksParser, self).__init__()
-
     def _parse_link(self, link: str) -> dict:
         pssb = ParserShadowsocksBasic(self._get_shadowsocks_base_config())
         return pssb.parse_subs_config([link])[0]

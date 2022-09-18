@@ -44,10 +44,10 @@ class ParserShadowsocksBasic:
             _config["method"] = encryption
             _config["password"] = password
             _config["remarks"] = _config["server"]
-        except binascii.Error:
-            raise ValueError(invalid_link)
+        except binascii.Error as error:
+            raise ValueError(invalid_link) from error
         except Exception:
-            logger.error(f"Exception link {link}", exc_info=True)
+            logger.exception(f"Exception link {link}")
             return None
         return _config
 
@@ -75,7 +75,7 @@ class ParserShadowsocksBasic:
     def parse_gui_data(self, data: dict) -> list:
         shadowsocksd_conf = False
         ssd_subs = []
-        if data.__contains__("subscriptions"):
+        if "subscriptions" in data:
             shadowsocksd_conf = True
             ssd_subs = data["subscriptions"]
         configs = data["configs"]
@@ -109,7 +109,7 @@ class ParserShadowsocksBasic:
             except json.decoder.JSONDecodeError:
                 return []
             except Exception:
-                logger.error("Not Shadowsocks configuration file.", exc_info=True)
+                logger.exception("Not Shadowsocks configuration file.")
                 return []
 
         logger.info(f"Read {len(self.__config_list)} node(s).")

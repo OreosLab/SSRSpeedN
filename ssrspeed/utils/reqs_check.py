@@ -56,7 +56,7 @@ class RequirementsCheck:
     def check(self, platform: str):
         if platform == "Windows":
             self.__checks(self.__win_require)
-        elif platform == "Linux" or platform == "MacOS":
+        elif platform in ("Linux", "MacOS"):
             self.__linux_check(platform)
             self.__checks(self.__linux_require)
         else:
@@ -101,7 +101,8 @@ class RequirementsCheck:
                     process.terminate()
                     out, errs = process.communicate()
                     logger.error(
-                        out.decode("utf-8") + errs.decode("utf-8"), exc_info=True
+                        out.decode("utf-8") + errs.decode("utf-8"),
+                        exc_info=True,
                     )
                     return False
                 logger.debug(f"brew info libsodium : {out!r}")
@@ -110,12 +111,14 @@ class RequirementsCheck:
                     return False
                 return True
             except Exception:
-                logger.error("", exc_info=True)
+                logger.exception("")
                 return False
         else:
             try:
                 process = subprocess.Popen(
-                    "ldconfig -p | grep libsodium", shell=True, stdout=subprocess.PIPE
+                    "ldconfig -p | grep libsodium",
+                    shell=True,
+                    stdout=subprocess.PIPE,
                 )
                 try:
                     out = process.communicate(timeout=15)[0]
@@ -123,7 +126,8 @@ class RequirementsCheck:
                     process.terminate()
                     out, errs = process.communicate()
                     logger.error(
-                        out.decode("utf-8") + errs.decode("utf-8"), exc_info=True
+                        out.decode("utf-8") + errs.decode("utf-8"),
+                        exc_info=True,
                     )
                     return False
                 logger.debug(f"ldconfig : {out!r}")
@@ -131,7 +135,7 @@ class RequirementsCheck:
                     return False
                 return True
             except Exception:
-                logger.error("", exc_info=True)
+                logger.exception("")
                 return False
 
     # @staticmethod
