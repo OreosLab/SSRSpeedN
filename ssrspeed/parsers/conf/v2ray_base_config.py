@@ -177,9 +177,7 @@ class V2RayBaseConfigs:
         stream_settings["security"] = config["tls"]
         if config["tls"] == "tls":
             tls_settings = V2RayBaseConfigs.get_tls_object()
-            tls_settings["allowInsecure"] = bool(
-                config.get("allowInsecure", "false") == "true"
-            )
+            tls_settings["allowInsecure"] = config.get("allowInsecure", "false") == "true"
             tls_settings["serverName"] = config.get("tls-host", "")
             stream_settings["tls_settings"] = tls_settings
 

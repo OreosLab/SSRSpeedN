@@ -167,9 +167,7 @@ class BaseParser(metaclass=ABCMeta):
         links_arr = (b64plus.decode(res).decode("utf-8")).split("\n")
         for link in links_arr:
             link = link.strip()
-            # 	print(link)
-            cfg = self._parse_link(link)
-            if cfg:
+            if cfg := self._parse_link(link):
                 # 	print(cfg["remarks"])
                 self._config_list.append(cfg)
         logger.info(f"Read {len(self._config_list)} node(s)")
@@ -207,6 +205,4 @@ class BaseParser(metaclass=ABCMeta):
         return self._config_list
 
     def get_next_config(self) -> Optional[list]:
-        if self._config_list:
-            return self._config_list.pop(0)
-        return None
+        return self._config_list.pop(0) if self._config_list else None

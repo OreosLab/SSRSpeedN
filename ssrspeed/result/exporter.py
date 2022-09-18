@@ -15,7 +15,7 @@ from ssrspeed.result.sorter import Sorter
 TMP_DIR = ssrconfig["path"]["tmp"]
 if not os.path.exists(TMP_DIR):
     os.makedirs(TMP_DIR)
-TEST_TXT = TMP_DIR + "test.txt"
+TEST_TXT = f"{TMP_DIR}test.txt"
 LOGOS_DIR = ssrconfig["path"]["logos"]
 RESULTS_DIR = ssrconfig["path"]["results"]
 TEMPLATES_DIR = ssrconfig["path"]["templates"]
