@@ -33,23 +33,40 @@ def mkdir(data_dir):
 
 
 def download_resource(url, headers, name, size, position, path, cols):
+    current_file_size = 0
     with tqdm(
-        desc=name,
-        total=size,
-        unit="b",
-        position=position,
-        colour="GREEN",
-        ascii=True,
-        leave=False,
-        unit_scale=True,
-        ncols=cols - 10,
-    ) as dbar, open(file=path, mode="wb") as f:
-        content = requests.get(
-            url=url, headers=headers, timeout=10, stream=True
-        ).iter_content(chunk_size=1024)
-        for chunk in content:
-            length = f.write(chunk)
-            dbar.update(length)
+            desc=name,
+            total=size,
+            unit="b",
+            position=position,
+            colour="GREEN",
+            ascii=True,
+            leave=False,
+            unit_scale=True,
+            ncols=cols - 10,
+    ) as bar:
+        if os.path.exists(path):
+            current_file_size = os.path.getsize(path)
+            if current_file_size == size:
+                return f"已保存至: {path}"
+            bar.update(current_file_size)
+        with open(file=path, mode="ab") as f:
+            try:
+                while True:
+                    headers.update({
+                        "Range": f"bytes={current_file_size}-{size}"
+                    })
+                    content = requests.get(
+                        url=url, headers=headers, timeout=10, stream=True
+                    ).iter_content(chunk_size=1024)
+                    for chunk in content:
+                        length = f.write(chunk)
+                        bar.update(length)
+                        current_file_size += length
+                    if current_file_size == size:
+                        break
+            except requests.exceptions.RequestException:
+                print(f"{name} 下载异常，正在重新下载")
     return f"已保存至: {path}"
 
 
@@ -72,7 +89,7 @@ def download(download_type, platform, download_path=None):
     )
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/64.0.3282.119 Safari/537.36 "
+                      "Chrome/64.0.3282.119 Safari/537.36 "
     }
     client_file_info = {
         "Windows": {"url": client_resources_url, "files": ["clients_win_64.zip"]},
@@ -94,7 +111,7 @@ def download(download_type, platform, download_path=None):
         response = requests.get(url=url_info["url"], headers=headers, timeout=10).json()
         file_info.extend(
             {
-                "url": proxy + each["browser_download_url"],
+                "url": f"{proxy}{each['browser_download_url']}",
                 "name": each["name"],
                 "size": each["size"],
                 "position": index,
@@ -103,7 +120,6 @@ def download(download_type, platform, download_path=None):
             for index, each in enumerate(response["assets"], 1)
             if each["name"] in url_info["files"]
         )
-
     os.system("clear" if os.name == "posix" else "cls")
     print(banner)
     with ThreadPoolExecutor() as pool:
@@ -119,3 +135,7 @@ def download(download_type, platform, download_path=None):
         for each in done:
             print(each.result())
     sys.exit(0)
+
+
+if __name__ == '__main__':
+    download(download_type="all", platform="Windows")
