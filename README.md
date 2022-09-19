@@ -190,7 +190,7 @@ ssrspeed -u "https://home.yoyu.dev/subscriptionlink" --include 香港 Azure --in
 
   ```jsonc
     "fastSpeed": false,  // 是否开启快速测速
-    "ntt": { "enabled": true, "internal_ip": "0.0.0.0", "internal_port": 54320 }, // UDP 类型测试
+    "ntt": { "enabled": true, "internal_ip": "0.0.0.0", "internal_port": 54320 },  // UDP 类型测试
     "geoip": true,       // 是否测 GeoIP, 包括 Inbound & Outbound
     "ping": true,        // 是否测 ping
     "gping": true,       // 是否测 Google ping
@@ -215,11 +215,11 @@ ssrspeed -u "https://home.yoyu.dev/subscriptionlink" --include 香港 Azure --in
     "port": true,       // 是否输出端口
     "multiplex": true,  // 是否输出复用检测
     "exportResult": {
-        "addition": "OreosLab ©",              // 自定义附加信息
+        "addition": "OreosLab ©",             // 自定义附加信息
         "uploadResult": false,
-        "hide_max_speed": false,               // 是否隐藏最高速度
-        "font": "LXGWBright-Medium.otf",       // 自定义字体，见下方说明
-        "colors": [                            // 自定义配色，见下方说明
+        "hide_max_speed": false,              // 是否隐藏最高速度
+        "font": "LXGWBright-Medium.otf",      // 自定义字体，见下方说明
+        "colors": [                           // 自定义配色，见下方说明
             {
                 "name": "origin",
                 "colors": {
