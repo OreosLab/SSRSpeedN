@@ -342,9 +342,7 @@ def get_ip_info(
             if recv_ext_ip == ext_ip and recv_ext_port == ext_port:
                 response = stun_test_3(sock, change_addr)
                 # Restricted cone NAT or Restricted cone NAT
-                topology = (
-                    RESTRICTED_CONE if response is not None else RESTRICTED_PORT
-                )
+                topology = RESTRICTED_CONE if response is not None else RESTRICTED_PORT
             # Symmetric NAT
             else:
                 topology = SYMMETRIC
