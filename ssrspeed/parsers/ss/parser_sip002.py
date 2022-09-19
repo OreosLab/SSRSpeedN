@@ -52,7 +52,7 @@ class ParserShadowsocksSIP002:
         _config["server_port"] = port
         _config["method"] = encryption
         _config["password"] = password
-        _config["remarks"] = remarks if remarks else server
+        _config["remarks"] = remarks or server
         if plugin.lower() in ["simple-obfs", "obfs-local"]:
             plugin = "simple-obfs"
         elif not plugin:
@@ -73,8 +73,7 @@ class ParserShadowsocksSIP002:
     def parse_subs_config(self, links: list) -> list:
         for link in links:
             link = link.strip()
-            cfg = self.__parse_link(link)
-            if cfg:
+            if cfg := self.__parse_link(link):
                 self.__config_list.append(cfg)
         logger.info(f"Read {len(self.__config_list)} config(s).")
         return self.__config_list

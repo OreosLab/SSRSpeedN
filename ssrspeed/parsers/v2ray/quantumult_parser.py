@@ -30,7 +30,7 @@ class ParserV2RayQuantumult:
 
             remarks = link_split[0].split(" = ")[0]
             server = link_split[1]
-            remarks = remarks if remarks else server
+            remarks = remarks or server
             port = int(link_split[2])
             security = link_split[3]
             uuid = link_split[4].replace('"', "")
@@ -45,13 +45,11 @@ class ParserV2RayQuantumult:
             if link_split[6].split("=")[1] == "true":
                 tls = "tls"
                 tls_host = link_split[7].split("=")[1]
-                allow_insecure = not bool(link_split[8].split("=")[1] == "1")
+                allow_insecure = link_split[8].split("=")[1] != "1"
             else:
                 allow_insecure = True
-            i = 7
-            if tls:
-                i = 8
-            if len(link_split) == 11 or len(link_split) == 12:
+            if len(link_split) in {11, 12}:
+                i = 8 if tls else 7
                 net = link_split[i + 1].split("=")[1]
                 path = link_split[i + 2].split("=")[1].replace('"', "")
                 header = (
@@ -59,13 +57,13 @@ class ParserV2RayQuantumult:
                 )
                 if len(header) > 0:
                     host = header[0].split(":")[1].strip()
-                    for h in range(1, len(header)):
-                        headers.append(
-                            {
-                                "header": header[h].split(":")[0].strip(),
-                                "value": header[h].split(":")[1].strip(),
-                            }
-                        )
+                    headers.extend(
+                        {
+                            "header": header[h].split(":")[0].strip(),
+                            "value": header[h].split(":")[1].strip(),
+                        }
+                        for h in range(1, len(header))
+                    )
 
             _type = "none"  # Obfs type under tcp mode
             aid = 0
@@ -75,7 +73,7 @@ class ParserV2RayQuantumult:
                 f"Host : {host}, Headers : {headers}, TLS : {tls}, Remarks : {remarks}, "
                 f"group={group}"
             )
-            _config = {
+            return {
                 "remarks": remarks,
                 "group": group,
                 "server": server,
@@ -92,7 +90,7 @@ class ParserV2RayQuantumult:
                 "tls": tls,
                 "tls-host": tls_host,
             }
-            return _config
+
         except Exception:
             logger.exception(f"Parse {raw_link} failed. (Quantumult Method)")
             return None

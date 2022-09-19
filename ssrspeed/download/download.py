@@ -85,34 +85,38 @@ def download(download_type, platform, download_path=None):
     }
 
     if download_type == "all":
-        urls_info.append(client_file_info[platform])
-        urls_info.append(database_file_info)
-    elif download_type == "database":
-        urls_info.append(database_file_info)
+        urls_info.extend((client_file_info[platform], database_file_info))
     elif download_type == "client":
         urls_info.append(client_file_info[platform])
+    elif download_type == "database":
+        urls_info.append(database_file_info)
     for url_info in urls_info:
         response = requests.get(url=url_info["url"], headers=headers, timeout=10).json()
-        for index, each in enumerate(response["assets"], 1):
-            if each["name"] in url_info["files"]:
-                file_info.append(
-                    {
-                        "url": proxy + each["browser_download_url"],
-                        "name": each["name"],
-                        "size": each["size"],
-                        "position": index,
-                        "path": f"{work_dir}{each['name']}",
-                    }
-                )
+        file_info.extend(
+            {
+                "url": proxy + each["browser_download_url"],
+                "name": each["name"],
+                "size": each["size"],
+                "position": index,
+                "path": f"{work_dir}{each['name']}",
+            }
+            for index, each in enumerate(response["assets"], 1)
+            if each["name"] in url_info["files"]
+        )
+
     os.system("clear" if os.name == "posix" else "cls")
     print(banner)
     with ThreadPoolExecutor() as pool:
-        for kwargs in file_info:
-            task_list.append(
-                pool.submit(
-                    download_resource, **kwargs, headers=headers, cols=terminal_size[0]
-                )
+        task_list.extend(
+            pool.submit(
+                download_resource,
+                **kwargs,
+                headers=headers,
+                cols=terminal_size[0]
             )
+            for kwargs in file_info
+        )
+
         done, _ = wait(task_list)
         print("\n")
         for each in done:
