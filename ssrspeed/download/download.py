@@ -52,9 +52,8 @@ def download_resource(url, headers, name, size, position, path, cols):
             current_file_size = os.path.getsize(path)
             if current_file_size == size:
                 return f"已保存至: {path}"
-            else:
-                mode = "ab"
-                download_bar.update(current_file_size)
+            mode = "ab"
+            download_bar.update(current_file_size)
         with open(file=path, mode=mode) as f:
             while True:
                 try:
