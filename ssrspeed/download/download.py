@@ -38,23 +38,22 @@ def download_resource(url, headers, name, size, position, path, cols):
     mode = "wb"
     current_file_size = 0
     with tqdm(
-        desc=name,
-        total=size,
-        unit="b",
-        position=position,
-        colour="GREEN",
-        ascii=True,
-        leave=False,
-        unit_scale=True,
-        ncols=cols - 10,
-    ) as download_bar:
+            desc=name,
+            total=size,
+            unit="b",
+            position=position,
+            colour="GREEN",
+            ascii=True,
+            leave=False,
+            unit_scale=True,
+            ncols=cols - 10,
+        ) as download_bar:
         if os.path.exists(path):
             current_file_size = os.path.getsize(path)
             if current_file_size == size:
                 return f"已保存至: {path}"
-            else:
-                mode = "ab"
-                download_bar.update(current_file_size)
+            mode = "ab"
+            download_bar.update(current_file_size)
         with open(file=path, mode=mode) as f:
             while True:
                 try:
