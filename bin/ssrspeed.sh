@@ -3,12 +3,12 @@
 # shellcheck disable=SC2015,2034,2089,2090
 
 # 当前脚本版本号和新增功能
-VERSION=1.0.2
+VERSION=1.0.4
 
 E[0]="Language:\n 1. English (default) \n 2. 简体中文"
 C[0]="${E[0]}"
-E[1]="New Features: 1. Support official testing mode; 2. Support to change the number of concurrent connections."
-C[1]="新特性: 1. 增加官方的测试方案选项; 2. 支持修改并发连接数"
+E[1]="New Features: 1. Support SSRSpeedN V1.4.6; 2. Add IPv4 network detection."
+C[1]="新特性: 1. 支持 SSRSpeedN V1.4.6; 2. 增加 ipv4 网络检测"
 E[2]="Speed test and unlocking test is for reference only and does not represent the actual usage, due to network changes, Netflix blocking and ip replacement. Speed test is time-sensitive."
 C[2]="测速及解锁测试仅供参考, 不代表实际使用情况, 由于网络情况变化, Netflix 封锁及 ip 更换, 测速具有时效性。"
 E[3]="Choose:"
@@ -71,6 +71,8 @@ E[31]="Multiplex:\n 1.On (default)\n 2.Off"
 C[31]="多路复用:\n 1.开启 (默认)\n 2.关闭"
 E[32]="Maximum number of concurrent connections. Input 1 if the airport does not support concurrency. ( Range: 1-999, default: 50):"
 C[32]="最大并发连接数, 如机场不支持并发, 请输入 1 (数字范围: 1-999, 默认: 50):"
+E[33]="This device does not have the IPv4 required for the program and the script exits."
+C[33]="本设备没有程序所需的 IPv4，脚本退出。"
 
 # 彩色 log 函数, read 函数, text 函数
 error() { echo -e "\033[31m\033[01m$1\033[0m" && exit 1; }
@@ -122,6 +124,10 @@ Options:
 "
   fi
   exit 0
+}
+
+check_ipv4() {
+  ! ping -c2 -W3 8.8.8.8 >/dev/null 2>&1 && error "\n $(text 33) "
 }
 
 check_operating_system() {
@@ -234,20 +240,21 @@ check_dependencies_Linux() {
 
 check_ssrspeedn() {
   info "\n $(text 15) \n"
-  [ ! -e SSRSpeedN ] && sudo git clone https://github.com/Oreomeow/SSRSpeedN
-  if [ ! -e SSRSpeedN/resources/clients ]; then
+  [ ! -d SSRSpeedN ] && sudo git clone https://github.com/Oreomeow/SSRSpeedN
+  [ ! -d SSRSpeedN/resources/databases ] && sudo mkdir -p SSRSpeedN/resources/databases
+  [ ! -d SSRSpeedN/data ] && sudo mkdir -p SSRSpeedN/data
+  if [ ! -d SSRSpeedN/resources/clients ]; then
     LATEST=$(sudo wget --no-check-certificate -qO- "https://api.github.com/repos/Oreomeow/SSRSpeedN/releases/latest" | grep tag_name | sed -E 's/.*"([^"]+)".*/\1/' | cut -c 2-)
-    LATEST=${LATEST:-'1.2.1'}
+    LATEST=${LATEST:-'1.4.6'}
     sudo wget --no-check-certificate -O SSRSpeedN/resources/$FILE https://github.com/OreosLab/SSRSpeedN/releases/download/v"$LATEST"/$FILE
-    [ ! -e SSRSpeedN/resources/$FILE ] && error " $(text 18) " || sudo unzip -d SSRSpeedN/resources/ SSRSpeedN/resources/$FILE
-    [ ! -e SSRSpeedN/resources/clients ] && error " $(text 19) " || sudo rm -f SSRSpeedN/resources/$FILE
+    [ ! -e SSRSpeedN/resources/$FILE ] && error " $(text 18) " || sudo unzip -d SSRSpeedN/resources/clients SSRSpeedN/resources/$FILE
+    [ ! -d SSRSpeedN/resources/clients ] && error " $(text 19) " || sudo rm -f SSRSpeedN/resources/$FILE
   fi
   sudo chmod -R +x SSRSpeedN
   cd SSRSpeedN || exit 1
   sudo git pull || sudo git fetch --all && sudo git reset --hard origin/main
   GEOIP_LATEST=$(sudo wget --no-check-certificate -qO- "https://api.github.com/repos/P3TERX/GeoLite.mmdb/releases/latest" | grep 'tag_name' | head -n 1 | cut -d\" -f4)
   if [[ ${GEOIP_LATEST//./} -gt $(grep 'GeoIP' data/setting 2>/dev/null | cut -d= -f2 | sed "s#[.]##g") ]]; then
-    [ ! -d resources/databases ] && sudo mkdir -p resources/databases
     for a in {GeoLite2-ASN.mmdb,GeoLite2-City.mmdb}; do
       sudo wget --no-check-certificate -O resources/databases/"$a" https://github.com/P3TERX/GeoLite.mmdb/releases/download/"$GEOIP_LATEST"/"$a"
     done
@@ -257,13 +264,12 @@ check_ssrspeedn() {
   sudo pip3 install --upgrade pip
   sudo pip3 install six
   sudo pip3 install -r requirements.txt
-  [ ! -e data/ssrspeed.json ] && sudo cp -f data/ssrspeed.example.json data/ssrspeed.json
 }
 
 # shellcheck disable=SC2086
 test() {
   info "\n $(text 16) \n"
-  sudo python3 -m ssrspeed $URL $MODE $MAXCONNECTIONS $INCLUDE_REMARK $EXCLUDE_REMARK $GROUP $RESULT_COLOR $SORT_METHOD --skip-requirements-check --yes
+  sudo python3 -m ssrspeed $URL $MODE $MAXCONNECTIONS $INCLUDE_REMARK $EXCLUDE_REMARK $GROUP $RESULT_COLOR $SORT_METHOD --skip-requirements-check
 }
 
 uninstall() {
@@ -309,6 +315,7 @@ while getopts ":HhUuR:r:M:m:N:n:" OPTNAME; do
   esac
 done
 
+check_ipv4
 check_operating_system
 input_url
 mode
