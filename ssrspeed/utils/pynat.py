@@ -337,19 +337,17 @@ def get_ip_info(
                 if ephemeral_sock:
                     sock.close()
                 raise PynatError("Error querying STUN server with changed address.")
-            # Symmetric, restricted cone, or restricted port NAT
+            recv_ext_ip, recv_ext_port = (response["ext_ip"], response["ext_port"])
+            # Some type of restricted NAT, do test 3 to the change_addr with a CHANGE_REQUEST for the port
+            if recv_ext_ip == ext_ip and recv_ext_port == ext_port:
+                response = stun_test_3(sock, change_addr)
+                # Restricted cone NAT or Restricted cone NAT
+                topology = (
+                    RESTRICTED_CONE if response is not None else RESTRICTED_PORT
+                )
+            # Symmetric NAT
             else:
-                recv_ext_ip, recv_ext_port = (response["ext_ip"], response["ext_port"])
-                # Some type of restricted NAT, do test 3 to the change_addr with a CHANGE_REQUEST for the port
-                if recv_ext_ip == ext_ip and recv_ext_port == ext_port:
-                    response = stun_test_3(sock, change_addr)
-                    # Restricted cone NAT or Restricted cone NAT
-                    topology = (
-                        RESTRICTED_CONE if response is not None else RESTRICTED_PORT
-                    )
-                # Symmetric NAT
-                else:
-                    topology = SYMMETRIC
+                topology = SYMMETRIC
     if ephemeral_sock:
         sock.close()
     if include_internal:
