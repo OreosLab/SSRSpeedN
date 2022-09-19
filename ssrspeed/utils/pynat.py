@@ -83,7 +83,7 @@ def randint(n):
 
 
 def ord_(ch):  # compatible to python3
-    return ch if type(ch) == int else ord(ch)
+    return ch if isinstance(ch, int) else ord(ch)
 
 
 # Get the family of an IP address
@@ -95,8 +95,8 @@ def get_address_family(addr):
         try:
             ipaddress.IPv6Interface(addr)
             return socket.AF_INET6
-        except ipaddress.AddressValueError:
-            raise PynatError(f"Invalid IP address: {addr}")
+        except ipaddress.AddressValueError as e:
+            raise PynatError(f"Invalid IP address: {addr}") from e
 
 
 # Send a STUN message to a server, with optional extra data

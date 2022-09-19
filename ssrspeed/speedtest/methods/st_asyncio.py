@@ -4,6 +4,7 @@ import time
 from typing import Union
 
 import aiohttp
+import contextlib
 from aiohttp_socks import ProxyConnector
 from loguru import logger
 
@@ -61,10 +62,8 @@ class Statistics:
         self._total_red += received
         if delta_time > 0.5:
             self._statistics_time = cur_time
-            try:
+            with contextlib.suppress(StopIteration):
                 self._show_progress(delta_time)
-            except StopIteration:
-                pass
         if self.time_used > 10:
             self._stopped = True
 

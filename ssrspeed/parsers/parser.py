@@ -1,3 +1,4 @@
+import contextlib
 import json
 import os
 from copy import deepcopy
@@ -129,18 +130,14 @@ class UniversalParser:
                 cfg = None
                 logger.info("Try V2RayN Parser.")
                 pv2rn = ParserV2RayN()
-                try:
+                with contextlib.suppress(ValueError):
                     cfg = pv2rn.parse_subs_config(link)
-                except ValueError:
-                    pass
                 if not cfg:
                     # Quantumult Parser
                     logger.info("Try Quantumult Parser.")
                     pq = ParserV2RayQuantumult()
-                    try:
+                    with contextlib.suppress(ValueError):
                         cfg = pq.parse_subs_config(link)
-                    except ValueError:
-                        pass
                 if not cfg:
                     logger.error(f"Invalid vmess link: {link}")
                 else:
@@ -153,10 +150,8 @@ class UniversalParser:
                 cfg = None
                 logger.info("Try Trojan Parser.")
                 ptrojan = TrojanParser()
-                try:
+                with contextlib.suppress(ValueError):
                     cfg = ptrojan.parse_single_link(link)
-                except ValueError:
-                    pass
                 if cfg:
                     node = NodeTrojan(cfg)
 

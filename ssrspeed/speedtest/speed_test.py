@@ -1,4 +1,5 @@
 import asyncio
+import contextlib
 import copy
 import os
 import socket
@@ -371,12 +372,9 @@ class SpeedTest:
 
             _item["dspeed"] = test_res[0]
             _item["maxDSpeed"] = test_res[1]
-            try:
+            with contextlib.suppress(Exception):
                 _item["trafficUsed"] = test_res[3]
                 _item["rawSocketSpeed"] = test_res[2]
-            except Exception:
-                pass
-
         logger.info(
             node_info
             + geoip_log
@@ -503,12 +501,9 @@ class SpeedTest:
 
             _item["dspeed"] = test_res[0]
             _item["maxDSpeed"] = test_res[1]
-            try:
+            with contextlib.suppress(Exception):
                 _item["trafficUsed"] = test_res[3]
                 _item["rawSocketSpeed"] = test_res[2]
-            except Exception:
-                pass
-
         if kwargs.get("default", False) and NTT_TEST or kwargs.get("ntt_test", False):
             t, eip, eport, sip, sport = self.__nat_type_test(port)
             _item["ntt"]["type"] = t

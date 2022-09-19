@@ -3,6 +3,7 @@ import re
 import socket
 
 import aiohttp
+import contextlib
 import python_socks
 from aiohttp_socks import ProxyConnector
 from loguru import logger
@@ -38,10 +39,8 @@ async def parse_location(port):
         logger.error("Parse location timeout.")
     except Exception as e:
         logger.error(f"Parse location failed.\n{repr(e)}")
-        try:
+        with contextlib.suppress(Exception):
             logger.error(response.content)
-        except Exception:
-            pass
     return False, "DEFAULT", "DEFAULT", "DEFAULT"
 
 

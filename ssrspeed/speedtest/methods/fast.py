@@ -2,6 +2,8 @@
 Python CLI-tool (without need for a GUI) to measure Internet speed with fast.com
 """
 
+
+import contextlib
 import json
 import socket
 import time
@@ -151,13 +153,10 @@ def fast_com(verbose=False, max_time=15, force_ipv4=False, force_ipv6=False):
     # Let's check whether it's IPv6:
     for url in urls:
         fqdn = url.split("/")[2]
-        try:
+        with contextlib.suppress(Exception):
             socket.getaddrinfo(fqdn, None, socket.AF_INET6)
             if verbose:
                 logger.info("IPv6")
-        except Exception:
-            pass
-
     # Now start the threads
     for i, t in enumerate(threads):
         # print("Thread: i is", i)

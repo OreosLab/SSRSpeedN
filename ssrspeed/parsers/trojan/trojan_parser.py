@@ -1,3 +1,4 @@
+import contextlib
 import re
 from urllib.parse import unquote
 
@@ -18,12 +19,8 @@ class TrojanParser(BaseParser):
             try:
                 s = unquote(s, encoding="gb2312", errors="strict")
             except Exception:
-                try:
+                with contextlib.suppress(Exception):
                     s = unquote(s, encoding="utf8", errors="strict")
-                except Exception:
-                    # error decoding
-                    # raise # warning is enough
-                    pass
             return s
 
         link = link[len("trojan://") :]

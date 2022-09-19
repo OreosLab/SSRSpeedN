@@ -35,15 +35,15 @@ def mkdir(data_dir):
 def download_resource(url, headers, name, size, position, path, cols):
     current_file_size = 0
     with tqdm(
-            desc=name,
-            total=size,
-            unit="b",
-            position=position,
-            colour="GREEN",
-            ascii=True,
-            leave=False,
-            unit_scale=True,
-            ncols=cols - 10,
+        desc=name,
+        total=size,
+        unit="b",
+        position=position,
+        colour="GREEN",
+        ascii=True,
+        leave=False,
+        unit_scale=True,
+        ncols=cols - 10,
     ) as bar:
         if os.path.exists(path):
             current_file_size = os.path.getsize(path)
@@ -53,9 +53,7 @@ def download_resource(url, headers, name, size, position, path, cols):
         with open(file=path, mode="ab") as f:
             try:
                 while True:
-                    headers.update({
-                        "Range": f"bytes={current_file_size}-{size}"
-                    })
+                    headers.update({"Range": f"bytes={current_file_size}-{size}"})
                     content = requests.get(
                         url=url, headers=headers, timeout=10, stream=True
                     ).iter_content(chunk_size=1024)
@@ -89,7 +87,7 @@ def download(download_type, platform, download_path=None):
     )
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
-                      "Chrome/64.0.3282.119 Safari/537.36 "
+        "Chrome/64.0.3282.119 Safari/537.36 "
     }
     client_file_info = {
         "Windows": {"url": client_resources_url, "files": ["clients_win_64.zip"]},
@@ -137,5 +135,5 @@ def download(download_type, platform, download_path=None):
     sys.exit(0)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     download(download_type="all", platform="Windows")
