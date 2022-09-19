@@ -38,16 +38,16 @@ def download_resource(url, headers, name, size, position, path, cols):
     mode = "wb"
     current_file_size = 0
     with tqdm(
-            desc=name,
-            total=size,
-            unit="b",
-            position=position,
-            colour="GREEN",
-            ascii=True,
-            leave=False,
-            unit_scale=True,
-            ncols=cols - 10,
-        ) as download_bar:
+        desc=name,
+        total=size,
+        unit="b",
+        position=position,
+        colour="GREEN",
+        ascii=True,
+        leave=False,
+        unit_scale=True,
+        ncols=cols - 10,
+    ) as download_bar:
         if os.path.exists(path):
             current_file_size = os.path.getsize(path)
             if current_file_size == size:
@@ -73,11 +73,11 @@ def download_resource(url, headers, name, size, position, path, cols):
 
 
 def unzip(file_info):
-    for file in file_info['files']:
-        zip_file = file_info['parent_path'] + file
+    for file in file_info["files"]:
+        zip_file = file_info["parent_path"] + file
         if os.path.exists(zip_file):
             with zipfile.ZipFile(zip_file, "r") as zips:
-                zips.extractall(file_info['parent_path'])
+                zips.extractall(file_info["parent_path"])
 
 
 def download(download_type, platform, client_path, database_path):
@@ -99,14 +99,26 @@ def download(download_type, platform, client_path, database_path):
         "Chrome/64.0.3282.119 Safari/537.36 "
     }
     client_file_info = {
-        "Windows": {"url": client_resources_url, "files": ["clients_win_64.zip"], "parent_path": client_path},
-        "Linux": {"url": client_resources_url, "files": ["clients_linux_amd64.zip"], "parent_path": client_path},
-        "MacOS": {"url": client_resources_url, "files": ["clients_darwin_64.zip"], "parent_path": client_path},
+        "Windows": {
+            "url": client_resources_url,
+            "files": ["clients_win_64.zip"],
+            "parent_path": client_path,
+        },
+        "Linux": {
+            "url": client_resources_url,
+            "files": ["clients_linux_amd64.zip"],
+            "parent_path": client_path,
+        },
+        "MacOS": {
+            "url": client_resources_url,
+            "files": ["clients_darwin_64.zip"],
+            "parent_path": client_path,
+        },
     }
     database_file_info = {
         "url": database_resources_url,
         "files": ["GeoLite2-City.mmdb", "GeoLite2-ASN.mmdb"],
-        "parent_path": database_path
+        "parent_path": database_path,
     }
     if download_type == "all":
         urls_info.extend((client_file_info[platform], database_file_info))
@@ -151,4 +163,9 @@ if __name__ == "__main__":
     resources_path = f"{current_path}{_}resources"
     client_test_path = f"{resources_path}{_}client"
     database_test_path = f"{resources_path}{_}databases"
-    download(download_type="all", platform="Windows", client_path=client_test_path, database_path=database_test_path)
+    download(
+        download_type="all",
+        platform="Windows",
+        client_path=client_test_path,
+        database_path=database_test_path,
+    )
