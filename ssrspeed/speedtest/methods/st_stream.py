@@ -19,41 +19,38 @@ class StreamTest:
                 headers=headers,
                 connector=ProxyConnector(host=host, port=port),
                 timeout=aiohttp.ClientTimeout(connect=10),
-            ) as session:
+            ) as session, session.get(
+                url="https://www.netflix.com/title/70242311"
+            ) as response1:
+                netflix_ip = "N/A"
+                if response1.status == 200:
+                    sum_ += 1
+                    netflix_ip = nf_ip_re.findall(str(await response1.read()))[0].split(
+                        ","
+                    )[0]
+                    logger.info(f"Netflix IP : {netflix_ip}")
                 async with session.get(
-                    url="https://www.netflix.com/title/70242311"
-                ) as response1:
-                    netflix_ip = "N/A"
-                    if response1.status == 200:
+                    url="https://www.netflix.com/title/70143836"
+                ) as response2:
+                    rg = ""
+                    if response2.status == 200:
                         sum_ += 1
-                        netflix_ip = nf_ip_re.findall(str(await response1.read()))[
-                            0
-                        ].split(",")[0]
-                        logger.info(f"Netflix IP : {netflix_ip}")
-                    async with session.get(
-                        url="https://www.netflix.com/title/70143836"
-                    ) as response2:
-                        rg = ""
-                        if response2.status == 200:
-                            sum_ += 1
-                            rg = (
-                                f"({str(response2.url).split('com/')[1].split('/')[0]})"
-                            )
-                        if rg == "(title)":
-                            rg = "(us)"
-                        # 测试连接状态
-                        if sum_ == 0:
-                            logger.info("Netflix test result: None.")
-                            inner_dict["Ntype"] = "None"
-                        elif sum_ == 1:
-                            logger.info("Netflix test result: Only Original.")
-                            inner_dict["Ntype"] = "Only Original"
-                        elif outbound_ip == netflix_ip:
-                            logger.info("Netflix test result: Full Native.")
-                            inner_dict["Ntype"] = f"Full Native{rg}"
-                        else:
-                            logger.info("Netflix test result: Full DNS.")
-                            inner_dict["Ntype"] = f"Full DNS{rg}"
+                        rg = f"({str(response2.url).split('com/')[1].split('/')[0]})"
+                    if rg == "(title)":
+                        rg = "(us)"
+                    # 测试连接状态
+                    if sum_ == 0:
+                        logger.info("Netflix test result: None.")
+                        inner_dict["Ntype"] = "None"
+                    elif sum_ == 1:
+                        logger.info("Netflix test result: Only Original.")
+                        inner_dict["Ntype"] = "Only Original"
+                    elif outbound_ip == netflix_ip:
+                        logger.info("Netflix test result: Full Native.")
+                        inner_dict["Ntype"] = f"Full Native{rg}"
+                    else:
+                        logger.info("Netflix test result: Full DNS.")
+                        inner_dict["Ntype"] = f"Full DNS{rg}"
         except Exception as e:
             logger.error(f"Netflix exception: {str(e)}")
             return {}
@@ -66,11 +63,10 @@ class StreamTest:
                 headers=headers,
                 connector=ProxyConnector(host=host, port=port),
                 timeout=aiohttp.ClientTimeout(connect=10),
-            ) as session:
-                async with session.get(
-                    url="https://www.hbomax.com/", allow_redirects=False
-                ) as response:
-                    inner_dict["Htype"] = response.status == 200
+            ) as session, session.get(
+                url="https://www.hbomax.com/", allow_redirects=False
+            ) as response:
+                inner_dict["Htype"] = response.status == 200
         except Exception as e:
             logger.error(f"HBO max exception: {str(e)}")
 
@@ -82,23 +78,22 @@ class StreamTest:
                 headers=headers,
                 connector=ProxyConnector(host=host, port=port),
                 timeout=aiohttp.ClientTimeout(connect=5),
-            ) as session:
-                async with session.get(
-                    url="https://www.disneyplus.com/"
-                ) as response1, session.get(
-                    url="https://global.edge.bamgrid.com/token"
-                ) as response2:
-                    if response1.status == 200 and response2.status != 403:
-                        text = await response1.text()
-                        if text.find("Region", 0, 400) == -1:
-                            inner_dict["Dtype"] = False
-                        elif response1.history:
-                            if 300 <= response1.history[0].status <= 399:
-                                inner_dict["Dtype"] = False
-                        else:
-                            inner_dict["Dtype"] = True
-                    else:
+            ) as session, session.get(
+                url="https://www.disneyplus.com/"
+            ) as response1, session.get(
+                url="https://global.edge.bamgrid.com/token"
+            ) as response2:
+                if response1.status == 200 and response2.status != 403:
+                    text = await response1.text()
+                    if text.find("Region", 0, 400) == -1:
                         inner_dict["Dtype"] = False
+                    elif response1.history:
+                        if 300 <= response1.history[0].status <= 399:
+                            inner_dict["Dtype"] = False
+                    else:
+                        inner_dict["Dtype"] = True
+                else:
+                    inner_dict["Dtype"] = False
         except Exception as e:
             logger.error(f"Disney plus exception: {str(e)}")
 
@@ -110,16 +105,15 @@ class StreamTest:
                 headers=headers,
                 connector=ProxyConnector(host=host, port=port),
                 timeout=aiohttp.ClientTimeout(connect=10),
-            ) as session:
-                async with session.get(
-                    url="https://music.youtube.com/", allow_redirects=False
-                ) as response:
-                    if "is not available" in await response.text():
-                        inner_dict["Ytype"] = False
-                    elif response.status == 200:
-                        inner_dict["Ytype"] = True
-                    else:
-                        inner_dict["Ytype"] = False
+            ) as session, session.get(
+                url="https://music.youtube.com/", allow_redirects=False
+            ) as response:
+                if "is not available" in await response.text():
+                    inner_dict["Ytype"] = False
+                elif response.status == 200:
+                    inner_dict["Ytype"] = True
+                else:
+                    inner_dict["Ytype"] = False
         except Exception as e:
             logger.error(f"Youtube Premium exception: {str(e)}")
 
@@ -131,13 +125,12 @@ class StreamTest:
                 headers=headers,
                 connector=ProxyConnector(host=host, port=port),
                 timeout=aiohttp.ClientTimeout(connect=10),
-            ) as session:
-                async with session.get(
-                    url="https://api.abema.io/v1/ip/check?device=android",
-                    allow_redirects=False,
-                ) as response:
-                    text = await response.text()
-                    inner_dict["Atype"] = text.count("Country") > 0
+            ) as session, session.get(
+                url="https://api.abema.io/v1/ip/check?device=android",
+                allow_redirects=False,
+            ) as response:
+                text = await response.text()
+                inner_dict["Atype"] = text.count("Country") > 0
         except Exception as e:
             logger.error(f"Abema exception: {str(e)}")
 
@@ -149,13 +142,12 @@ class StreamTest:
                 headers=headers,
                 connector=ProxyConnector(host=host, port=port),
                 timeout=aiohttp.ClientTimeout(connect=10),
-            ) as session:
-                async with session.get(
-                    url="https://ani.gamer.com.tw/ajax/token.php?adID=89422&sn=14667",
-                    allow_redirects=False,
-                ) as response:
-                    text = await response.text()
-                    inner_dict["Btype"] = text.count("animeSn") > 0
+            ) as session, session.get(
+                url="https://ani.gamer.com.tw/ajax/token.php?adID=89422&sn=14667",
+                allow_redirects=False,
+            ) as response:
+                text = await response.text()
+                inner_dict["Btype"] = text.count("animeSn") > 0
         except Exception as e:
             logger.error(f"Bahamut exception: {str(e)}")
 
@@ -194,12 +186,11 @@ class StreamTest:
                 headers=headers,
                 connector=ProxyConnector(host=host, port=port),
                 timeout=aiohttp.ClientTimeout(connect=10),
-            ) as session:
-                async with session.get(
-                    url="https://www.mytvsuper.com/iptest.php", allow_redirects=False
-                ) as response:
-                    text = await response.text()
-                    inner_dict["Ttype"] = text.count("HK") > 0
+            ) as session, session.get(
+                url="https://www.mytvsuper.com/iptest.php", allow_redirects=False
+            ) as response:
+                text = await response.text()
+                inner_dict["Ttype"] = text.count("HK") > 0
         except Exception as e:
             logger.error(f"TVB exception: {str(e)}")
 

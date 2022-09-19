@@ -42,15 +42,13 @@ async def execute(url, host, port, semaphore):
         async with aiohttp.ClientSession(
             connector=ProxyConnector(host=host, port=port),
             timeout=aiohttp.ClientTimeout(connect=10),
-        ) as session:
-            async with semaphore:
-                async with session.get(url) as response:
-                    res["retCode"] = response.status
-                    stop_time = time.time()
-                    res["time"] = stop_time - start_time
-                    logger.info(
-                        f"Url: {url}, time used: {res['time']:.2f}s, code: {res['retCode']}."
-                    )
+        ) as session, semaphore, session.get(url) as response:
+            res["retCode"] = response.status
+            stop_time = time.time()
+            res["time"] = stop_time - start_time
+            logger.info(
+                f"Url: {url}, time used: {res['time']:.2f}s, code: {res['retCode']}."
+            )
     except asyncio.TimeoutError:
         logger.error(f"Url: {url} timeout.")
     except ConnectionResetError:
