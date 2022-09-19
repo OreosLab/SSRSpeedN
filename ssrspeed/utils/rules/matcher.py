@@ -9,7 +9,7 @@ class DownloadRuleMatch:
         self._download_links: dict = deepcopy(file_download["downloadLinks"])
 
     def _get_download_link(self, tag: str = "") -> tuple:
-        default: tuple = tuple()
+        default: tuple = ()
         for link in self._download_links:
             if link["tag"] == "Default":
                 default = (link["link"], link["fileSize"])
