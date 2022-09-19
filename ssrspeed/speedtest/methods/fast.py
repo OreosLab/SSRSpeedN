@@ -115,13 +115,13 @@ def fast_com(verbose=False, max_time=15, force_ipv4=False, force_ipv6=False):
     if force_ipv4:
         # force IPv4 by connecting to an IPv4 address of api.fast.com (over ... HTTP)
         ipv4 = find_ipv4("api.fast.com")
-        baseurl = f"http://{ipv4}/"
+        baseurl = f"http://{ipv4}/"  # HTTPS does not work IPv4 addresses, thus use HTTP
     elif force_ipv6:
         # force IPv6
         ipv6 = find_ipv6("api.fast.com")
         baseurl = f"http://[{ipv6}]/"
 
-    url = f"{baseurl}netflix/speedtest?https=true&token={token}&urlCount=3"
+    url = f"{baseurl}netflix/speedtest?https=true&token={token}&urlCount=3"  # Not more than 3 possible
     if verbose:
         logger.debug(f"API url is{url}")
     try:
@@ -192,7 +192,6 @@ def fast_com(verbose=False, max_time=15, force_ipv4=False, force_ipv6=False):
         logger.info(
             f"Highest Speed (kB/s):{str(highest_speed_kbps)}aka Mbps {str(mbps)}"
         )
-
 
     return mbps
 

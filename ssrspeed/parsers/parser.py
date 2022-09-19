@@ -300,10 +300,12 @@ class UniversalParser:
                 pssb = ParserShadowsocksBasic(self.__get_ss_base_config())
                 for cfg in pssb.parse_gui_data(data):
                     self.__nodes.append(NodeShadowsocks(cfg))
+            # ShadowsocksR
             elif "serverSubscribes" in data:
                 pssr = ParserShadowsocksR(self.__get_ss_base_config())
                 for cfg in pssr.parse_gui_data(data):
                     self.__nodes.append(NodeShadowsocksR(cfg))
+            # V2RayN
             else:
                 pv2n = ParserV2RayN()
                 cfgs = pv2n.parse_gui_data(data)

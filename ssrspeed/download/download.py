@@ -109,10 +109,7 @@ def download(download_type, platform, download_path=None):
     with ThreadPoolExecutor() as pool:
         task_list.extend(
             pool.submit(
-                download_resource,
-                **kwargs,
-                headers=headers,
-                cols=terminal_size[0]
+                download_resource, **kwargs, headers=headers, cols=terminal_size[0]
             )
             for kwargs in file_info
         )

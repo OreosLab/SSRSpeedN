@@ -74,6 +74,7 @@ def main():
 
     # 生成项目路径字典
     key_path = get_path_json(work_path=args.dir) if args.dir else get_path_json()
+
     if download_type := args.download:
         download(download_type, PLATFORM, args.dir)
 

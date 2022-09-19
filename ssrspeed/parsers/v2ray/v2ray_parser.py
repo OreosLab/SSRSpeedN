@@ -53,7 +53,9 @@ class V2RayParser(BaseParser):
         stream_settings["security"] = config["tls"]
         if config["tls"] == "tls":
             tls_settings = V2RayBaseConfigs.get_tls_object()
-            tls_settings["allowInsecure"] = config.get("allowInsecure", "false") == "true"
+            tls_settings["allowInsecure"] = (
+                config.get("allowInsecure", "false") == "true"
+            )
             tls_settings["serverName"] = config["tls-host"]
             stream_settings["tlsSettings"] = tls_settings
 

@@ -88,9 +88,7 @@ class ClashParser:
             "Host", ""
         )  # http host, web socket host, h2 host, quic encrypt method
         headers = {
-            header: ws_header[header]
-            for header in ws_header.keys()
-            if header != "Host"
+            header: ws_header[header] for header in ws_header.keys() if header != "Host"
         }
 
         tls_host = host

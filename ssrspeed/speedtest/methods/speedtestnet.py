@@ -991,7 +991,6 @@ class SpeedtestResults(object):
             f'serverid={self.server["id"]}',
         ]
 
-
         headers = {"Referer": "http://c.speedtest.net/flash/speedtest.swf"}
         request = build_request(
             "://www.speedtest.net/api/api.php",
@@ -1169,7 +1168,9 @@ class Speedtest(object):
                 root = ET.fromstring(configxml)
             except ET.ParseError:
                 e = get_exception()
-                raise SpeedtestConfigError(f"Malformed speedtest.net configuration: {e}")
+                raise SpeedtestConfigError(
+                    f"Malformed speedtest.net configuration: {e}"
+                )
             server_config = root.find("server-config").attrib
             download = root.find("download").attrib
             upload = root.find("upload").attrib
@@ -1181,7 +1182,9 @@ class Speedtest(object):
                 root = DOM.parseString(configxml)
             except ExpatError:
                 e = get_exception()
-                raise SpeedtestConfigError(f"Malformed speedtest.net configuration: {e}")
+                raise SpeedtestConfigError(
+                    f"Malformed speedtest.net configuration: {e}"
+                )
             server_config = get_attributes_by_tag_name(root, "server-config")
             download = get_attributes_by_tag_name(root, "download")
             upload = get_attributes_by_tag_name(root, "upload")
@@ -1255,7 +1258,9 @@ class Speedtest(object):
                 try:
                     server_list[i] = int(s)
                 except ValueError:
-                    raise InvalidServerIDType(f"{s} is an invalid server type, must be int")
+                    raise InvalidServerIDType(
+                        f"{s} is an invalid server type, must be int"
+                    )
 
         urls = [
             "://www.speedtest.net/speedtest-servers-static.php",
@@ -1309,14 +1314,18 @@ class Speedtest(object):
                             root = ET.fromstring(serversxml)
                         except ET.ParseError:
                             e = get_exception()
-                            raise SpeedtestServersError(f"Malformed speedtest.net server list: {e}")
+                            raise SpeedtestServersError(
+                                f"Malformed speedtest.net server list: {e}"
+                            )
                         elements = etree_iter(root, "server")
                     except AttributeError:
                         try:
                             root = DOM.parseString(serversxml)
                         except ExpatError:
                             e = get_exception()
-                            raise SpeedtestServersError(f"Malformed speedtest.net server list: {e}")
+                            raise SpeedtestServersError(
+                                f"Malformed speedtest.net server list: {e}"
+                            )
                         elements = root.getElementsByTagName("server")
                 except (SyntaxError, xml.parsers.expat.ExpatError):
                     raise ServersRetrievalError()
@@ -1406,7 +1415,6 @@ class Speedtest(object):
                 "id": 0,
             }
         ]
-
 
         return self.servers
 
@@ -1514,7 +1522,9 @@ class Speedtest(object):
         urls = []
         for size in self.config["sizes"]["download"]:
             for _ in range(self.config["counts"]["download"]):
-                urls.append(f'{os.path.dirname(self.best["url"])}/random{size}x{size}.jpg')
+                urls.append(
+                    f'{os.path.dirname(self.best["url"])}/random{size}x{size}.jpg'
+                )
 
         request_count = len(urls)
         requests = []
@@ -1957,7 +1967,6 @@ def shell():
             raise SpeedtestCLIError(
                 f'{", ".join(f"{s}" for s in args.server)} is an invalid server type, must be an int'
             )
-
 
         if args.server and len(args.server) == 1:
             printer("Retrieving information for the selected server...", quiet)

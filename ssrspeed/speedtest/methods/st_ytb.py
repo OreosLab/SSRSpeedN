@@ -57,7 +57,7 @@ def speed_test_ytb(port: int) -> Tuple[int, int, List[int], int]:
         for i in range(20):
             time.sleep(1)
             s1 = driver.find_element(By.XPATH, "//*[contains(text(),'Kbps')]").text
-            current_speed = int(s1[:s1.find(" ")])
+            current_speed = int(s1[: s1.find(" ")])
             total_received += current_speed * 128
             speed_list.append(current_speed * 128)
             if not i:

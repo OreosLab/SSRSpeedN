@@ -612,10 +612,12 @@ class SpeedTest:
         dic = {"done_nodes": 0, "total_nodes": len(self.__configs)}
         # 根据配置文件是否选择极速模式
         fast_method = self.__fast_start_test if FAST_SPEED else self.__base_start_test
-        # 初始化端口范围
 
+        # 初始化端口范围
         for i in range(LOCAL_PORT, LOCAL_PORT + self.__connection):
             port_queue.put_nowait(i)
+
+        # 布置异步任务
         task_list = [
             asyncio.create_task(
                 self.__async__start_test(

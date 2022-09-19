@@ -24,9 +24,7 @@ async def start_web_page_simulation_test(w_config, local_host, local_port):
     logger.info(f"Read {len(urls)} url(s).")
     task_list = [
         asyncio.create_task(
-            execute(
-                url=url, host=local_host, port=local_port, semaphore=semaphore
-            )
+            execute(url=url, host=local_host, port=local_port, semaphore=semaphore)
         )
         for url in urls
     ]
