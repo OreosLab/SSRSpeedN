@@ -293,8 +293,7 @@ def get_ip_info(
                 sock.close()
             if include_internal:
                 return BLOCKED, None, None, None
-            else:
-                return BLOCKED, None, None
+            return BLOCKED, None, None
     # If a stun host was specified, set stun_addr
     else:
         stun_addr = (stun_host, stun_port)
@@ -313,8 +312,7 @@ def get_ip_info(
             sock.close()
         if include_internal:
             return BLOCKED, None, None, None
-        else:
-            return BLOCKED, None, None
+        return BLOCKED, None, None
     # Otherwise the network is not blocked and we can continue
     ext_ip, ext_port = response["ext_ip"], response["ext_port"]
     change_addr = response.get("change_ip"), response.get("change_port")

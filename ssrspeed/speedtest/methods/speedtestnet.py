@@ -867,8 +867,7 @@ class HTTPUploaderData(object):
             chunk = self.data.read(n)
             self.total.append(len(chunk))
             return chunk
-        else:
-            raise SpeedtestUploadTimeout()
+        raise SpeedtestUploadTimeout()
 
     def __len__(self):
         return self.length
