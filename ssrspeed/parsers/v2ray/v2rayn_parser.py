@@ -48,13 +48,13 @@ class ParserV2RayN:
             tls_host = host
             security = _conf.get("security", "auto")
             remarks = _conf.get("ps", server)
-            remarks = remarks if remarks else server
+            remarks = remarks or server
             logger.debug(
                 f"Server : {server}, Port : {port}, tls-host : {tls_host}, Path : {path}, "
                 f"Type : {_type}, UUID : {uuid}, AlterId : {aid}, Network : {net}, "
                 f"Host : {host}, TLS : {tls}, Remarks : {remarks}, group={group}"
             )
-            _config = {
+            return {
                 "remarks": remarks,
                 "server": server,
                 "server_port": port,
@@ -68,7 +68,7 @@ class ParserV2RayN:
                 "host": host,
                 "tls": tls,
             }
-            return _config
+
         except Exception:
             logger.exception(f"Parse {raw_link} failed. (V2RayN Method)")
             return None

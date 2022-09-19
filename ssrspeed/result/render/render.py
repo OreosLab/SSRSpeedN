@@ -30,11 +30,9 @@ class ExporterWps:
         with open(filename, "w+", encoding="utf-8") as f:
             f.writelines(res)
         index_filename = os.path.join(fileloc, "index.html")
-        index = ""
         with open(index_filename, "r", encoding="utf-8") as f:
             read = f.readlines()
-        for r in read:
-            index += r
+        index = "".join(read)
         index = index.replace(r"{{ $generatedTime }}", now_time)
         with open(index_filename, "w+", encoding="utf-8") as f:
             f.writelines(index)

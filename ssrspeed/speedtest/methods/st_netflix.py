@@ -25,17 +25,17 @@ def speed_test_netflix(port: int) -> Tuple[float, float, List[float], float]:
         max_speed: Union[int, float] = 0
         total_received: Union[int, float] = 0
         speed_list: list = []
-        for i in range(0, 60):
+        for i in range(60):
             time.sleep(0.5)
             current_speed = float(
                 driver.find_element(By.CLASS_NAME, "speed-results-container").text
             )
             unit = driver.find_element(By.CLASS_NAME, "speed-units-container").text
             speed_list.append(current_speed * 128 * 1024)
-            if unit == "Kbps":
-                current_speed /= 1024
             if unit == "Gbps":
                 current_speed *= 1024
+            elif unit == "Kbps":
+                current_speed /= 1024
             if current_speed > max_speed:
                 max_speed = current_speed
             total_received += current_speed * 128 * 1024

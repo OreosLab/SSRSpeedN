@@ -53,9 +53,7 @@ class V2RayParser(BaseParser):
         stream_settings["security"] = config["tls"]
         if config["tls"] == "tls":
             tls_settings = V2RayBaseConfigs.get_tls_object()
-            tls_settings["allowInsecure"] = bool(
-                config.get("allowInsecure", "false") == "true"
-            )
+            tls_settings["allowInsecure"] = config.get("allowInsecure", "false") == "true"
             tls_settings["serverName"] = config["tls-host"]
             stream_settings["tlsSettings"] = tls_settings
 
@@ -97,9 +95,7 @@ class V2RayParser(BaseParser):
             links_arr = (b64plus.decode(res).decode("utf-8")).split("\n")
             for link in links_arr:
                 link = link.strip()
-                # 	print(link)
-                cfg = self._parse_link(link)
-                if cfg:
+                if cfg := self._parse_link(link):
                     # 	print(cfg["remarks"])
                     self._config_list.append(cfg)
         except ValueError:
@@ -116,10 +112,10 @@ class V2RayParser(BaseParser):
         if raw_gui_configs is False:
             logger.info("Not V2RayN Config.")
             raw_gui_configs = pv2rc.parse_gui_config(filename)
-            if raw_gui_configs is False:
-                logger.info("Not Clash Config.")
-                logger.critical("Gui config parse failed.")
-                raw_gui_configs = []
+        if raw_gui_configs is False:
+            logger.info("Not Clash Config.")
+            logger.critical("Gui config parse failed.")
+            raw_gui_configs = []
 
         for _dict in raw_gui_configs:
             _cfg = self.__generate_config(_dict)

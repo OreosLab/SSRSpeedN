@@ -38,8 +38,7 @@ class ClashParser:
                 return {}
             p_opts = cfg.get("plugin-opts", {})
         elif "obfs" in cfg:
-            raw_plugin = cfg.get("obfs", "")
-            if raw_plugin:
+            if raw_plugin := cfg.get("obfs", ""):
                 if raw_plugin == "http":
                     plugin = "obfs-local"
                     p_opts["mode"] = "http"
@@ -88,10 +87,12 @@ class ClashParser:
         host = ws_header.get(
             "Host", ""
         )  # http host, web socket host, h2 host, quic encrypt method
-        headers = {}
-        for header in ws_header.keys():
-            if header != "Host":
-                headers[header] = ws_header[header]
+        headers = {
+            header: ws_header[header]
+            for header in ws_header.keys()
+            if header != "Host"
+        }
+
         tls_host = host
         path = cfg.get("ws-path", "")  # Websocket path, http path, quic encrypt key
         logger.debug(
@@ -168,9 +169,7 @@ class ClashParser:
         clash_cfg = yaml.load(clash_cfg, Loader=yaml.FullLoader)
         for cfg in clash_cfg["proxies"]:
             _type = cfg.get("type", "N/A").lower()
-            if _type == "ss":
-                ret = self.__parse_shadowsocks(cfg)
-            elif _type == "ssr":
+            if _type in ["ss", "ssr"]:
                 ret = self.__parse_shadowsocks(cfg)
             elif _type == "vmess":
                 ret = self.__convert_v2ray_cfg(cfg)

@@ -96,7 +96,7 @@ def get_address_family(addr):
             ipaddress.IPv6Interface(addr)
             return socket.AF_INET6
         except ipaddress.AddressValueError:
-            raise PynatError("Invalid IP address: %s" % addr)
+            raise PynatError(f"Invalid IP address: {addr}")
 
 
 # Send a STUN message to a server, with optional extra data
@@ -322,18 +322,12 @@ def get_ip_info(
     if ext_ip == source_ip and ext_port == source_port:
         response = stun_test_2(sock, stun_addr)
         # Open Internet
-        if response is not None:
-            topology = OPEN
-        # Symmetric UDP Firewall
-        else:
-            topology = UDP_FIREWALL
-    # Some type of NAT, do test 2
+        topology = OPEN if response is not None else UDP_FIREWALL
     else:
         response = stun_test_2(sock, stun_addr)
         # Full-cone NAT
         if response is not None:
             topology = FULL_CONE
-        # Some other type of NAT, do test 1 on a new ip
         else:
             response = stun_test_1(sock, change_addr)
             # This should never occur
@@ -341,19 +335,13 @@ def get_ip_info(
                 if ephemeral_sock:
                     sock.close()
                 raise PynatError("Error querying STUN server with changed address.")
-            # Symmetric, restricted cone, or restricted port NAT
             else:
                 recv_ext_ip, recv_ext_port = (response["ext_ip"], response["ext_port"])
                 # Some type of restricted NAT, do test 3 to the change_addr with a CHANGE_REQUEST for the port
                 if recv_ext_ip == ext_ip and recv_ext_port == ext_port:
                     response = stun_test_3(sock, change_addr)
                     # Restricted cone NAT
-                    if response is not None:
-                        topology = RESTRICTED_CONE
-                    # Restricted port NAT
-                    else:
-                        topology = RESTRICTED_PORT
-                # Symmetric NAT
+                    topology = RESTRICTED_CONE if response is not None else RESTRICTED_PORT
                 else:
                     topology = SYMMETRIC
     if ephemeral_sock:
