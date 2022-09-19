@@ -27,29 +27,32 @@ class BaseClient:
             await f.write(json.dumps(self._config))
 
         if self._process is None:
-
             if BaseClient._platform == "Windows":
-                if debug:
-                    self._process = subprocess.Popen(self._cmd["win_debug"])
-                else:
-                    self._process = subprocess.Popen(
+                self._process = (
+                    subprocess.Popen(self._cmd["win_debug"])
+                    if debug
+                    else subprocess.Popen(
                         self._cmd["win"],
                         stdout=subprocess.DEVNULL,
                         stderr=subprocess.DEVNULL,
                     )
+                )
+
                 logger.info(
                     f'Starting {self._clients["win"]} with server {config["server"]}:{config["server_port"]}'
                 )
 
             else:
-                if debug:
-                    self._process = subprocess.Popen(self._cmd["unix"])
-                else:
-                    self._process = subprocess.Popen(
+                self._process = (
+                    subprocess.Popen(self._cmd["unix"])
+                    if debug
+                    else subprocess.Popen(
                         self._cmd["unix_debug"],
                         stdout=subprocess.DEVNULL,
                         stderr=subprocess.DEVNULL,
                     )
+                )
+
                 logger.info(
                     f'Starting {self._clients["unix"]} with server {config["server"]}:{config["server_port"]}'
                 )

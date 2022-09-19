@@ -44,8 +44,7 @@ class ParserShadowsocksClash:
                     continue
                 p_opts = cfg.get("plugin-opts", {})
             elif "obfs" in cfg:
-                raw_plugin = cfg.get("obfs", "")
-                if raw_plugin:
+                if raw_plugin := cfg.get("obfs", ""):
                     if raw_plugin == "http":
                         plugin = "obfs-local"
                         p_opts["mode"] = "http"

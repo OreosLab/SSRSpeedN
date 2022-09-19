@@ -54,7 +54,7 @@ class RequirementsCheck:
     def check(self, platform: str):
         if platform == "Windows":
             self.__checks(self.__win_require)
-        elif platform in ("Linux", "MacOS"):
+        elif platform in {"Linux", "MacOS"}:
             self.__linux_check(platform)
             self.__checks(self.__linux_require)
         else:
@@ -125,9 +125,7 @@ class RequirementsCheck:
                     )
                     return False
                 logger.debug(f"ldconfig : {out!r}")
-                if "libsodium" not in out.decode("utf-8"):
-                    return False
-                return True
+                return "libsodium" in out.decode("utf-8")
             except Exception:
                 logger.exception("")
                 return False

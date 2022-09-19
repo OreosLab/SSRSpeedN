@@ -8,9 +8,7 @@ def check_platform() -> str:
         return "Windows"
     if "Linux" in tmp:
         return "Linux"
-    if "Darwin" in tmp or "mac" in tmp:
-        return "MacOS"
-    return "Unknown"
+    return "MacOS" if "Darwin" in tmp or "mac" in tmp else "Unknown"
 
 
 PLATFORM = check_platform()

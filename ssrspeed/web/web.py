@@ -55,29 +55,33 @@ def server_method(app, sc):
             if sc.web_get_status() == "running":
                 return "running"
             subscription_url = data.get("url", "")
-            if not subscription_url:
-                return "invalid url."
-            return json.dumps(sc.web_read_subscription(subscription_url))
+            return (
+                json.dumps(sc.web_read_subscription(subscription_url))
+                if subscription_url
+                else "invalid url."
+            )
+
         return "invalid method"
 
     @app.route("/readfileconfig", methods=["POST"])
     def read_file_config():
-        if request.method == "POST":
-            if sc.web_get_status() == "running":
-                return "running"
-            ufile = request.files["file"]
-            if ufile:
-                if check_file_allowed(ufile.filename):
-                    filename = secure_filename(ufile.filename)
-                    tmp_filename = os.path.join(app.config["UPLOAD_FOLDER"], filename)
-                    ufile.save(tmp_filename)
-                    logger.info(f"Tmp config file saved as {tmp_filename}.")
-                    return json.dumps(sc.web_read_config_file(tmp_filename))
-                logger.error(f"Disallowed file {ufile.filename}.")
-                return FileNotAllowed.err_msg
-            logger.error("File upload failed or unknown error.")
-            return WebFileCommonError.err_msg
-        return "invalid method"
+        if request.method != "POST":
+            return "invalid method"
+
+        if sc.web_get_status() == "running":
+            return "running"
+        ufile = request.files["file"]
+        if ufile:
+            if check_file_allowed(ufile.filename):
+                filename = secure_filename(ufile.filename)
+                tmp_filename = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+                ufile.save(tmp_filename)
+                logger.info(f"Tmp config file saved as {tmp_filename}.")
+                return json.dumps(sc.web_read_config_file(tmp_filename))
+            logger.error(f"Disallowed file {ufile.filename}.")
+            return FileNotAllowed.err_msg
+        logger.error("File upload failed or unknown error.")
+        return WebFileCommonError.err_msg
 
     @app.route("/getcolors", methods=["GET"])
     def get_colors():
@@ -85,32 +89,33 @@ def server_method(app, sc):
 
     @app.route("/start", methods=["POST"])
     def start_test():
-        if request.method == "POST":
-            data = get_post_data()
-            if sc.web_get_status() == "running":
-                return "running"
-            configs = data.get("configs", [])
-            if not configs:
-                return "No configs"
-            test_method = data.get("testMethod", "ST_ASYNC")
-            colors = data.get("colors", "origin")
-            sort_method = data.get("sortMethod", "")
-            test_mode = data.get("testMode", "")
-            use_ssr_cs = data.get("useSsrCSharp", False)
-            group = data.get("group", "")
-            sc.web_setup(
-                testMode=test_mode,
-                testMethod=test_method,
-                colors=colors,
-                sortMethod=sort_method,
-            )
-            sc.clean_result()
-            sc.web_set_configs(configs)
-            if group:
-                sc.set_group(group)
-            sc.start_test(use_ssr_cs)
-            return "done"
-        return "invalid method"
+        if request.method != "POST":
+            return "invalid method"
+
+        data = get_post_data()
+        if sc.web_get_status() == "running":
+            return "running"
+        configs = data.get("configs", [])
+        if not configs:
+            return "No configs"
+        test_method = data.get("testMethod", "ST_ASYNC")
+        colors = data.get("colors", "origin")
+        sort_method = data.get("sortMethod", "")
+        test_mode = data.get("testMode", "")
+        use_ssr_cs = data.get("useSsrCSharp", False)
+        group = data.get("group", "")
+        sc.web_setup(
+            testMode=test_mode,
+            testMethod=test_method,
+            colors=colors,
+            sortMethod=sort_method,
+        )
+        sc.clean_result()
+        sc.web_set_configs(configs)
+        if group:
+            sc.set_group(group)
+        sc.start_test(use_ssr_cs)
+        return "done"
 
     @app.route("/getresults")
     def get_results():
@@ -136,12 +141,6 @@ def start_server(args, key_path):
     if not os.path.exists(upload_dir):
         logger.warning(f"Upload folder {upload_dir} not found, creating.")
         os.makedirs(upload_dir)
-    if args.port:
-        port = args.port
-    else:
-        port = ssrconfig["web"]["port"]
-    if args.listen:
-        host = args.listen
-    else:
-        host = ssrconfig["web"]["listen"]
+    port = args.port or ssrconfig["web"]["port"]
+    host = args.listen or ssrconfig["web"]["listen"]
     app.run(host=host, port=port, debug=args.debug, threaded=True)

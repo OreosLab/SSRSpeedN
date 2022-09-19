@@ -79,7 +79,7 @@ class TrojanParser(BaseParser):
         result["server"], result["server_port"] = host.split(":")
         p = re.match(r"^\d+", result["server_port"])
         assert p is not None
-        result["server_port"] = int(p.group(0))
+        result["server_port"] = int(p[0])
 
         result["remote_addr"] = result["server"]
         result["remote_port"] = result["server_port"]

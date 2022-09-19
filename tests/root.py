@@ -3,7 +3,7 @@ import sys
 
 _ = os.sep
 file_path: list = os.path.realpath(__file__).split(_)
-root_path: str = _.join(file_path[0:-2]) + _
+root_path: str = _.join(file_path[:-2]) + _
 
 
 def root():
