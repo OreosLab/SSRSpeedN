@@ -1137,8 +1137,8 @@ class ExportResult:
     def __parse_speed(speed: float) -> str:
         speed = speed / 1024 / 1024
         if speed < 1:
-            return f"{speed * 1024:.2f}KB"
-        return f"{speed:.2fMB}"
+            return f"{speed * 1024:.2f} KB"
+        return f"{speed:.2f} MB"
 
     @staticmethod
     def __new_mix_color(lc: dict, rc: dict, rt: int) -> tuple:

@@ -139,7 +139,7 @@ def start_server(args, key_path):
     server_method(app, sc)
     sc.web_mode = True
     if not os.path.exists(upload_dir):
-        logger.warning(f"Upload folder {upload_dir} not found, creating.")
+        logger.warning(f" Upload folder {upload_dir} not found, creating.")
         os.makedirs(upload_dir)
     port = args.port or ssrconfig["web"]["port"]
     host = args.listen or ssrconfig["web"]["listen"]
