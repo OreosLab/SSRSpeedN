@@ -9,8 +9,7 @@ from ssrspeed.parsers.base import BaseParser
 
 class TrojanParser(BaseParser):
     # From: https://github.com/NyanChanMeow/SSRSpeed/issues/105
-    @staticmethod
-    def _parse_link(link: str) -> dict:
+    def _parse_link(self, link: str) -> dict:
         if not link.startswith("trojan://"):
             logger.error(f"Unsupported link : {link}")
             return {}

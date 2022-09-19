@@ -1,6 +1,9 @@
 version = 1
 
-exclude_patterns = ["ssrspeed/resource/**"]
+exclude_patterns = [
+    "ssrspeed/resource/**",
+    "ssrspeed/speedtest/methods/speedtestnet.py",
+]
 
 [[analyzers]]
 name = "python"

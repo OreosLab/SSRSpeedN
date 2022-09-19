@@ -2,7 +2,7 @@ ignore: []
 
 refactor:
   include: []
-  skip: [""]
+  skip: ["ssrspeed/resource/**", "ssrspeed/speedtest/methods/speedtestnet.py"]
   rule_types:
     - refactoring
     - suggestion

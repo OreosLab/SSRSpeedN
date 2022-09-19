@@ -1,10 +1,10 @@
 import asyncio
+import contextlib
 import copy
 import time
 from typing import Union
 
 import aiohttp
-import contextlib
 from aiohttp_socks import ProxyConnector
 from loguru import logger
 

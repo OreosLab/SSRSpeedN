@@ -40,7 +40,7 @@ class ParserV2RayQuantumult:
             host = ""  # http host, web socket host, h2 host, quic encrypt method
             net = "tcp"
             path = ""  # Websocket path, http path, quic encrypt key
-            headers = []
+            headers: list = []
 
             if link_split[6].split("=")[1] == "true":
                 tls = "tls"

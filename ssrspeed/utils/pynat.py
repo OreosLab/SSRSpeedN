@@ -37,7 +37,7 @@ import socket
 import sys
 
 __version__ = "0.7.0"
-url = "https://github.com/aarant/pynat"
+URL = "https://github.com/aarant/pynat"
 
 
 class PynatError(Exception):
@@ -386,8 +386,8 @@ def main():
         print(
             "Network type:",
             topology,
-            "\nInternal address: %s:%s" % (source_ip, source_port),
-            "\nExternal address: %s:%s" % (ext_ip, ext_port),
+            f"\nInternal address: {source_ip}:{source_port}",
+            f"\nExternal address: {ext_ip}:{ext_port}",
         )
     except KeyboardInterrupt:
         sys.exit()

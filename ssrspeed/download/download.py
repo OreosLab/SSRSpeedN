@@ -44,12 +44,12 @@ def download_resource(url, headers, name, size, position, path, cols):
         leave=False,
         unit_scale=True,
         ncols=cols - 10,
-    ) as bar:
+    ) as dbar:
         if os.path.exists(path):
             current_file_size = os.path.getsize(path)
             if current_file_size == size:
                 return f"已保存至: {path}"
-            bar.update(current_file_size)
+            dbar.update(current_file_size)
         with open(file=path, mode="ab") as f:
             try:
                 while True:
@@ -59,7 +59,7 @@ def download_resource(url, headers, name, size, position, path, cols):
                     ).iter_content(chunk_size=1024)
                     for chunk in content:
                         length = f.write(chunk)
-                        bar.update(length)
+                        dbar.update(length)
                         current_file_size += length
                     if current_file_size == size:
                         break

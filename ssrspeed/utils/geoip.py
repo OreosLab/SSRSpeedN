@@ -1,9 +1,9 @@
 import asyncio
+import contextlib
 import re
 import socket
 
 import aiohttp
-import contextlib
 import python_socks
 from aiohttp_socks import ProxyConnector
 from loguru import logger
