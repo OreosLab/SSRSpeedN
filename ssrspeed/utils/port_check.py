@@ -12,7 +12,7 @@ async def async_check_port(port):
         sock.settimeout(3)
         await loop.sock_connect(sock, ("127.0.0.1", port))
         sock.shutdown(2)
-        logger.info("Port Available")
+        logger.info("Port Available.")
         return True
     except socket.timeout:
         logger.error(f"Port {port} timeout.")
@@ -21,7 +21,7 @@ async def async_check_port(port):
         logger.error(f"Connection refused on port {port}.")
         return False
     except Exception as error:
-        logger.error(f"Other Error `{error}` on port {port}")
+        logger.error(f"Other Error `{error}` on port {port}.")
         return False
     finally:
         await asyncio.sleep(1)

@@ -38,7 +38,7 @@ async def parse_location(port):
     except asyncio.TimeoutError:
         logger.error("Parse location timeout.")
     except Exception as e:
-        logger.error(f"Parse location failed.\n{repr(e)}")
+        logger.error(f"Parse location failed: {repr(e)}")
         with contextlib.suppress(Exception):
             logger.error(response.content)
     return False, "DEFAULT", "DEFAULT", "DEFAULT"
@@ -89,6 +89,9 @@ async def ip_loc(port):
         return {}
     except aiohttp.ClientOSError:
         logger.error("Geo IP ClientOSError.")
+        return {}
+    except aiohttp.ServerDisconnectedError:
+        logger.error("Geo IP Server disconnected.")
         return {}
     except aiohttp.ContentTypeError:
         logger.error("Geo IP Connection closed.")
