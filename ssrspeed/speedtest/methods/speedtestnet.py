@@ -299,7 +299,7 @@ try:
     try:
         CERT_ERROR = (ssl.CertificateError,)
     except AttributeError:
-        CERT_ERROR = tuple()
+        CERT_ERROR = ()
 
     HTTP_ERRORS = (
         HTTPError,
