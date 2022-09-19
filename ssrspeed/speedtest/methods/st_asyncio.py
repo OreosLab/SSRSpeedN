@@ -105,7 +105,7 @@ async def _fetch(url: str, sta: Statistics, host: str, port: int, buffer: int):
                         break
                     await sta.record(len(chunk))
     except Exception as e:
-        logger.error(f"Connect to Download link exception: {str(e)}")
+        logger.error(f"Download link error: {str(e)}")
 
 
 async def start(

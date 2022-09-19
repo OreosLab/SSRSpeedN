@@ -213,11 +213,14 @@ class SpeedTest:
                 sock=s,
             )
             return t, eip, eport, sip, sport
-        except socket.gaierror:
-            logger.exception("")
+        except socket.gaierror as e:
+            logger.error(f"NAT Type Test: {repr(e)}")
+            return None, None, None, None, None
+        except TypeError as e:
+            logger.error(f"NAT Type Test: {repr(e)}")
             return None, None, None, None, None
         except Exception:
-            logger.exception("")
+            logger.exception("NAT Type Test: ")
             return None, None, None, None, None
         finally:
             s.close()

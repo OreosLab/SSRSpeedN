@@ -52,7 +52,7 @@ class StreamTest:
                         logger.info("Netflix test result: Full DNS.")
                         inner_dict["Ntype"] = f"Full DNS{rg}"
         except Exception as e:
-            logger.error(f"Netflix exception: {str(e)}")
+            logger.error(f"Netflix error: {str(e)}")
             return {}
 
     @classmethod
@@ -68,7 +68,7 @@ class StreamTest:
             ) as response:
                 inner_dict["Htype"] = response.status == 200
         except Exception as e:
-            logger.error(f"HBO max exception: {str(e)}")
+            logger.error(f"HBO max error: {str(e)}")
 
     @classmethod
     async def disneyplus(cls, host, headers, inner_dict, port):
@@ -95,7 +95,7 @@ class StreamTest:
                 else:
                     inner_dict["Dtype"] = False
         except Exception as e:
-            logger.error(f"Disney plus exception: {str(e)}")
+            logger.error(f"Disney plus error: {str(e)}")
 
     @classmethod
     async def youtube(cls, host, headers, inner_dict, port):
@@ -115,7 +115,7 @@ class StreamTest:
                 else:
                     inner_dict["Ytype"] = False
         except Exception as e:
-            logger.error(f"Youtube Premium exception: {str(e)}")
+            logger.error(f"Youtube Premium error: {str(e)}")
 
     @classmethod
     async def abema(cls, host, headers, inner_dict, port):
@@ -132,7 +132,7 @@ class StreamTest:
                 text = await response.text()
                 inner_dict["Atype"] = text.count("Country") > 0
         except Exception as e:
-            logger.error(f"Abema exception: {str(e)}")
+            logger.error(f"Abema error: {str(e)}")
 
     @classmethod
     async def bahamut(cls, host, headers, inner_dict, port):
@@ -149,7 +149,7 @@ class StreamTest:
                 text = await response.text()
                 inner_dict["Btype"] = text.count("animeSn") > 0
         except Exception as e:
-            logger.error(f"Bahamut exception: {str(e)}")
+            logger.error(f"Bahamut error: {str(e)}")
 
     @classmethod
     async def indazn(cls, host, headers, inner_dict, port):
@@ -176,7 +176,7 @@ class StreamTest:
                 ) as response:
                     inner_dict["Dztype"] = response.status == 200
         except Exception as e:
-            logger.error(f"Dazn exception: {str(e)}")
+            logger.error(f"Dazn error: {str(e)}")
 
     @classmethod
     async def mytvsuper(cls, host, headers, inner_dict, port):
@@ -192,7 +192,7 @@ class StreamTest:
                 text = await response.text()
                 inner_dict["Ttype"] = text.count("HK") > 0
         except Exception as e:
-            logger.error(f"TVB exception: {str(e)}")
+            logger.error(f"TVB error: {str(e)}")
 
     @classmethod
     async def bilibili(cls, host, headers, inner_dict, port):
@@ -250,7 +250,7 @@ class StreamTest:
                                 else:
                                     inner_dict["Bltype"] = "N/A"
         except Exception as e:
-            logger.error(f"Bilibili exception: {str(e)}")
+            logger.error(f"Bilibili error: {str(e)}")
 
 
 async def start_stream_test(port, stream_cfg, outbound_ip):

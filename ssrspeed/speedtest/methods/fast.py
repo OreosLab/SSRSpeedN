@@ -130,8 +130,8 @@ def fast_com(verbose=False, max_time=15, force_ipv4=False, force_ipv6=False):
     except Exception:
         # not good
         if verbose:
-            logger.error(
-                "No connection possible", exc_info=True
+            logger.exception(
+                "No connection possible"
             )  # probably IPv6, or just no network
         return 0  # no connection, thus no speed
 

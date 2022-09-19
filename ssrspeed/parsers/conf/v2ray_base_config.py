@@ -159,8 +159,8 @@ class V2RayBaseConfigs:
             web_socket_settings = V2RayBaseConfigs.get_ws_object()
             web_socket_settings["path"] = config["path"]
             web_socket_settings["headers"]["Host"] = config["host"]
-            for h in config.get("headers", []):
-                web_socket_settings["headers"][h["header"]] = h["value"]
+            for k, v in config.get("headers", {}).items():
+                web_socket_settings["headers"][k] = v
             stream_settings["wsSettings"] = web_socket_settings
         elif config["network"] == "h2":
             http_settings = V2RayBaseConfigs.get_http_object()
