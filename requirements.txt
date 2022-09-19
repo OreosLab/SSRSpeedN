@@ -8,4 +8,5 @@ PySocks
 PyYAML
 requests
 selenium==4.4.3
+tqdm
 webdriver-manager
