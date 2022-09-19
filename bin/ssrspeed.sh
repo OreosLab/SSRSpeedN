@@ -2,13 +2,14 @@
 
 # shellcheck disable=SC2015,2034,2089,2090
 
-# 当前脚本版本号和新增功能
-VERSION=1.0.2
+# 当前脚本版本号，设置工作文件夹
+VERSION=1.0.4
+WORKDIR=SSRSpeedN
 
 E[0]="Language:\n 1. English (default) \n 2. 简体中文"
 C[0]="${E[0]}"
-E[1]="New Features: 1. Support official testing mode; 2. Support to change the number of concurrent connections."
-C[1]="新特性: 1. 增加官方的测试方案选项; 2. 支持修改并发连接数"
+E[1]="New Features: 1. Support SSRSpeedN V1.4.6; 2. Add IPv4 network detection."
+C[1]="新特性: 1. 支持 SSRSpeedN V1.4.6; 2. 增加 ipv4 网络检测"
 E[2]="Speed test and unlocking test is for reference only and does not represent the actual usage, due to network changes, Netflix blocking and ip replacement. Speed test is time-sensitive."
 C[2]="测速及解锁测试仅供参考, 不代表实际使用情况, 由于网络情况变化, Netflix 封锁及 ip 更换, 测速具有时效性。"
 E[3]="Choose:"
@@ -65,12 +66,14 @@ E[28]="Whether to uninstall brew, a package management tool for Mac?"
 C[28]="是否卸载 Mac 下的一个包管理工具 brew"
 E[29]="Mode:\n 1.Ping only\n 2.Streaming Media only\n 3.Above all (default)\n 4.Geoip ping and wps only. Web output with graphical results"
 C[29]="模式:\n 1.只测 Ping\n 2.只测流媒体\n 3.以上全部 (默认)\n 4.只测 geoip ping 和 wps， 结果输出为网页版本， 数据图形化。"
-E[30]=""
-C[30]=""
-E[31]="Multiplex:\n 1.On (default)\n 2.Off"
-C[31]="多路复用:\n 1.开启 (默认)\n 2.关闭"
+E[30]="Failed to download the GeoIP files."
+C[30]="下载 GeoIP 文件失败"
+E[31]="The installation path of the program is: $PWD/$WORKDIR/"
+C[31]="程序的安装路径为: $PWD/$WORKDIR/"
 E[32]="Maximum number of concurrent connections. Input 1 if the airport does not support concurrency. ( Range: 1-999, default: 50):"
 C[32]="最大并发连接数, 如机场不支持并发, 请输入 1 (数字范围: 1-999, 默认: 50):"
+E[33]="This device does not have the IPv4 required for the program and the script exits."
+C[33]="本设备没有程序所需的 IPv4，脚本退出。"
 
 # 彩色 log 函数, read 函数, text 函数
 error() { echo -e "\033[31m\033[01m$1\033[0m" && exit 1; }
@@ -79,11 +82,11 @@ warning() { echo -e "\033[33m\033[01m$1\033[0m"; }
 reading() { read -rp "$(info "$1")" "$2"; }
 text() { eval echo "\${${L}[$*]}"; }
 
-# 选择语言, 先判断 SSRSpeedN/data/setting 里的语言选择, 没有的话再让用户选择, 默认英语
+# 选择语言, 先判断 $WORKDIR/data/setting 里的语言选择, 没有的话再让用户选择, 默认英语
 select_language() {
   if [[ "$L" != [CE] ]]; then
-    if [ -e SSRSpeedN/data/setting ]; then
-      L=$(grep 'language' SSRSpeedN/data/setting | cut -d= -f2)
+    if [ -e $WORKDIR/data/setting ]; then
+      L=$(grep 'language' $WORKDIR/data/setting | cut -d= -f2)
     else
       L=E && warning "\n $(text 0) \n" && reading " $(text 3) " LNG_CHOICE
       [ "$LNG_CHOICE" = 2 ] && L=C
@@ -92,7 +95,7 @@ select_language() {
 }
 
 help() {
-  if [ $L = C ] || ([ $L != E ] && grep -q 'language=C' SSRSpeedN/data/setting); then
+  if [ $L = C ] || ([ $L != E ] && grep -q 'language=C' $WORKDIR/data/setting); then
     echo "
 用法: ssrspeed.sh [Option]
 
@@ -122,6 +125,10 @@ Options:
 "
   fi
   exit 0
+}
+
+check_ipv4() {
+  ! ping -c2 -W3 8.8.8.8 >/dev/null 2>&1 && error "\n $(text 33) "
 }
 
 check_operating_system() {
@@ -234,51 +241,52 @@ check_dependencies_Linux() {
 
 check_ssrspeedn() {
   info "\n $(text 15) \n"
-  [ ! -e SSRSpeedN ] && sudo git clone https://github.com/Oreomeow/SSRSpeedN
-  if [ ! -e SSRSpeedN/resources/clients ]; then
+  [ ! -d $WORKDIR ] && sudo git clone https://github.com/Oreomeow/SSRSpeedN
+  [ ! -d $WORKDIR/resources/databases ] && sudo mkdir -p $WORKDIR/resources/databases
+  [ ! -d $WORKDIR/data ] && sudo mkdir -p $WORKDIR/data
+  if [ ! -d $WORKDIR/resources/clients ]; then
     LATEST=$(sudo wget --no-check-certificate -qO- "https://api.github.com/repos/Oreomeow/SSRSpeedN/releases/latest" | grep tag_name | sed -E 's/.*"([^"]+)".*/\1/' | cut -c 2-)
-    LATEST=${LATEST:-'1.2.1'}
-    sudo wget --no-check-certificate -O SSRSpeedN/resources/$FILE https://github.com/OreosLab/SSRSpeedN/releases/download/v"$LATEST"/$FILE
-    [ ! -e SSRSpeedN/resources/$FILE ] && error " $(text 18) " || sudo unzip -d SSRSpeedN/resources/ SSRSpeedN/resources/$FILE
-    [ ! -e SSRSpeedN/resources/clients ] && error " $(text 19) " || sudo rm -f SSRSpeedN/resources/$FILE
+    LATEST=${LATEST:-'1.4.6'}
+    sudo wget --no-check-certificate -O $WORKDIR/resources/$FILE https://github.com/OreosLab/SSRSpeedN/releases/download/v"$LATEST"/$FILE
+    [ ! -e $WORKDIR/resources/$FILE ] && error " $(text 18) " || sudo unzip -d $WORKDIR/resources/clients $WORKDIR/resources/$FILE
+    [ ! -d $WORKDIR/resources/clients ] && error " $(text 19) " || sudo rm -f $WORKDIR/resources/$FILE
   fi
-  sudo chmod -R +x SSRSpeedN
-  cd SSRSpeedN || exit 1
+  sudo chmod -R +x $WORKDIR
+  cd $WORKDIR || exit 1
   sudo git pull || sudo git fetch --all && sudo git reset --hard origin/main
   GEOIP_LATEST=$(sudo wget --no-check-certificate -qO- "https://api.github.com/repos/P3TERX/GeoLite.mmdb/releases/latest" | grep 'tag_name' | head -n 1 | cut -d\" -f4)
   if [[ ${GEOIP_LATEST//./} -gt $(grep 'GeoIP' data/setting 2>/dev/null | cut -d= -f2 | sed "s#[.]##g") ]]; then
-    [ ! -d resources/databases ] && sudo mkdir -p resources/databases
     for a in {GeoLite2-ASN.mmdb,GeoLite2-City.mmdb}; do
       sudo wget --no-check-certificate -O resources/databases/"$a" https://github.com/P3TERX/GeoLite.mmdb/releases/download/"$GEOIP_LATEST"/"$a"
     done
   fi
+  [[ ! -e resources/databases/GeoLite2-ASN.mmdb || ! -e resources/databases/GeoLite2-City.mmdb ]] && error " $(text 30) "
   echo -e "language=$L\nGeoIP=$GEOIP_LATEST" | sudo tee data/setting >/dev/null 2>&1
   #  echo -e "language=$L" | sudo tee data/setting >/dev/null 2>&1
   sudo pip3 install --upgrade pip
   sudo pip3 install six
   sudo pip3 install -r requirements.txt
-  [ ! -e data/ssrspeed.json ] && sudo cp -f data/ssrspeed.example.json data/ssrspeed.json
 }
 
 # shellcheck disable=SC2086
 test() {
   info "\n $(text 16) \n"
-  sudo python3 -m ssrspeed $URL $MODE $MAXCONNECTIONS $INCLUDE_REMARK $EXCLUDE_REMARK $GROUP $RESULT_COLOR $SORT_METHOD --skip-requirements-check --yes
+  sudo python3 -m ssrspeed $URL $MODE $MAXCONNECTIONS $INCLUDE_REMARK $EXCLUDE_REMARK $GROUP $RESULT_COLOR $SORT_METHOD --skip-requirements-check
 }
 
 uninstall() {
-  if [ -e SSRSpeedN ]; then
-    REQS=$(sed "/^$/d" SSRSpeedN/requirements.txt)
+  if [ -d $WORKDIR ]; then
+    REQS=$(sed "/^$/d" $WORKDIR/requirements.txt)
     REQS="${REQS//[[:space:]]/, }"
     warning "\n $(text 20)\n $REQS " && reading " $(text 23) " UNINSTALL_REQS
     #  if [ "$UNAME" = Darwin ]; then
     #    warning "\n $(text 27) " && reading " $(text 23) " UNINSTALL_GIT_PYTHON3
     #    warning "\n $(text 28) " && reading " $(text 23) " UNINSTALL_BREW
     #  fi
-    cd SSRSpeedN || exit 1
+    cd $WORKDIR || exit 1
     [[ "$UNINSTALL_REQS" = [Yy] ]] && sudo pip3 uninstall -yr requirements.txt
     cd ..
-    sudo rm -rf SSRSpeedN
+    sudo rm -rf $WORKDIR
     #  if [ "$UNAME" = Darwin ]; then
     #    [[ $UNINSTALL_GIT_PYTHON3 = [Yy] ]] && brew uninstall git
     #    [[ $UNINSTALL_BREW = [Yy] ]] && sudo
@@ -309,6 +317,7 @@ while getopts ":HhUuR:r:M:m:N:n:" OPTNAME; do
   esac
 done
 
+check_ipv4
 check_operating_system
 input_url
 mode
