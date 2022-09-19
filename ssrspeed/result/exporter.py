@@ -1152,7 +1152,7 @@ class ExportResult:
     def __get_color(self, data: float) -> tuple:
         if not self.__color_speed_list:
             return 255, 255, 255
-        cur_speed = self.__color_speed_list[len(self.__color_speed_list) - 1]
+        cur_speed = self.__color_speed_list[-1]
         back_speed = 0
         if data >= cur_speed * 1024 * 1024:
             return (
