@@ -25,9 +25,9 @@ class StreamTest:
                 netflix_ip = "N/A"
                 if response1.status == 200:
                     sum_ += 1
-                    netflix_ip = nf_ip_re.findall(str(await response1.read()))[
-                        0
-                    ].split(",")[0]
+                    netflix_ip = nf_ip_re.findall(str(await response1.read()))[0].split(
+                        ","
+                    )[0]
                     logger.info(f"Netflix IP : {netflix_ip}")
                 async with session.get(
                     url="https://www.netflix.com/title/70143836"
@@ -35,9 +35,7 @@ class StreamTest:
                     rg = ""
                     if response2.status == 200:
                         sum_ += 1
-                        rg = (
-                            f"({str(response2.url).split('com/')[1].split('/')[0]})"
-                        )
+                        rg = f"({str(response2.url).split('com/')[1].split('/')[0]})"
                     if rg == "(title)":
                         rg = "(us)"
                     # 测试连接状态
