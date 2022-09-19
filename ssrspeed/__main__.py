@@ -75,8 +75,13 @@ def main():
     # 生成项目路径字典
     key_path = get_path_json(work_path=args.dir) if args.dir else get_path_json()
 
+    # 下载资源文件
     if download_type := args.download:
-        download(download_type, PLATFORM, args.dir)
+        # 下载资源时，将自动创建目录结构
+        download(download_type, PLATFORM, key_path["clients"], key_path["databases"])
+    else:
+        # 检测外部资源目录(项目依赖项)
+        check_dir([key_path["clients"], key_path["databases"]])
 
     # 生成项目路径 JSON 文件
     generate_path_json(key_path, JSON_PATH)
@@ -86,8 +91,6 @@ def main():
     generate_config_file()
     # 配置日志格式及日志文件路径
     handlers = get_handlers(key_path["logs"])
-    # 检测外部资源目录(不存在，则建议资源文件夹，供用户存放运行依赖资源)
-    check_dir([key_path["clients"], key_path["databases"]])
     # 初始化临时文件、日志和结果集目录(非项目依赖项)
     init_dir(
         [key_path["tmp"], key_path["logs"], key_path["custom"], key_path["results"]]
