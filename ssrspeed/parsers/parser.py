@@ -29,7 +29,7 @@ TIMEOUT = 10
 TMP_DIR = ssrconfig["path"]["tmp"]
 if not os.path.exists(TMP_DIR):
     os.makedirs(TMP_DIR)
-TEST_TXT = TMP_DIR + "test.txt"
+TEST_TXT = f"{TMP_DIR}test.txt"
 
 
 class UniversalParser:
@@ -118,8 +118,7 @@ class UniversalParser:
             elif link[:6] == "ssr://":
                 # ShadowsocksR
                 pssr = ParserShadowsocksR(self.__get_ss_base_config())
-                cfg = pssr.parse_single_link(link)
-                if cfg:
+                if cfg := pssr.parse_single_link(link):
                     node = NodeShadowsocksR(cfg)
                 else:
                     logger.warning(f"Invalid shadowsocksR link {link}")
@@ -293,21 +292,19 @@ class UniversalParser:
             data = json.loads(raw_data)
             # Identification of proxy type
             # Shadowsocks(D)
-            if "subscriptions" in data or (
-                "subscriptions" not in data
-                and "serverSubscribes" not in data
+            if (
+                "subscriptions" in data
+                or "serverSubscribes" not in data
                 and "vmess" not in data
             ):
                 pssb = ParserShadowsocksBasic(self.__get_ss_base_config())
                 for cfg in pssb.parse_gui_data(data):
                     self.__nodes.append(NodeShadowsocks(cfg))
-            # ShadowsocksR
             elif "serverSubscribes" in data:
                 pssr = ParserShadowsocksR(self.__get_ss_base_config())
                 for cfg in pssr.parse_gui_data(data):
                     self.__nodes.append(NodeShadowsocksR(cfg))
-            # V2RayN
-            elif "vmess" in data:
+            else:
                 pv2n = ParserV2RayN()
                 cfgs = pv2n.parse_gui_data(data)
                 for cfg in cfgs:

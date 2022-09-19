@@ -181,5 +181,4 @@ def init(version: str) -> Namespace:
     if len(sys.argv) == 1:
         parser.print_help()
         sys.exit(0)
-    args = parser.parse_args()
-    return args
+    return parser.parse_args()

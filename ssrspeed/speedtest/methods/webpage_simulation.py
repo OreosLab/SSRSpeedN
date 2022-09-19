@@ -14,7 +14,6 @@ results: list = []
 async def start_web_page_simulation_test(w_config, local_host, local_port):
     while results:
         results.pop()
-    task_list = []
     semaphore = asyncio.Semaphore(w_config.get("maxWorkers", 4))
     logger.info("Start web page simulation test.")
     logger.info(f"Proxy {local_host}:{local_port}")
@@ -23,12 +22,15 @@ async def start_web_page_simulation_test(w_config, local_host, local_port):
     if ip_loc[0] and ip_loc[1] == "CN":
         urls = copy.deepcopy(w_config.get("cnUrls", []))
     logger.info(f"Read {len(urls)} url(s).")
-    for url in urls:
-        task_list.append(
-            asyncio.create_task(
-                execute(url=url, host=local_host, port=local_port, semaphore=semaphore)
+    task_list = [
+        asyncio.create_task(
+            execute(
+                url=url, host=local_host, port=local_port, semaphore=semaphore
             )
         )
+        for url in urls
+    ]
+
     await asyncio.wait(task_list)
     return copy.deepcopy(results)
 
