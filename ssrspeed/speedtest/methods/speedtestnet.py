@@ -436,8 +436,7 @@ def create_connection(address, timeout=_GLOBAL_DEFAULT_TIMEOUT, source_address=N
 
     if err is not None:
         raise err
-    else:
-        raise socket.error("getaddrinfo returns an empty list")
+    raise socket.error("getaddrinfo returns an empty list")
 
 
 class SpeedtestHTTPConnection(HTTPConnection):
