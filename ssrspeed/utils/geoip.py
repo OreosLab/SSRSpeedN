@@ -21,14 +21,13 @@ async def parse_location(port):
             headers=headers,
             connector=ProxyConnector(host="127.0.0.1", port=port),
             timeout=aiohttp.ClientTimeout(connect=10, sock_connect=10, sock_read=10),
-        ) as session:
-            async with session.get(url=url) as response:
-                tmp = await response.json()
-                logger.info(
-                    f'Server Country Code : {tmp["country_code"]}, '
-                    f'Continent Code : {tmp["continent_code"]}, '
-                    f'ISP : {tmp["organization"]}'
-                )
+        ) as session, session.get(url=url) as response:
+            tmp = await response.json()
+            logger.info(
+                f'Server Country Code : {tmp["country_code"]}, '
+                f'Continent Code : {tmp["continent_code"]}, '
+                f'ISP : {tmp["organization"]}'
+            )
             return (
                 True,
                 tmp["country_code"],
@@ -71,10 +70,8 @@ async def ip_loc(port):
             headers=headers,
             connector=ProxyConnector(host="127.0.0.1", port=port),
             timeout=aiohttp.ClientTimeout(connect=10, sock_connect=10, sock_read=10),
-        ) as session:
-            async with session.get(url=url) as response:
-                tmp = await response.json()
-            return tmp
+        ) as session, session.get(url=url) as response:
+            return await response.json()
     except asyncio.TimeoutError:
         logger.error("Geo IP Timeout.")
         return {}
@@ -107,3 +104,10 @@ async def ip_loc(port):
             return {}
     finally:
         await asyncio.sleep(0.1)
+
+
+if __name__ == "__main__":
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+    logger.info(domain2ip("www.google.com"))
+    logger.info(asyncio.run(parse_location(7890)))
+    logger.info(asyncio.run(ip_loc(7890)))

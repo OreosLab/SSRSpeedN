@@ -154,7 +154,7 @@ class V2RayBaseConfigs:
                 tcp_settings["header"]["request"]["headers"]["Host"] = config[
                     "host"
                 ].split(",")
-                stream_settings["tcp_settings"] = tcp_settings
+                stream_settings["tcpSettings"] = tcp_settings
         elif config["network"] == "ws":
             web_socket_settings = V2RayBaseConfigs.get_ws_object()
             web_socket_settings["path"] = config["path"]
@@ -166,13 +166,13 @@ class V2RayBaseConfigs:
             http_settings = V2RayBaseConfigs.get_http_object()
             http_settings["path"] = config["path"]
             http_settings["host"] = config["host"].split(",")
-            stream_settings["http_settings"] = http_settings
+            stream_settings["httpSettings"] = http_settings
         elif config["network"] == "quic":
             quic_settings = V2RayBaseConfigs.get_quic_object()
             quic_settings["security"] = config["host"]
             quic_settings["key"] = config["path"]
             quic_settings["header"]["type"] = config["type"]
-            stream_settings["quic_settings"] = quic_settings
+            stream_settings["quicSettings"] = quic_settings
 
         stream_settings["security"] = config["tls"]
         if config["tls"] == "tls":
@@ -181,7 +181,7 @@ class V2RayBaseConfigs:
                 config.get("allowInsecure", "false") == "true"
             )
             tls_settings["serverName"] = config.get("tls-host", "")
-            stream_settings["tls_settings"] = tls_settings
+            stream_settings["tlsSettings"] = tls_settings
 
         _config["outbounds"][0]["streamSettings"] = stream_settings
 

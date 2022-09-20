@@ -41,29 +41,12 @@ class SpeedTestMethods:
         buffer_ = kwargs.get("buffer", 4096)
         workers = kwargs.get("workers", 4)
         logger.info(f"Starting speed test with {method}.")
-        if method == "SPEED_TEST_NET":
+        if method == "ST_ASYNC":
             try:
-                socks.set_default_proxy(socks.SOCKS5, address, port)
-                socket.socket = socks.socksocket
-                logger.info("Initializing...")
-                s = speedtestnet.Speedtest()
-                logger.info("Selecting Best Server.")
-                logger.info(s.get_best_server())
-                logger.info("Testing Download...")
-                s.download()
-                result = s.results.dict()
-                self.__init_socket()
-                return result["download"] / 8, 0, [], 0  # bits to bytes
-            except Exception:
-                logger.exception("")
-                return 0, 0, [], 0
-        elif method == "FAST":
-            try:
-                fast.set_proxy(address, port)
-                result = fast.fast_com(verbose=True)
-                self.__init_socket()
-                #   print(result)
-                return result, 0, [], 0
+                result = await st_asyncio.start(
+                    download_semaphore, file_download, address, port, buffer_, workers
+                )
+                return result
             except Exception:
                 logger.exception("")
                 return 0, 0, [], 0
@@ -89,6 +72,32 @@ class SpeedTestMethods:
             except Exception:
                 logger.exception("")
                 return 0, 0, [], 0
+        elif method == "SPEED_TEST_NET":
+            try:
+                socks.set_default_proxy(socks.SOCKS5, address, port)
+                socket.socket = socks.socksocket
+                logger.info("Initializing...")
+                s = speedtestnet.Speedtest()
+                logger.info("Selecting Best Server.")
+                logger.info(s.get_best_server())
+                logger.info("Testing Download...")
+                s.download()
+                result = s.results.dict()
+                self.__init_socket()
+                return result["download"] / 8, 0, [], 0  # bits to bytes
+            except Exception:
+                logger.exception("")
+                return 0, 0, [], 0
+        elif method == "FAST":
+            try:
+                fast.set_proxy(address, port)
+                result = fast.fast_com(verbose=True)
+                self.__init_socket()
+                #   print(result)
+                return result, 0, [], 0
+            except Exception:
+                logger.exception("")
+                return 0, 0, [], 0
         elif method == "YOUTUBE":
             try:
                 result = await stSocket.speed_test_socket(
@@ -99,15 +108,6 @@ class SpeedTestMethods:
                     st_speed_test,
                     buffer_,
                     workers,
-                )
-                return result
-            except Exception:
-                logger.exception("")
-                return 0, 0, [], 0
-        elif method == "ST_ASYNC":
-            try:
-                result = await st_asyncio.start(
-                    download_semaphore, file_download, address, port, buffer_, workers
                 )
                 return result
             except Exception:
