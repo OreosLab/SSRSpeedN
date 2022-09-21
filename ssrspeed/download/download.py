@@ -62,15 +62,15 @@ def download_resource(url, headers, name, size, position, parent_path, cols, typ
     mode = "wb"
     current_file_size = 0
     with tqdm(
-            desc=name,
-            total=size,
-            unit="b",
-            position=position,
-            colour="GREEN",
-            ascii=True,
-            leave=False,
-            unit_scale=True,
-            ncols=cols - 10,
+        desc=name,
+        total=size,
+        unit="b",
+        position=position,
+        colour="GREEN",
+        ascii=True,
+        leave=False,
+        unit_scale=True,
+        ncols=cols - 10,
     ) as download_bar:
         if os.path.exists(path):
             current_file_size = os.path.getsize(path)
@@ -113,7 +113,7 @@ def download(download_type, platform, client_path, database_path, version_path):
     )
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
-                      "Chrome/64.0.3282.119 Safari/537.36 "
+        "Chrome/64.0.3282.119 Safari/537.36 "
     }
     client_file_info = {
         "Windows": {
@@ -157,7 +157,7 @@ def download(download_type, platform, client_path, database_path, version_path):
                 "name": each["name"],
                 "size": each["size"],
                 "position": index,
-                "parent_path": url_info['parent_path']
+                "parent_path": url_info["parent_path"],
             }
             for index, each in enumerate(response["assets"], 1)
             if each["name"] in url_info["files"]
@@ -173,7 +173,10 @@ def download(download_type, platform, client_path, database_path, version_path):
                 os.makedirs(kwargs["parent_path"])
                 task_list.append(
                     pool.submit(
-                        download_resource, **kwargs, headers=headers, cols=terminal_size[0]
+                        download_resource,
+                        **kwargs,
+                        headers=headers,
+                        cols=terminal_size[0],
                     )
                 )
         done, _ = wait(task_list)
@@ -196,5 +199,5 @@ if __name__ == "__main__":
         platform="Windows",
         client_path=client_test_path,
         database_path=database_test_path,
-        version_path=version_test_path
+        version_path=version_test_path,
     )
