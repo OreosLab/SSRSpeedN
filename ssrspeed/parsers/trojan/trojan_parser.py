@@ -1,7 +1,7 @@
 import contextlib
 import sys
-from urllib.parse import unquote, urlparse, parse_qsl
 from copy import deepcopy
+from urllib.parse import parse_qsl, unquote, urlparse
 
 from loguru import logger
 
