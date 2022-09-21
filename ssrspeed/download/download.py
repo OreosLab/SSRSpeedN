@@ -57,7 +57,50 @@ def check_version(version_info, version_path):
     return need_update
 
 
-def download_resource(url, headers, name, size, position, parent_path, cols, types):
+def get_urls_info(download_type, platform, client_path, database_path):
+    urls_info = []
+    client_resources_url = (
+        "https://api.github.com/repos/OreosLab/SSRSpeedN/releases/latest"
+    )
+    database_resources_url = (
+        "https://api.github.com/repos/P3TERX/GeoLite.mmdb/releases/latest"
+    )
+    client_file_info = {
+        "Windows": {
+            "url": client_resources_url,
+            "type": "client",
+            "files": ["clients_win_64.zip"],
+            "parent_path": client_path,
+        },
+        "Linux": {
+            "url": client_resources_url,
+            "type": "client",
+            "files": ["clients_linux_amd64.zip"],
+            "parent_path": client_path,
+        },
+        "MacOS": {
+            "url": client_resources_url,
+            "type": "client",
+            "files": ["clients_darwin_64.zip"],
+            "parent_path": client_path,
+        },
+    }
+    database_file_info = {
+        "url": database_resources_url,
+        "type": "database",
+        "files": ["GeoLite2-City.mmdb", "GeoLite2-ASN.mmdb"],
+        "parent_path": database_path,
+    }
+    if download_type == "all":
+        urls_info.extend((client_file_info[platform], database_file_info))
+    elif download_type == "client":
+        urls_info.append(client_file_info[platform])
+    elif download_type == "database":
+        urls_info.append(database_file_info)
+    return urls_info, client_file_info[platform]
+
+
+def download_resource(url, headers, name, size, position, parent_path, cols):
     path = f"{parent_path}{name}"
     mode = "wb"
     current_file_size = 0
@@ -96,57 +139,46 @@ def download_resource(url, headers, name, size, position, parent_path, cols, typ
     return f"已保存至: {path}"
 
 
+def executor(file_info, headers, need_download, zip_file_path, platform):
+    task_list = []
+    terminal_size = get_terminal_size(platform)
+    os.system("clear" if os.name == "posix" else "cls")
+    print(banner)
+    with ThreadPoolExecutor() as pool:
+        for kwargs in file_info:
+            if kwargs["types"] in need_download:
+                if os.path.exists(kwargs["parent_path"]):
+                    shutil.rmtree(kwargs["parent_path"])
+                os.makedirs(kwargs["parent_path"])
+                kwargs.pop("types")
+                task_list.append(
+                    pool.submit(
+                        download_resource,
+                        **kwargs,
+                        headers=headers,
+                        cols=terminal_size[0],
+                    )
+                )
+        done, _ = wait(task_list)
+        print("\n")
+        for each in done:
+            print(each.result())
+    unzip(zip_file_path)
+
+
 def download(download_type, platform, client_path, database_path, version_path):
     _ = os.sep
-    urls_info = []
-    task_list = []
     file_info = []
     new_version_info = {}
     proxy = "https://ghproxy.com/"
-    mkdirs([client_path, database_path])
-    terminal_size = get_terminal_size(platform)
-    client_resources_url = (
-        "https://api.github.com/repos/OreosLab/SSRSpeedN/releases/latest"
-    )
-    database_resources_url = (
-        "https://api.github.com/repos/P3TERX/GeoLite.mmdb/releases/latest"
-    )
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
         "Chrome/64.0.3282.119 Safari/537.36 "
     }
-    client_file_info = {
-        "Windows": {
-            "url": client_resources_url,
-            "type": "client",
-            "files": ["clients_win_64.zip"],
-            "parent_path": client_path,
-        },
-        "Linux": {
-            "url": client_resources_url,
-            "type": "client",
-            "files": ["clients_linux_amd64.zip"],
-            "parent_path": client_path,
-        },
-        "MacOS": {
-            "url": client_resources_url,
-            "type": "client",
-            "files": ["clients_darwin_64.zip"],
-            "parent_path": client_path,
-        },
-    }
-    database_file_info = {
-        "url": database_resources_url,
-        "type": "database",
-        "files": ["GeoLite2-City.mmdb", "GeoLite2-ASN.mmdb"],
-        "parent_path": database_path,
-    }
-    if download_type == "all":
-        urls_info.extend((client_file_info[platform], database_file_info))
-    elif download_type == "client":
-        urls_info.append(client_file_info[platform])
-    elif download_type == "database":
-        urls_info.append(database_file_info)
+    mkdirs([client_path, database_path])
+    urls_info, zip_file_path = get_urls_info(
+        download_type, platform, client_path, database_path
+    )
     for url_info in urls_info:
         response = requests.get(url=url_info["url"], headers=headers, timeout=10).json()
         new_version_info[url_info["type"]] = response["id"]
@@ -162,28 +194,10 @@ def download(download_type, platform, client_path, database_path, version_path):
             for index, each in enumerate(response["assets"], 1)
             if each["name"] in url_info["files"]
         )
-    need_download = check_version(new_version_info, version_path)
-    os.system("clear" if os.name == "posix" else "cls")
-    print(banner)
-    with ThreadPoolExecutor() as pool:
-        for kwargs in file_info:
-            if kwargs["types"] in need_download:
-                if os.path.exists(kwargs["parent_path"]):
-                    shutil.rmtree(kwargs["parent_path"])
-                os.makedirs(kwargs["parent_path"])
-                task_list.append(
-                    pool.submit(
-                        download_resource,
-                        **kwargs,
-                        headers=headers,
-                        cols=terminal_size[0],
-                    )
-                )
-        done, _ = wait(task_list)
-        print("\n")
-        for each in done:
-            print(each.result())
-    unzip(client_file_info[platform])
+    if need_download := check_version(new_version_info, version_path):
+        executor(file_info, headers, need_download, zip_file_path, platform)
+    else:
+        print("本地资源已是最新版本")
     sys.exit(0)
 
 
