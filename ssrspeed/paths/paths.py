@@ -33,6 +33,7 @@ def get_path_json(work_path: str = WD_PATH) -> dict:
         "clients": f"{work_dir}resources{_}clients{_}",
         "databases": f"{work_dir}resources{_}databases{_}",
         "custom": f"{work_dir}resources{_}custom{_}",
+        "resources.json": f"{work_dir}resources{_}resources.json",
     }
     inner_dict.update(INNER_PATH)
     return inner_dict

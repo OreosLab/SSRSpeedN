@@ -78,7 +78,13 @@ def main():
     # 下载资源文件
     if download_type := args.download:
         # 下载资源时，将自动创建目录结构
-        download(download_type, PLATFORM, key_path["clients"], key_path["databases"])
+        download(
+            download_type,
+            PLATFORM,
+            key_path["clients"],
+            key_path["databases"],
+            key_path["resources.json"],
+        )
     else:
         # 检测外部资源目录(项目依赖项)
         check_dir([key_path["clients"], key_path["databases"]])
