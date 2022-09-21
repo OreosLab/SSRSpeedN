@@ -149,9 +149,7 @@ def download(download_type, platform, client_path, database_path, version_path):
         urls_info.append(database_file_info)
     for url_info in urls_info:
         response = requests.get(url=url_info["url"], headers=headers, timeout=10).json()
-        new_version_info.update({
-            url_info["type"]: response["id"]
-        })
+        new_version_info[url_info["type"]] = response["id"]
         file_info.extend(
             {
                 "url": f"{proxy}{each['browser_download_url']}",
