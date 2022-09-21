@@ -17,8 +17,8 @@ def speed_test_ytb(port: int) -> Tuple[int, int, List[int], int]:
         chrome_options.add_argument("--headless")
         chrome_options.add_argument(f"--proxy-server=socks5://127.0.0.1:{port}")
         chrome_options.add_argument(
-            "user-agent=Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
-            "Chrome/83.0.4103.116 Safari/537.36 "
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36"
         )
         driver = webdriver.Chrome(
             service=ChromeService(ChromeDriverManager().install()),

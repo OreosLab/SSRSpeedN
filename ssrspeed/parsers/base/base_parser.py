@@ -8,15 +8,17 @@ from loguru import logger
 
 from ssrspeed.config import ssrconfig
 from ssrspeed.parsers.conf import shadowsocks_get_config
+from ssrspeed.parsers.filter import NodeFilter
 from ssrspeed.utils import b64plus
 
-LOCAL_ADDRESS = ssrconfig["localAddress"]
-LOCAL_PORT = ssrconfig["localPort"]
+LOCAL_ADDRESS = ssrconfig.get("localAddress", "127.0.0.1")
+LOCAL_PORT = ssrconfig.get("localPort", 7890)
 TIMEOUT = 10
 
 
-class BaseParser(metaclass=ABCMeta):
+class BaseParser(NodeFilter, metaclass=ABCMeta):
     def __init__(self):
+        super().__init__()
         self._config_list: list = []
         self.__base_shadowsocks_config: dict = shadowsocks_get_config()
         self.__base_shadowsocks_config["timeout"]: int = TIMEOUT
@@ -44,113 +46,6 @@ class BaseParser(metaclass=ABCMeta):
     def _get_shadowsocks_base_config(self) -> dict:
         return copy.deepcopy(self.__base_shadowsocks_config)
 
-    @staticmethod
-    def __check_in_list(item, _list: list) -> bool:
-        for _item in _list:
-            server1 = item.get("server", "")
-            server2 = _item.get("server", "")
-            port1 = item.get("server_port", item.get("port", 0))
-            port2 = _item.get("server_port", _item.get("port", 0))
-            if server1 and server2 and port1 and port2:
-                if server1 == server2 and port1 == port2:
-                    logger.warning(
-                        f'{item.get("group", "N/A")} - {item.get("remarks", "N/A")} '
-                        f'({item.get("server", "Server EMPTY")}:{item.get("server_port", item.get("port", 0))}) '
-                        f"already in list."
-                    )
-                    return True
-            else:
-                return True
-        return False
-
-    def __filter_group(self, gkwl: list):
-        _list: list = []
-        if not gkwl:
-            return
-        for gkw in gkwl:
-            for item in self._config_list:
-                if self.__check_in_list(item, _list):
-                    continue
-                if gkw in item["group"]:
-                    _list.append(item)
-        self._config_list = _list
-
-    def __filter_remark(self, rkwl: list):
-        _list: list = []
-        if not rkwl:
-            return
-        for rkw in rkwl:
-            for item in self._config_list:
-                if self.__check_in_list(item, _list):
-                    continue
-                # 	print(item["remarks"])
-                if rkw in item["remarks"]:
-                    _list.append(item)
-        self._config_list = _list
-
-    def filter_node(self, **kwargs: list):
-        kwl = kwargs.get("kwl", [])
-        gkwl = kwargs.get("gkwl", [])
-        rkwl = kwargs.get("rkwl", [])
-        _list: list = []
-        # 	print(len(self._config_list), type(kwl))
-        if kwl:
-            for kw in kwl:
-                for item in self._config_list:
-                    if self.__check_in_list(item, _list):
-                        continue
-                    if (kw in item["group"]) or (kw in item["remarks"]):
-                        # 	print(item["remarks"])
-                        _list.append(item)
-            self._config_list = _list
-        self.__filter_group(gkwl)
-        self.__filter_remark(rkwl)
-
-    def __exclude_group(self, gkwl: Optional[list]):
-        if not gkwl:
-            return
-        for gkw in gkwl:
-            _list: list = []
-            for item in self._config_list:
-                if self.__check_in_list(item, _list):
-                    continue
-                if gkw not in item["group"]:
-                    _list.append(item)
-            self._config_list = _list
-
-    def __exclude_remark(self, rkwl: Optional[list]):
-        if not rkwl:
-            return
-        for rkw in rkwl:
-            _list: list = []
-            for item in self._config_list:
-                if self.__check_in_list(item, _list):
-                    continue
-                if rkw not in item["remarks"]:
-                    _list.append(item)
-            self._config_list = _list
-
-    def exclude_node(self, **kwargs: list):
-        #   print(kwargs, "\n", len(self._config_list), "\n", self._config_list)
-        kwl = kwargs.get("kwl", [])
-        gkwl = kwargs.get("gkwl", [])
-        rkwl = kwargs.get("rkwl", [])
-        if kwl:
-            for kw in kwl:
-                _list: list = []
-                for item in self._config_list:
-                    if self.__check_in_list(item, _list):
-                        continue
-                    if (kw not in item["group"]) and (kw not in item["remarks"]):
-                        _list.append(item)
-                    else:
-                        logger.debug(f'Excluded {item["group"]} - {item["remarks"]}')
-                self._config_list = _list
-        self.__exclude_group(gkwl)
-        self.__exclude_remark(rkwl)
-
-    # 	print(self._config_list)
-
     def print_node(self):
         for item in self._config_list:
             # 	print(f'{item["group"]} - {item["remarks"]}')
@@ -158,8 +53,8 @@ class BaseParser(metaclass=ABCMeta):
 
     def read_subscription_config(self, url: str):
         header = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) "
-            "Chrome/39.0.2171.95 Safari/537.36 "
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36"
         }
         rep = requests.get(url, headers=header, timeout=15)
         rep.encoding = "utf-8"

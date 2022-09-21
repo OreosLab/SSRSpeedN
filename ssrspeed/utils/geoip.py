@@ -13,8 +13,8 @@ async def parse_location(port):
     try:
         logger.info("Starting parse location.")
         headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
-            "Chrome/104.0.0.0 Safari/537.36"
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36"
         }
         url = "https://api.ip.sb/geoip"
         async with aiohttp.ClientSession(
@@ -62,8 +62,9 @@ async def ip_loc(port):
     try:
         logger.info("Starting Geo IP.")
         headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
-            "Chrome/104.0.0.0 Safari/537.36"
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/105.0.0.0 Safari/537.36"
         }
         url = "https://api.ip.sb/geoip"
         async with aiohttp.ClientSession(

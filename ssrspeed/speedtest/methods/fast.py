@@ -50,7 +50,6 @@ def find_ipv4(fqdn):
     """
     find IPv4 address of fqdn
     """
-
     return socket.getaddrinfo(fqdn, 80, socket.AF_INET)[0][4][0]
 
 
@@ -58,7 +57,6 @@ def find_ipv6(fqdn):
     """
     find IPv6 address of fqdn
     """
-
     return socket.getaddrinfo(fqdn, 80, socket.AF_INET6)[0][4][0]
 
 
@@ -122,7 +120,8 @@ def fast_com(verbose=False, max_time=15, force_ipv4=False, force_ipv6=False):
         ipv6 = find_ipv6("api.fast.com")
         baseurl = f"http://[{ipv6}]/"
 
-    url = f"{baseurl}netflix/speedtest?https=true&token={token}&urlCount=3"  # Not more than 3 possible
+    # Not more than 3 possible
+    url = f"{baseurl}netflix/speedtest?https=true&token={token}&urlCount=3"
     if verbose:
         logger.debug(f"API url is{url}")
     try:
