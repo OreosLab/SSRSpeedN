@@ -18,8 +18,8 @@ class ShadowsocksParser(BaseParser):
 
     def read_subscription_config(self, url: str):
         header = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) "
-            "Chrome/39.0.2171.95 Safari/537.36 "
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36"
         }
         rep = requests.get(url, headers=header, timeout=15)
         rep.encoding = "utf-8"

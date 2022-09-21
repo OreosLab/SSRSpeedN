@@ -135,7 +135,7 @@ class ExportResult:
             )
             len_in = max(len_in, pilmoji.getsize(inres, font=font)[0])
             len_out = max(len_out, pilmoji.getsize(outres, font=font)[0])
-        return (max_group_width + 10, max_remark_width + 10, len_in + 20, len_out + 20)
+        return max_group_width + 10, max_remark_width + 10, len_in + 20, len_out + 20
 
     def __get_base_pos(self, width: float, text: str) -> float:
         font = self.__font

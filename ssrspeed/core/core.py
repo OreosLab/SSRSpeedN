@@ -4,7 +4,7 @@ from typing import Optional
 from loguru import logger
 
 from ssrspeed.config import ssrconfig
-from ssrspeed.parsers import UniversalParser
+from ssrspeed.parsers.parser import UniversalParser
 from ssrspeed.result import ExportResult
 from ssrspeed.result.importer import import_result
 from ssrspeed.speedtest import SpeedTest

@@ -1,6 +1,7 @@
 import contextlib
-import re
-from urllib.parse import unquote
+import sys
+from urllib.parse import unquote, urlparse, parse_qsl
+from copy import deepcopy
 
 from loguru import logger
 
@@ -8,25 +9,9 @@ from ssrspeed.parsers.base import BaseParser
 
 
 class TrojanParser(BaseParser):
-    # From: https://github.com/NyanChanMeow/SSRSpeed/issues/105
-    def _parse_link(self, link: str) -> dict:
-        if not link.startswith("trojan://"):
-            logger.error(f"Unsupported link : {link}")
-            return {}
-
-        def percent_decode(s: str) -> str:
-            try:
-                s = unquote(s, encoding="gb2312", errors="strict")
-            except Exception:
-                with contextlib.suppress(Exception):
-                    s = unquote(s, encoding="utf8", errors="strict")
-            return s
-
-        link = link[len("trojan://") :]
-        if not link:
-            return {}
-
-        result: dict = {
+    def __init__(self):
+        super().__init__()
+        self.__base_config: dict = {
             "run_type": "client",
             "local_addr": "127.0.0.1",
             "local_port": 10870,
@@ -38,10 +23,13 @@ class TrojanParser(BaseParser):
                 "verify": "true",
                 "verify_hostname": "true",
                 "cert": "",
-                "cipher": "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-CHACHA20-POLY1305"
-                ":ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384"
-                ":ECDHE-ECDSA-AES256-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES128-SHA:ECDHE-RSA-AES256-SHA"
-                ":DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA:AES128-SHA:AES256-SHA:DES-CBC3-SHA",
+                "cipher": "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:"
+                "ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:"
+                "ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:"
+                "ECDHE-ECDSA-AES256-SHA:ECDHE-ECDSA-AES128-SHA:"
+                "ECDHE-RSA-AES128-SHA:ECDHE-RSA-AES256-SHA:"
+                "DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA:"
+                "AES128-SHA:AES256-SHA:DES-CBC3-SHA",
                 "cipher_tls13": "TLS_AES_128_GCM_SHA256:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384",
                 "sni": "",
                 "alpn": ["h2", "http/1.1"],
@@ -60,45 +48,71 @@ class TrojanParser(BaseParser):
             "group": "N/A",
         }
 
-        link = percent_decode(link)
-        if "#" in link:
-            link, result["remarks"] = link.split("#")
-        result["remarks"] = re.sub(r"\s", "", result["remarks"])
+    def __get_trojan_base_config(self) -> dict:
+        return deepcopy(self.__base_config)
 
-        password = ""
-        if "@" in link:
-            password, link = link.split("@")
-        result["password"].append(password)
+    @staticmethod
+    def percent_decode(s: str) -> str:
+        try:
+            s = unquote(s, encoding="gb2312", errors="strict")
+        except Exception:
+            with contextlib.suppress(Exception):
+                s = unquote(s, encoding="utf8", errors="strict")
+        return s
 
-        host = ""
-        if "?" in link:
-            host, link = link.split("?")
-        result["server"], result["server_port"] = host.split(":")
-        p = re.match(r"^\d+", result["server_port"])
-        assert p is not None
-        result["server_port"] = int(p[0])
+    def decode(self, link_: str) -> tuple:
+        config = self.__get_trojan_base_config()
+        url = urlparse(link_.strip("\n"))
+        if not url.scheme.startswith("trojan"):
+            logger.error(f"Not trojan URL : {link_}")
+            sys.exit(1)
+        try:
+            password, addr_port = url.netloc.split("@")
+            password = unquote(password)
+            if ":" not in addr_port or addr_port.endswith("]"):
+                addr = addr_port.strip("[]")
+                port = 443
+            else:
+                addr_port = addr_port.replace("[", "").replace("]", "")
+                addr, port = addr_port.rsplit(":", 1)[0], int(
+                    addr_port.rsplit(":", 1)[1]
+                )
+            query = dict(parse_qsl(url.query))
+            remarks = unquote(url.fragment)
+        except:
+            logger.error(f"Invalid trojan URL : {link_}")
+            sys.exit(1)
+        config["remote_addr"], config["server"] = addr, addr
+        config["remote_port"], config["server_port"] = port, port
+        config["password"][0] = password
+        config["remarks"] = remarks
+        return config, query
 
-        result["remote_addr"] = result["server"]
-        result["remote_port"] = result["server_port"]
+    def _parse_link(self, link_: str) -> dict:
+        result, query = self.decode(self.percent_decode(link_))
+        result["ssl"]["verify"] = query.get("allowinsecure", "") == "1"
+        result["ssl"]["sni"] = query.get("sni", "")
+        result["tcp"]["fast_open"] = query.get("tfo", "") == "1"
+        result["group"] = query.get("peer", "N/A")
 
-        if link:
-            link_args = dict(str.lower(x).split("=") for x in link.split("&"))
-            if "allowinsecure" in link_args:
-                result["ssl"]["verify"] = link_args["allowinsecure"] == "1"
-            if "sni" in link_args:
-                result["ssl"]["sni"] = link_args["sni"]
-            if "tfo" in link_args:
-                result["tcp"]["fast_open"] = link_args["tfo"] == "1"
-            if "peer" in link_args:
-                result["group"] = link_args["peer"]
-            # ws 协议必传 host 与 path
-            if (
-                "type" in link_args
-                and link_args["type"] == "ws"
-                and "host" in link_args
-                and "path" in link_args
-            ):
-                result["websocket"]["enabled"] = "true"
-                result["websocket"]["path"] = link_args["path"]
-                result["websocket"]["host"] = link_args["host"]
+        # ws protocol must pass host and path
+        if query.get("type", "") == "ws":
+            result["websocket"]["enabled"] = "true"
+            result["websocket"]["path"] = query.get("path", "")
+            result["websocket"]["host"] = query.get("host", "")
         return result
+
+
+if __name__ == "__main__":
+    links = (
+        "trojan://8888@[2001:1234:4321:66::33]?allowinsecure=0&tfo=1\n"
+        "trojan://123@helloworld.xyz?allowinsecure=0&tfo=1#testIPv4port443\n"
+        "trojan://9999@[2001:1234:4321:66::33]:444?allowinsecure=1&tfo=0#testIPv6\n"
+        "trojan://1234@a.helloworld.xyz:444?allowinsecure=1&tfo=0#%E4%BD%A0%E5%A5%BD\n"
+        "trojan://12345@a.b.c:445?security=tls&sni=a.b.c&alpn=http%2F1.1&type=tcp&headerType=none\n"
+        "trojan-go://1@ip.com:446/?sni=qq.com&type=ws&host=fast.com&path=%2Fgo&encryption=ss%3Baes-256-gcm%3Afuckgfw\n"
+    )
+    tropar = TrojanParser()
+    for link in links.split("\n"):
+        if link:
+            print(tropar.parse_single_link(link))

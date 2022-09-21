@@ -18,13 +18,13 @@ class ParserShadowsocksBasic:
 
     def __parse_link(self, link: str) -> Optional[dict]:
         _config = self.__get_shadowsocks_base_config()
+        invalid_link = "Not shadowsocks basic link."
 
         if link[:5] != "ss://":
             logger.error(f"Unsupported link : {link}")
             return None
 
         try:
-            invalid_link = "Not shadowsocks basic link."
             decoded = b64plus.decode(link[5:]).decode("utf-8")
             at_pos = decoded.rfind("@")
             if at_pos == -1:
