@@ -7,68 +7,11 @@ from ssrspeed.parsers.v2ray import ParserV2RayClash, ParserV2RayN, ParserV2RayQu
 from ssrspeed.utils import b64plus
 
 
-class V2RayParser(BaseParser):
+class V2RayParser(V2RayBaseConfigs, BaseParser):
     def __generate_config(self, config: dict) -> dict:
-        _config = V2RayBaseConfigs.get_config()
-
-        _config["inbounds"][0]["listen"] = self._get_local_config()[0]
-        _config["inbounds"][0]["port"] = self._get_local_config()[1]
-
-        # Common
-        _config["remarks"] = config["remarks"]
-        _config["group"] = config.get("group", "N/A")
-        _config["server"] = config["server"]
-        _config["server_port"] = config["server_port"]
-
-        # stream settings
-        stream_settings = _config["outbounds"][0]["streamSettings"]
-        stream_settings["network"] = config["network"]
-        if config["network"] == "tcp":
-            if config["type"] == "http":
-                tcp_settings = V2RayBaseConfigs.get_tcp_object()
-                tcp_settings["header"]["request"]["path"] = config["path"].split(",")
-                tcp_settings["header"]["request"]["headers"]["Host"] = config[
-                    "host"
-                ].split(",")
-                stream_settings["tcpSettings"] = tcp_settings
-        elif config["network"] == "ws":
-            web_socket_settings = V2RayBaseConfigs.get_ws_object()
-            web_socket_settings["path"] = config["path"]
-            web_socket_settings["headers"]["Host"] = config["host"]
-            for h in config.get("headers", []):
-                web_socket_settings["headers"][h["header"]] = h["value"]
-            stream_settings["wsSettings"] = web_socket_settings
-        elif config["network"] == "h2":
-            http_settings = V2RayBaseConfigs.get_http_object()
-            http_settings["path"] = config["path"]
-            http_settings["host"] = config["host"].split(",")
-            stream_settings["httpSettings"] = http_settings
-        elif config["network"] == "quic":
-            quic_settings = V2RayBaseConfigs.get_quic_object()
-            quic_settings["security"] = config["host"]
-            quic_settings["key"] = config["path"]
-            quic_settings["header"]["type"] = config["type"]
-            stream_settings["quicSettings"] = quic_settings
-
-        stream_settings["security"] = config["tls"]
-        if config["tls"] == "tls":
-            tls_settings = V2RayBaseConfigs.get_tls_object()
-            tls_settings["allowInsecure"] = (
-                config.get("allowInsecure", "false") == "true"
-            )
-            tls_settings["serverName"] = config["tls-host"]
-            stream_settings["tlsSettings"] = tls_settings
-
-        _config["outbounds"][0]["streamSettings"] = stream_settings
-
-        outbound = _config["outbounds"][0]["settings"]["vnext"][0]
-        outbound["address"] = config["server"]
-        outbound["port"] = config["server_port"]
-        outbound["users"][0]["id"] = config["id"]
-        outbound["users"][0]["alterId"] = config["alterId"]
-        outbound["users"][0]["security"] = config["security"]
-        _config["outbounds"][0]["settings"]["vnext"][0] = outbound
-        return _config
+        return super().generate_config(
+            config, self._get_local_config()[0], self._get_local_config()[1]
+        )
 
     def _parse_link(self, link: str) -> dict:
 

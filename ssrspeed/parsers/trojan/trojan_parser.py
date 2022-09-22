@@ -1,5 +1,4 @@
 import contextlib
-import sys
 from copy import deepcopy
 from urllib.parse import parse_qsl, unquote, urlparse
 
@@ -60,12 +59,11 @@ class TrojanParser(BaseParser):
                 s = unquote(s, encoding="utf8", errors="strict")
         return s
 
-    def decode(self, link_: str) -> tuple:
+    def _decode(self, link_: str) -> tuple:
         config = self.__get_trojan_base_config()
         url = urlparse(link_.strip("\n"))
         if not url.scheme.startswith("trojan"):
-            logger.error(f"Not trojan URL : {link_}")
-            sys.exit(1)
+            raise ValueError(f"Not trojan URL : {link_}")
         try:
             password, addr_port = url.netloc.split("@")
             password = unquote(password)
@@ -80,8 +78,7 @@ class TrojanParser(BaseParser):
             query = dict(parse_qsl(url.query))
             remarks = unquote(url.fragment)
         except Exception:
-            logger.error(f"Invalid trojan URL : {link_}")
-            sys.exit(1)
+            raise ValueError(f"Invalid trojan URL : {link_}")
         config["remote_addr"], config["server"] = addr, addr
         config["remote_port"], config["server_port"] = port, port
         config["password"][0] = password
@@ -89,7 +86,11 @@ class TrojanParser(BaseParser):
         return config, query
 
     def _parse_link(self, link_: str) -> dict:
-        result, query = self.decode(self.percent_decode(link_))
+        try:
+            result, query = self._decode(self.percent_decode(link_))
+        except ValueError as e:
+            logger.error(e)
+            return {}
         result["ssl"]["verify"] = query.get("allowinsecure", "") == "1"
         result["ssl"]["sni"] = query.get("sni", "")
         result["tcp"]["fast_open"] = query.get("tfo", "") == "1"

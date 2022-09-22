@@ -48,7 +48,6 @@ class BaseParser(NodeFilter, metaclass=ABCMeta):
 
     def print_node(self):
         for item in self._config_list:
-            # 	print(f'{item["group"]} - {item["remarks"]}')
             logger.info(f'{item["group"]} - {item["remarks"]}')
 
     def read_subscription_config(self, url: str):

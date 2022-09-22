@@ -205,7 +205,7 @@ if __name__ == "__main__":
     _ = os.sep
     current_path = os.getcwd() + _
     resources_path = f"{current_path}resources{_}"
-    client_test_path = f"{resources_path}client{_}"
+    client_test_path = f"{resources_path}clients{_}"
     database_test_path = f"{resources_path}databases{_}"
     version_test_path = f"{resources_path}resources.json"
     download(

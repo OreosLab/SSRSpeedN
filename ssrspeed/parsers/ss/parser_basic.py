@@ -1,7 +1,7 @@
 import binascii
 import copy
 import json
-from typing import Optional
+from urllib.parse import urlparse
 
 from loguru import logger
 
@@ -16,42 +16,38 @@ class ParserShadowsocksBasic:
     def __get_shadowsocks_base_config(self) -> dict:
         return copy.deepcopy(self.__base_config)
 
-    def __parse_link(self, link: str) -> Optional[dict]:
-        _config = self.__get_shadowsocks_base_config()
-        invalid_link = "Not shadowsocks basic link."
-
-        if link[:5] != "ss://":
-            logger.error(f"Unsupported link : {link}")
-            return None
-
+    def __decode(self, link_: str) -> dict:
+        if not link_.startswith("ss://"):
+            raise ValueError(f"Not shadowsocks basic URL : {link_}")
         try:
-            decoded = b64plus.decode(link[5:]).decode("utf-8")
-            at_pos = decoded.rfind("@")
-            if at_pos == -1:
-                raise ValueError(invalid_link)
-            mp = decoded[:at_pos]
-            ap = decoded[at_pos + 1 :]
-            mp_pos = mp.find(":")
-            ap_pos = ap.find(":")
-            if mp_pos == -1 or ap_pos == -1:
-                raise ValueError(invalid_link)
-            encryption = mp[:mp_pos]
-            password = mp[mp_pos + 1 :]
-            server = ap[:ap_pos]
-            port = int(ap[ap_pos + 1 :])
-            _config["server"] = server
-            _config["server_port"] = port
-            _config["method"] = encryption
-            _config["password"] = password
-            _config["remarks"] = _config["server"]
-        except binascii.Error as error:
-            raise ValueError(invalid_link) from error
+            link_ = "ss://" + b64plus.decode(link_[5:]).decode("utf-8")
+        except binascii.Error:
+            raise ValueError(f"Not shadowsocks basic URL : {link_}")
+        config = self.__get_shadowsocks_base_config()
+        url = urlparse(link_.strip("\n"))
+        try:
+            encryption, addr_port = url.netloc.split("@")
+            if ":" not in addr_port or addr_port.endswith("]"):
+                addr = addr_port.strip("[]")
+                port = 443
+            else:
+                addr_port = addr_port.replace("[", "").replace("]", "")
+                addr, port = addr_port.rsplit(":", 1)[0], int(
+                    addr_port.rsplit(":", 1)[1]
+                )
         except Exception:
-            logger.exception(f"Exception link {link}")
-            return None
-        return _config
+            raise ValueError(f"Invalid shadowsocks basic URL : {link_}")
+        config["server"] = addr
+        config["server_port"] = port
+        config["method"] = encryption.split(":")[0]
+        config["password"] = encryption.split(":")[1]
+        config["remarks"] = addr
+        return config
 
-    def parse_single_link(self, link: str) -> Optional[dict]:
+    def __parse_link(self, link_: str) -> dict:
+        return self.__decode(link_)
+
+    def parse_single_link(self, link: str) -> dict:
         return self.__parse_link(link)
 
     def parse_subs_config(self, links: list) -> list:
@@ -117,3 +113,14 @@ class ParserShadowsocksBasic:
 
         logger.info(f"Read {len(self.__config_list)} node(s).")
         return self.__config_list
+
+
+if __name__ == "__main__":
+    links = (
+        "ss://YWVzLTI1Ni1nY206aXN4Lnl0LTMxMDk1NzYxQDE5Mi4yNDEuMTkzLjI0MToxMzU0NQ==\n"
+        "ss://YWVzLTEyOC1jZmI6c2hhZG93c29ja3M@156.146.38.163:443#US_13\n"
+    )
+    sspar = ParserShadowsocksBasic({})
+    for link in links.split("\n"):
+        if link:
+            print(sspar.parse_single_link(link))
