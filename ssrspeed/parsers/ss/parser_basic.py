@@ -1,8 +1,8 @@
 import binascii
 import copy
 import json
-from urllib.parse import urlparse
 from typing import Optional
+from urllib.parse import urlparse
 
 from loguru import logger
 
