@@ -94,7 +94,7 @@ def get_urls_info(download_type, platform, client_path, database_path):
         urls_info.append(client_file_info)
     elif download_type == "database":
         urls_info.append(database_file_info)
-    return urls_info, client_file_info
+    return urls_info, client_file_info["files"]
 
 
 def download_resource(url, headers, name, size, position, parent_path, cols):
