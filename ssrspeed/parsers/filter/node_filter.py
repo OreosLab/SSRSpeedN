@@ -8,127 +8,86 @@ class NodeFilter:
         self.__node_list: list = []
 
     def filter_node(self, nodes: list, **kwargs: list) -> list:
-        kwl = kwargs.get("kwl", [])
-        gkwl = kwargs.get("gkwl", [])
-        rkwl = kwargs.get("rkwl", [])
-        ekwl = kwargs.get("ekwl", [])
-        egkwl = kwargs.get("egkwl", [])
-        erkwl = kwargs.get("erkwl", [])
         self.__node_list.clear()
         self.__node_list = deepcopy(nodes)
-        self.__filter_node(kwl=kwl, gkwl=gkwl, rkwl=rkwl)
-        self.__exclude_nodes(ekwl=ekwl, egkwl=egkwl, erkwl=erkwl)
+        self.__get_first_nodes(self.__node_list)
+        if kwl := kwargs.get("fk", []):
+            self.__filter_node(kwl)
+        if gkwl := kwargs.get("frk", []):
+            self.__filter_group(gkwl)
+        if rkwl := kwargs.get("fgk", []):
+            self.__filter_remark(rkwl)
+        if ekwl := kwargs.get("ek", []):
+            self.__exclude_nodes(ekwl)
+        if egkwl := kwargs.get("egk", []):
+            self.__exclude_group(egkwl)
+        if erkwl := kwargs.get("erk", []):
+            self.__exclude_remark(erkwl)
         return self.__node_list
 
-    @staticmethod
-    def __check_in_list(item: dict, _list: list) -> bool:
-        for _item in _list:
-            _item = _item.config
-            server1 = item.get("server", "")
-            server2 = _item.get("server", "")
-            port1 = item.get("server_port", item.get("port", 0))
-            port2 = _item.get("server_port", _item.get("port", 0))
-            if server1 and server2 and port1 and port2:
-                if server1 == server2 and port1 == port2:
-                    logger.warning(
-                        f'{item.get("group", "N/A")} - {item.get("remarks", "N/A")} '
-                        f'({item.get("server", "Server EMPTY")}:{item.get("server_port", item.get("port", 0))}) '
-                        f"already in list. "
-                    )
-                    return True
+    def __get_first_nodes(self, nodes: list):
+        """
+        Get the first unique node of node list_dict
+        Regardless of order can use
+        `list({(d.get("server", ""), d.get("port", 0)): d for d in nodes}.values())`
+        """
+        existing_dicts = set()
+        filtered_list = []
+        for node in nodes:
+            d = node.config
+            if (
+                d.get("server", ""),
+                d.get("server_port", d.get("port", 0)),
+            ) not in existing_dicts:
+                existing_dicts.add(
+                    (d.get("server", ""), d.get("server_port", d.get("port", 0)))
+                )
+                filtered_list.append(node)
             else:
-                return True
-        return False
+                logger.warning(
+                    f'{d.get("group", "N/A")} - {d.get("remarks", "N/A")} '
+                    f'({d.get("server", "Server EMPTY")}:{d.get("server_port", d.get("port", 0))}) '
+                    f"already in list. "
+                )
+        self.__node_list = filtered_list
+
+    def __filter_node(self, kwl: list):
+        self.__node_list = [
+            n
+            for n in self.__node_list
+            if any(kw in n.config["group"] or kw in n.config["remarks"] for kw in kwl)
+        ]
 
     def __filter_group(self, gkwl: list):
-        _list: list = []
-        if not gkwl:
-            return
-        for gkw in gkwl:
-            for item in self.__node_list:
-                config = item.config
-                if self.__check_in_list(config, _list):
-                    continue
-                if gkw in config["group"]:
-                    _list.append(item)
-        self.__node_list = _list
+        self.__node_list = [
+            n for n in self.__node_list if any(kw in n.config["group"] for kw in gkwl)
+        ]
 
     def __filter_remark(self, rkwl: list):
-        _list: list = []
-        if not rkwl:
-            return
-        for rkw in rkwl:
-            for item in self.__node_list:
-                config = item.config
-                if self.__check_in_list(config, _list):
-                    continue
-                if rkw in config["remarks"]:
-                    _list.append(item)
-        self.__node_list = _list
+        self.__node_list = [
+            n for n in self.__node_list if any(kw in n.config["remarks"] for kw in rkwl)
+        ]
 
-    def __filter_node(self, **kwargs: list):
-        kwl = kwargs.get("kwl", [])
-        gkwl = kwargs.get("gkwl", [])
-        rkwl = kwargs.get("rkwl", [])
-        _list: list = []
-        # 	print(len(self.__node_list))
-        # 	print(type(kwl))
-        if kwl:
-            for kw in kwl:
-                for item in self.__node_list:
-                    config = item.config
-                    if self.__check_in_list(config, _list):
-                        continue
-                    if (kw in config["group"]) or (kw in config["remarks"]):
-                        # 	print(item["remarks"])
-                        _list.append(item)
-            self.__node_list = _list
-        self.__filter_group(gkwl)
-        self.__filter_remark(rkwl)
+    def __exclude_nodes(self, ekwl: list):
+        self.__node_list = [
+            n
+            for n in self.__node_list
+            if all(
+                kw not in n.config["group"] and kw not in n.config["remarks"]
+                for kw in ekwl
+            )
+        ]
 
-    def __exclude_group(self, gkwl: list):
-        if not gkwl:
-            return
-        for gkw in gkwl:
-            _list: list = []
-            for item in self.__node_list:
-                config = item.config
-                if self.__check_in_list(config, _list):
-                    continue
-                if gkw not in config["group"]:
-                    _list.append(item)
-            self.__node_list = _list
+    def __exclude_group(self, egkwl: list):
+        self.__node_list = [
+            n
+            for n in self.__node_list
+            if all(kw not in n.config["group"] for kw in egkwl)
+        ]
 
-    def __exclude_remark(self, rkwl: list):
-        if not rkwl:
-            return
-        for rkw in rkwl:
-            _list: list = []
-            for item in self.__node_list:
-                config = item.config
-                if self.__check_in_list(config, _list):
-                    continue
-                if rkw not in config["remarks"]:
-                    _list.append(item)
-            self.__node_list = _list
-
-    def __exclude_nodes(self, **kwargs: list):
-        kwl = kwargs.get("kwl", [])
-        gkwl = kwargs.get("gkwl", [])
-        rkwl = kwargs.get("rkwl", [])
-        if kwl:
-            for kw in kwl:
-                _list: list = []
-                for item in self.__node_list:
-                    config = item.config
-                    if self.__check_in_list(config, _list):
-                        continue
-                    if (kw not in config["group"]) and (kw not in config["remarks"]):
-                        _list.append(item)
-                    else:
-                        logger.debug(
-                            f'Excluded {config["group"]} - {config["remarks"]}'
-                        )
-                self.__node_list = _list
-        self.__exclude_group(gkwl)
-        self.__exclude_remark(rkwl)
+    def __exclude_remark(self, erkwl: list):
+        self.__node_list = [
+            n
+            for n in self.__node_list
+            if all(kw not in n.config["remarks"] for kw in erkwl)
+        ]
