@@ -1,6 +1,7 @@
 import binascii
 import copy
 import json
+from typing import Optional
 from urllib.parse import urlparse
 
 from loguru import logger
@@ -16,44 +17,38 @@ class ParserShadowsocksBasic:
     def __get_shadowsocks_base_config(self) -> dict:
         return copy.deepcopy(self.__base_config)
 
-    def __decode(self, link_: str) -> dict:
+    def __parse_link(self, link_: str) -> Optional[dict]:
         if not link_.startswith("ss://"):
-            raise ValueError(f"Not shadowsocks basic URL : {link_}")
+            logger.error(f"Not shadowsocks URL : {link_}")
+            return None
+
         try:
-            link_ = "ss://" + b64plus.decode(link_[5:]).decode("utf-8")
-        except binascii.Error:
-            raise ValueError(f"Not shadowsocks basic URL : {link_}")
+            _link = "ss://" + b64plus.decode(link_[5:].strip("\n")).decode("utf-8")
+        except binascii.Error as e:
+            raise ValueError(f"Not shadowsocks basic URL : {link_}") from e
+
         config = self.__get_shadowsocks_base_config()
-        url = urlparse(link_.strip("\n"))
         try:
-            encryption, addr_port = url.netloc.split("@")
-            if ":" not in addr_port or addr_port.endswith("]"):
-                addr = addr_port.strip("[]")
-                port = 443
-            else:
-                addr_port = addr_port.replace("[", "").replace("]", "")
-                addr, port = addr_port.rsplit(":", 1)[0], int(
-                    addr_port.rsplit(":", 1)[1]
-                )
+            url = urlparse(_link)
+            hostname = url.hostname
+            port = url.port or 443
+            encryption = url.netloc.split("@")[0]
+            config["server"] = hostname
+            config["server_port"] = port
+            config["method"] = encryption.split(":")[0]
+            config["password"] = encryption.split(":")[1]
+            config["remarks"] = hostname
         except Exception:
-            raise ValueError(f"Invalid shadowsocks basic URL : {link_}")
-        config["server"] = addr
-        config["server_port"] = port
-        config["method"] = encryption.split(":")[0]
-        config["password"] = encryption.split(":")[1]
-        config["remarks"] = addr
+            logger.exception(f"Invalid shadowsocks basic URL : {link_}")
         return config
 
-    def __parse_link(self, link_: str) -> dict:
-        return self.__decode(link_)
+    def parse_single_link(self, link_: str) -> Optional[dict]:
+        return self.__parse_link(link_)
 
-    def parse_single_link(self, link: str) -> dict:
-        return self.__parse_link(link)
-
-    def parse_subs_config(self, links: list) -> list:
-        for link in links:
-            link = link.strip()
-            if cfg := self.__parse_link(link):
+    def parse_subs_config(self, links_: list) -> list:
+        for link_ in links_:
+            link_ = link_.strip()
+            if cfg := self.__parse_link(link_):
                 self.__config_list.append(cfg)
         logger.info(f"Read {len(self.__config_list)} config(s).")
         return self.__config_list

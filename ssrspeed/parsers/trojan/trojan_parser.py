@@ -1,5 +1,6 @@
 import contextlib
 from copy import deepcopy
+from typing import Optional
 from urllib.parse import parse_qsl, unquote, urlparse
 
 from loguru import logger
@@ -59,49 +60,38 @@ class TrojanParser(BaseParser):
                 s = unquote(s, encoding="utf8", errors="strict")
         return s
 
-    def _decode(self, link_: str) -> tuple:
-        config = self.__get_trojan_base_config()
+    def _parse_link(self, link_: str) -> dict:
         url = urlparse(link_.strip("\n"))
         if not url.scheme.startswith("trojan"):
-            raise ValueError(f"Not trojan URL : {link_}")
+            logger.error(f"Not trojan URL : {link_}")
+            return {}
+
+        _config = self.__get_trojan_base_config()
         try:
-            password, addr_port = url.netloc.split("@")
-            password = unquote(password)
-            if ":" not in addr_port or addr_port.endswith("]"):
-                addr = addr_port.strip("[]")
-                port = 443
-            else:
-                addr_port = addr_port.replace("[", "").replace("]", "")
-                addr, port = addr_port.rsplit(":", 1)[0], int(
-                    addr_port.rsplit(":", 1)[1]
-                )
+            hostname = url.hostname
+            port = url.port or 443
+            password = unquote(url.netloc.split("@")[0])
             query = dict(parse_qsl(url.query))
             remarks = unquote(url.fragment)
+
+            _config["remote_addr"], _config["server"] = hostname, hostname
+            _config["remote_port"], _config["server_port"] = port, port
+            _config["password"][0] = password
+            _config["remarks"] = remarks
+            _config["ssl"]["verify"] = query.get("allowinsecure", "") == "1"
+            _config["ssl"]["sni"] = query.get("sni", "")
+            _config["tcp"]["fast_open"] = query.get("tfo", "") == "1"
+            _config["group"] = query.get("peer", "N/A")
+
+            # ws protocol must pass host and path
+            if query.get("type", "") == "ws":
+                _config["websocket"]["enabled"] = "true"
+                _config["websocket"]["path"] = query.get("path", "")
+                _config["websocket"]["host"] = query.get("host", "")
+
         except Exception:
-            raise ValueError(f"Invalid trojan URL : {link_}")
-        config["remote_addr"], config["server"] = addr, addr
-        config["remote_port"], config["server_port"] = port, port
-        config["password"][0] = password
-        config["remarks"] = remarks
-        return config, query
-
-    def _parse_link(self, link_: str) -> dict:
-        try:
-            result, query = self._decode(self.percent_decode(link_))
-        except ValueError as e:
-            logger.error(e)
-            return {}
-        result["ssl"]["verify"] = query.get("allowinsecure", "") == "1"
-        result["ssl"]["sni"] = query.get("sni", "")
-        result["tcp"]["fast_open"] = query.get("tfo", "") == "1"
-        result["group"] = query.get("peer", "N/A")
-
-        # ws protocol must pass host and path
-        if query.get("type", "") == "ws":
-            result["websocket"]["enabled"] = "true"
-            result["websocket"]["path"] = query.get("path", "")
-            result["websocket"]["host"] = query.get("host", "")
-        return result
+            logger.exception(f"Invalid trojan URL : {link_}")
+        return _config
 
 
 if __name__ == "__main__":
