@@ -73,7 +73,7 @@ def get_urls_info(download_type, platform, client_path, database_path):
     client_file = {
         "Windows": ["clients_win_64.zip"],
         "Linux": ["clients_linux_amd64.zip"],
-        "MacOS": ["clients_darwin_64.zip"]
+        "MacOS": ["clients_darwin_64.zip"],
     }
     client_file_info = {
         "url": client_resources_url,
