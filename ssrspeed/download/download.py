@@ -39,8 +39,11 @@ def unzip(file_info):
     for file in file_info["files"]:
         zip_file = file_info["parent_path"] + file
         if os.path.exists(zip_file):
-            with zipfile.ZipFile(zip_file, "r") as zips:
-                zips.extractall(file_info["parent_path"])
+            try:
+                with zipfile.ZipFile(zip_file, "r") as zips:
+                    zips.extractall(file_info["parent_path"])
+            except zipfile.error as e:
+                print(f"{file} 解压失败, 失败原因: {e}")
 
 
 def check_version(version_info, version_path):
@@ -51,10 +54,12 @@ def check_version(version_info, version_path):
             for types in version_info:
                 if version_info[types] == old_version_info[types]:
                     need_update.remove(types)
-    else:
-        with open(file=version_path, mode="w", encoding="utf-8") as f:
-            json.dump(version_info, fp=f, indent=4)
     return need_update
+
+
+def update_version(version_info, version_path):
+    with open(file=version_path, mode="w", encoding="utf-8") as f:
+        json.dump(version_info, fp=f, indent=4)
 
 
 def get_urls_info(download_type, platform, client_path, database_path):
@@ -118,11 +123,11 @@ def download_resource(url, headers, name, size, position, parent_path, cols):
         if os.path.exists(path):
             current_file_size = os.path.getsize(path)
             if current_file_size == size:
-                return f"已保存至: {path}"
+                return {"state": True, "msg": f"{name} 已存在"}
             mode = "ab"
             download_bar.update(current_file_size)
         with open(file=path, mode=mode) as f:
-            while True:
+            for _ in range(3):
                 try:
                     headers.update({"Range": f"bytes={current_file_size}-{size}"})
                     content = requests.get(
@@ -135,11 +140,21 @@ def download_resource(url, headers, name, size, position, parent_path, cols):
                     if current_file_size == size:
                         break
                 except requests.exceptions.RequestException:
-                    download_bar.write(f"{name} 下载异常，正在重新下载")
-    return f"已保存至: {path}"
+                    download_bar.write(f"{name} 下载异常，尝试重新请求")
+            else:
+                return {"state": False, "msg": f"{name} 下载失败"}
+    return {"state": True, "msg": f"{name} 已保存至 {path}"}
 
 
-def executor(file_info, headers, need_download, zip_file_path, platform):
+def executor(
+    file_info,
+    headers,
+    need_download,
+    zip_file_path,
+    platform,
+    new_version_info,
+    version_path,
+):
     task_list = []
     terminal_size = get_terminal_size(platform)
     os.system("clear" if os.name == "posix" else "cls")
@@ -159,21 +174,23 @@ def executor(file_info, headers, need_download, zip_file_path, platform):
                         cols=terminal_size[0],
                     )
                 )
-        done, _ = wait(task_list)
         print("\n")
+        done, _ = wait(task_list)
         for each in done:
-            print(each.result())
-    unzip(zip_file_path)
+            print(each["msg"])
+        if all([each.get("state", False) for each in done]):
+            update_version(new_version_info, version_path)  # 确保文件完全下载完成，才允许写入版本控制文件
+            unzip(zip_file_path)
 
 
 def download(download_type, platform, client_path, database_path, version_path):
     _ = os.sep
     file_info = []
-    new_version_info = {}
+    version_info = {}
     proxy = "https://ghproxy.com/"
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36"
+        "User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/64.0.3282.119 Safari/537.36 "
     }
     mkdirs([client_path, database_path])
     urls_info, zip_file_path = get_urls_info(
@@ -181,7 +198,7 @@ def download(download_type, platform, client_path, database_path, version_path):
     )
     for url_info in urls_info:
         response = requests.get(url=url_info["url"], headers=headers, timeout=10).json()
-        new_version_info[url_info["type"]] = response["id"]
+        version_info.update({url_info["type"]: response["id"]})
         file_info.extend(
             {
                 "url": f"{proxy}{each['browser_download_url']}",
@@ -194,8 +211,16 @@ def download(download_type, platform, client_path, database_path, version_path):
             for index, each in enumerate(response["assets"], 1)
             if each["name"] in url_info["files"]
         )
-    if need_download := check_version(new_version_info, version_path):
-        executor(file_info, headers, need_download, zip_file_path, platform)
+    if need_download := check_version(version_info, version_path):
+        executor(
+            file_info,
+            headers,
+            need_download,
+            zip_file_path,
+            platform,
+            version_info,
+            version_path,
+        )
     else:
         print("本地资源已是最新版本")
     sys.exit(0)
@@ -205,7 +230,7 @@ if __name__ == "__main__":
     _ = os.sep
     current_path = os.getcwd() + _
     resources_path = f"{current_path}resources{_}"
-    client_test_path = f"{resources_path}clients{_}"
+    client_test_path = f"{resources_path}client{_}"
     database_test_path = f"{resources_path}databases{_}"
     version_test_path = f"{resources_path}resources.json"
     download(
