@@ -70,18 +70,18 @@ def get_urls_info(download_type, platform, client_path, database_path):
     database_resources_url = (
         "https://api.github.com/repos/P3TERX/GeoLite.mmdb/releases/latest"
     )
-    client_file_info = {
-            "url": client_resources_url,
-            "type": "client",
-            "files": None,
-            "parent_path": client_path,
-    }
     client_file = {
         "Windows": ["clients_win_64.zip"],
         "Linux": ["clients_linux_amd64.zip"],
         "MacOS": ["clients_darwin_64.zip"]
     }
-    client_file_info.update({"files": client_file[platform]})
+    client_file_info = {
+        "url": client_resources_url,
+        "type": "client",
+        "parent_path": client_path,
+        "files": client_file[platform],
+    }
+
     database_file_info = {
         "url": database_resources_url,
         "type": "database",
@@ -170,7 +170,7 @@ def executor(
         print("\n")
         for each in done:
             print(each.result().get("msg"))
-        if all([each.result().get("state", False) for each in done]):
+        if all(each.result().get("state", False) for each in done):
             update_version(new_version_info, version_path)  # 确保文件完全下载完成，才允许写入版本控制文件
             unzip(zip_file_path)
 
@@ -190,7 +190,7 @@ def download(download_type, platform, client_path, database_path, version_path):
     )
     for url_info in urls_info:
         response = requests.get(url=url_info["url"], headers=headers, timeout=10).json()
-        version_info.update({url_info["type"]: response["id"]})
+        version_info[url_info["type"]] = response["id"]
         file_info.extend(
             {
                 "url": f"{proxy}{each['browser_download_url']}",
