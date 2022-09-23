@@ -33,10 +33,10 @@ class BaseParser(NodeFilter, metaclass=ABCMeta):
             self._config_list.append(item)
 
     @abstractmethod
-    def _parse_link(self, link: str) -> dict:
-        return {}
+    def _parse_link(self, link: str) -> Optional[dict]:
+        pass
 
-    def parse_single_link(self, link: str) -> dict:
+    def parse_single_link(self, link: str) -> Optional[dict]:
         return self._parse_link(link)
 
     @staticmethod

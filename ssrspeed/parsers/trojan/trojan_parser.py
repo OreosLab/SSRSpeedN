@@ -65,7 +65,6 @@ class TrojanParser(BaseParser):
             logger.error(f"Not trojan URL : {link}")
             return {}
 
-        _config = self.__get_trojan_base_config()
         try:
             hostname = url.hostname
             port = url.port or 443
@@ -73,6 +72,7 @@ class TrojanParser(BaseParser):
             query = dict(parse_qsl(url.query))
             remarks = unquote(url.fragment)
 
+            _config = self.__get_trojan_base_config()
             _config["remote_addr"], _config["server"] = hostname, hostname
             _config["remote_port"], _config["server_port"] = port, port
             _config["password"][0] = password
