@@ -325,7 +325,7 @@ SSRSpeedN
 │   │   ├── __init__.py
 │   │   ├── method
 │   │   ├── methodology.py
-│   │   └── speed_test.py
+│   │   └── speedtest.py
 │   ├── type
 │   │   ├── __init__.py
 │   │   ├── error
