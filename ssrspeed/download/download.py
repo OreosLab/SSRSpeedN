@@ -154,9 +154,8 @@ def executor(
     with ThreadPoolExecutor() as pool:
         for kwargs in file_info:
             if kwargs["types"] in need_download:
-                if os.path.exists(kwargs["parent_path"]):
-                    shutil.rmtree(kwargs["parent_path"])
-                os.makedirs(kwargs["parent_path"])
+                if not os.path.exists(kwargs["parent_path"]):
+                    os.makedirs(kwargs["parent_path"])
                 kwargs.pop("types")
                 task_list.append(
                     pool.submit(
