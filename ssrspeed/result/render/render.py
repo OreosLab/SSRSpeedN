@@ -40,7 +40,7 @@ class ExporterWps:
 
 
 if __name__ == "__main__":
-    from ssrspeed.paths import ROOT_PATH, get_path_json
+    from ssrspeed.path import ROOT_PATH, get_path_json
 
     key_path = get_path_json(ROOT_PATH)
     er = ExporterWps([], key_path["results"], key_path["templates"])

@@ -286,14 +286,14 @@ SSRSpeedN
 │   ├── download
 │   │   ├── __init__.py
 │   │   └── download.py
-│   ├── launchers
+│   ├── launcher
 │   │   ├── __init__.py
-│   │   ├── base_client.py
-│   │   ├── ss_client.py
-│   │   ├── ssr_client.py
-│   │   ├── trojan_client.py
-│   │   └── v2ray_client.py
-│   ├── parsers
+│   │   ├── base.py
+│   │   ├── ss.py
+│   │   ├── ssr.py
+│   │   ├── trojan.py
+│   │   └── v2ray.py
+│   ├── parser
 │   │   ├── __init__.py
 │   │   ├── base
 │   │   ├── clash
@@ -304,10 +304,9 @@ SSRSpeedN
 │   │   ├── ssr
 │   │   ├── trojan
 │   │   └── v2ray
-│   ├── paths
+│   ├── path
 │   │   ├── __init__.py
-│   │   ├── paths.json
-│   │   └── paths.py
+│   │   └── path.py
 │   ├── resource
 │   │   ├── ssrspeed.example.json
 │   │   ├── static
@@ -324,22 +323,22 @@ SSRSpeedN
 │   │   └── cli.py
 │   ├── speedtest
 │   │   ├── __init__.py
+│   │   ├── method
 │   │   ├── methodology.py
-│   │   ├── methods
 │   │   └── speed_test.py
 │   ├── type
 │   │   ├── __init__.py
-│   │   ├── errors
-│   │   └── nodes
-│   ├── utils
+│   │   ├── error
+│   │   └── node
+│   ├── util
 │   │   ├── __init__.py
 │   │   ├── b64plus.py
 │   │   ├── geoip.py
-│   │   ├── platform_check.py
-│   │   ├── port_check.py
+│   │   ├── platform.py
+│   │   ├── port.py
 │   │   ├── pynat.py
-│   │   ├── reqs_check.py
-│   │   ├── rules
+│   │   ├── require.py
+│   │   ├── rule
 │   │   └── web
 │   └── web
 │       ├── __init__.py

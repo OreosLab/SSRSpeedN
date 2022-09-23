@@ -8,9 +8,9 @@ from loguru import logger
 from ssrspeed import __version__ as version
 from ssrspeed.config import generate_config_file, load_path_config, ssrconfig
 from ssrspeed.download import download
-from ssrspeed.paths import JSON_PATH, get_path_json
+from ssrspeed.path import JSON_PATH, get_path_json
 from ssrspeed.shell import cli as cli_cfg
-from ssrspeed.utils import PLATFORM, RequirementsCheck
+from ssrspeed.util import PLATFORM, RequirementsCheck
 
 
 def init_dir(paths):

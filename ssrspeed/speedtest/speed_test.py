@@ -10,14 +10,14 @@ from geoip2.errors import AddressNotFoundError
 from loguru import logger
 
 from ssrspeed.config import ssrconfig
-from ssrspeed.launchers import (
+from ssrspeed.launcher import (
     ShadowsocksClient,
     ShadowsocksRClient,
     TrojanClient,
     V2RayClient,
 )
 from ssrspeed.speedtest.methodology import SpeedTestMethods
-from ssrspeed.utils import async_check_port, domain2ip, get_ip_info, ip_loc
+from ssrspeed.util import async_check_port, domain2ip, get_ip_info, ip_loc
 
 CLIENTS_DIR = ssrconfig["path"]["clients"]
 DATABASES_DIR = ssrconfig["path"]["databases"]

@@ -2,7 +2,7 @@ version = 1
 
 exclude_patterns = [
     "ssrspeed/resource/**",
-    "ssrspeed/speedtest/methods/speedtestnet.py",
+    "ssrspeed/speedtest/method/speedtestnet.py",
 ]
 
 [[analyzers]]

@@ -8,8 +8,8 @@ from werkzeug.utils import secure_filename
 
 from ssrspeed.config import ssrconfig
 from ssrspeed.core import SSRSpeedCore
-from ssrspeed.type.errors.webapi import FileNotAllowed, WebFileCommonError
-from ssrspeed.utils.web import get_post_data
+from ssrspeed.type.error.webapi import FileNotAllowed, WebFileCommonError
+from ssrspeed.util.web import get_post_data
 
 ALLOWED_EXTENSIONS = {"json", "yml"}
 

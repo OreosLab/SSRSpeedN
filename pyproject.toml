@@ -42,5 +42,5 @@ ignore_missing_imports = true
 show_error_codes = true
 
 [[tool.mypy.overrides]]
-module = ["ssrspeed.speedtest.methods.*"]
+module = ["ssrspeed.speedtest.method.*"]
 ignore_errors = true

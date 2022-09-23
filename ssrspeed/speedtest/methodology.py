@@ -3,7 +3,7 @@ import socket
 import socks
 from loguru import logger
 
-from ssrspeed.speedtest.methods import (
+from ssrspeed.speedtest.method import (
     fast,
     google_ping,
     speedtestnet,
