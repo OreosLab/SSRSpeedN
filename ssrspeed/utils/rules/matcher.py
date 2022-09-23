@@ -7,26 +7,22 @@ class DownloadRuleMatch:
     def __init__(self, file_download: dict):
         self._config: dict = deepcopy(file_download)
         self._download_links: dict = deepcopy(file_download["downloadLinks"])
+        self._download_dict: dict = {
+            link["tag"]: (link["link"], link["fileSize"])
+            for link in self._download_links
+        }
 
     def _get_download_link(self, tag: str = "") -> tuple:
-        default: tuple = ()
-        for link in self._download_links:
-            if link["tag"] == "Default":
-                default = (link["link"], link["fileSize"])
-        if not tag:
-            logger.info("No tag, using default.")
-            return default
-        for link in self._download_links:
-            if link["tag"] == tag:
-                logger.info(f"Tag matched: {tag}")
-                return link["link"], link["fileSize"]
-        logger.info(f"Tag {tag} not matched, using default.")
-        return default
+        if tag in self._download_dict:
+            return self._download_dict[tag]
+        logger.info(f"No (matched) tag {tag}, using default.")
+        return self._download_dict.get("default", ("", ""))
 
     def _check_rule(self, data: dict) -> tuple:
         isp = data["organization"].strip()
         country_code = data["country_code"].strip()
         continent = data["continent_code"].strip()
+
         rules = self._config["rules"]
         for rule in rules:
             if rule["mode"].lower() == "match_isp":
@@ -40,10 +36,7 @@ class DownloadRuleMatch:
                     if country_code == code.strip():
                         logger.info(f"Country {code} matched.")
                         return self._get_download_link(rule["tag"])
-                if (
-                    rule.get("continent", "") != ""
-                    and rule["continent"].strip() in continent
-                ):
+                if rule.get("continent", "").strip() in continent:
                     logger.info(f"Continent {continent} matched.")
                     return self._get_download_link(rule["tag"])
         logger.info("Rule not matched, using default.")
