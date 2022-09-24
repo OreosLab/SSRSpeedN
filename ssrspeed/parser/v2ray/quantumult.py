@@ -12,7 +12,6 @@ class ParserV2RayQuantumult:
         link_decoded = b64plus.decode(link).decode("utf-8")
         try:
             link_split = link_decoded.split(",")
-
             new_list = []
             while True:
                 try:
@@ -28,34 +27,32 @@ class ParserV2RayQuantumult:
                 new_list.append(text)
             link_split = new_list
 
-            remarks = link_split[0].split(" = ")[0]
             server = link_split[1]
-            remarks = remarks or server
+            remarks = link_split[0].split(" = ")[0] or server
             port = int(link_split[2])
             security = link_split[3]
             uuid = link_split[4].replace('"', "")
             group = link_split[5].split("=")[1]
+
             tls = ""
             tls_host = ""
             host = ""  # http host, web socket host, h2 host, quic encrypt method
             net = "tcp"
             path = ""  # Websocket path, http path, quic encrypt key
             headers: list = []
-
+            allow_insecure = True
+            i = 7
             if link_split[6].split("=")[1] == "true":
                 tls = "tls"
                 tls_host = link_split[7].split("=")[1]
                 allow_insecure = link_split[8].split("=")[1] != "1"
-            else:
-                allow_insecure = True
+                i = 8
             if len(link_split) in {11, 12}:
-                i = 8 if tls else 7
                 net = link_split[i + 1].split("=")[1]
                 path = link_split[i + 2].split("=")[1].replace('"', "")
-                header = (
+                if header := (
                     link_split[i + 3].split("=")[1].replace('"', "").split("[Rr][Nn]")
-                )
-                if len(header) > 0:
+                ):
                     host = header[0].split(":")[1].strip()
                     headers.extend(
                         {
@@ -94,3 +91,8 @@ class ParserV2RayQuantumult:
         except Exception:
             logger.exception(f"Parse {raw_link} failed. (Quantumult Method)")
             return None
+
+
+if __name__ == "__main__":
+    LINK = "vmess://T3JhY2xlID0gdm1lc3MsIHYycmF5LnVydXRvcmE5Ni50aywgNDQzLCBjaGFjaGEyMC1pZXRmLXBvbHkxMzA1LCAiNjZiZTk4YTctNTUzNy00ZjM5LWIwYjgtY2FhNGU3ZGI0ZmQwIiwgZ3JvdXA9VjJSYXlQcm92aWRlciwgb3Zlci10bHM9dHJ1ZSwgdGxzLWhvc3Q9djJyYXkudXJ1dG9yYTk2LnRrLCBjZXJ0aWZpY2F0ZT0xLCBvYmZzPXdzLCBvYmZzLXBhdGg9Ii91cnV0b3JhOTYiLCBvYmZzLWhlYWRlcj0iSG9zdDogdjJyYXkudXJ1dG9yYTk2LnRrIg"
+    print(ParserV2RayQuantumult.parse_subs_config(LINK))

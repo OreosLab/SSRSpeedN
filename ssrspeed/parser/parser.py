@@ -57,6 +57,8 @@ class UniversalParser:
                 result.append(NodeShadowsocksR(_config["config"]))
             elif _type == "V2Ray":
                 result.append(NodeV2Ray(_config["config"]))
+            elif _type == "Trojan":
+                result.append(NodeTrojan(_config["config"]))
             else:
                 logger.warning(f"Unknown node type: {_type}")
         return result
@@ -103,8 +105,10 @@ class UniversalParser:
                 Optional[NodeV2Ray],
                 Optional[NodeTrojan],
             ] = None
+
             if link[:5] == "ss://":
                 # Shadowsocks
+                cfg = None
                 try:
                     pssb = ParserShadowsocksBasic(self.__get_ss_base_config())
                     cfg = pssb.parse_single_link(link)
@@ -201,8 +205,6 @@ class UniversalParser:
         for item in self.nodes:
             logger.info(f'{item.config["group"]} - {item.config["remarks"]}')
 
-    #   logger.info(f"{len(self.__nodes)} node(s) in list.")
-
     def read_subscription(self, urls: list):
         for url in urls:
             if not url:
@@ -217,12 +219,11 @@ class UniversalParser:
                 self.__nodes.extend(self.parse_links([url]))
                 continue
 
+            logger.info(f"Reading {url}")
             header = {
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
                 "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36"
             }
-            logger.info(f"Reading {url}")
-
             clash_ua = {"User-Agent": "Clash"}
 
             try:

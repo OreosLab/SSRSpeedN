@@ -17,26 +17,26 @@ class ClashParser:
         return deepcopy(self.__ss_base_config)
 
     def __parse_shadowsocks(self, cfg: dict) -> dict:
-        _dict = self.__get_shadowsocks_base_config()
-        _dict["server"] = cfg["server"]
-        _dict["server_port"] = int(cfg["port"])
-        _dict["password"] = cfg["password"]
-        _dict["method"] = cfg["cipher"]
-        _dict["remarks"] = cfg.get("name", cfg["server"])
-        _dict["group"] = cfg.get("group", "N/A")
-        _dict["fast_open"] = False
+        _config = self.__get_shadowsocks_base_config()
+        _config["server"] = cfg["server"]
+        _config["server_port"] = int(cfg["port"])
+        _config["password"] = cfg["password"]
+        _config["method"] = cfg["cipher"]
+        _config["remarks"] = cfg.get("name", cfg["server"])
+        _config["group"] = cfg.get("group", "N/A")
+        _config["fast_open"] = False
 
         plugin = cfg.get("plugin")
         if plugin == "obfs":
             plugin = "obfs-local"
         elif plugin == "v2ray-plugin":
             logger.warning("V2Ray plugin not supported.")
-            logger.info(f'Skip {_dict["group"]} - {_dict["remarks"]}')
+            logger.info(f'Skip {_config["group"]} - {_config["remarks"]}')
         elif cfg.get("obfs") in ["http", "tls"]:
             plugin = "obfs-local"
         elif cfg.get("obfs"):
             logger.warning(f'Plugin {cfg.get("obfs")} not supported.')
-            logger.info(f'Skip {_dict["group"]} - {_dict["remarks"]}')
+            logger.info(f'Skip {_config["group"]} - {_config["remarks"]}')
 
         plugin_opts = ""
         p_opts = cfg.get("plugin-opts", {})
@@ -46,14 +46,14 @@ class ClashParser:
             plugin_opts += f";obfs-host={host}"
 
         logger.debug(
-            f'{_dict["group"]} - {_dict["remarks"]}\n'
+            f'{_config["group"]} - {_config["remarks"]}\n'
             f"Plugin [{plugin}], mode [{mode}], host [{host}]"
         )
 
-        _dict["plugin"] = plugin
-        _dict["plugin_opts"] = plugin_opts
-        _dict["plugin_args"] = ""
-        return _dict
+        _config["plugin"] = plugin
+        _config["plugin_opts"] = plugin_opts
+        _config["plugin_args"] = ""
+        return _config
 
     @staticmethod
     def __convert_v2ray_cfg(cfg: dict) -> dict:
@@ -64,20 +64,20 @@ class ClashParser:
         uuid = cfg["uuid"]
         aid = int(cfg["alterId"])
         security = cfg.get("cipher", "auto")
-        tls = "tls" if (cfg.get("tls", False)) else ""  # TLS
+        tls = "tls" if "tls" in cfg else ""  # TLS
         allow_insecure = bool(cfg.get("skip-cert-verify", False))
-        net = cfg.get("network", "tcp")  # ws,tcp
+        net = cfg.get("network", "tcp")  # ws, tcp
         _type = cfg.get("type", "none")  # Obfs type
         ws_header = cfg.get("ws-headers", {})
-        host = ws_header.get(
-            "Host", ""
-        )  # http host, web socket host, h2 host, quic encrypt method
         headers = {
             header: ws_header[header] for header in ws_header.keys() if header != "Host"
         }
-
+        # http host, web socket host, h2 host, quic encrypt method
+        host = ws_header.get("Host", "")
         tls_host = host
-        path = cfg.get("ws-path", "")  # Websocket path, http path, quic encrypt key
+        # Websocket path, http path, quic encrypt key
+        path = cfg.get("ws-path", "")
+
         logger.debug(
             f"Server : {server}, Port : {port}, tls-host : {tls_host}, Path : {path}, "
             f"Type : {_type}, UUID : {uuid}, AlterId : {aid}, Network : {net}, "
@@ -102,7 +102,9 @@ class ClashParser:
         }
 
     @staticmethod
-    def __convert_trojan_cfg(cfg):
+    def __convert_trojan_cfg(cfg: dict) -> dict:
+        logger.debug(cfg)
+
         password = cfg["password"]
         server = cfg["server"]
         remarks = cfg.get("name", server)
@@ -110,8 +112,6 @@ class ClashParser:
         sni = cfg.get("sni", "")
         port = int(cfg["port"])
         allow_insecure = bool(cfg.get("skip-cert-verify", False))
-        _type = cfg.get("type", "none")  # Obfs type
-        logger.debug(cfg)
         return {
             "run_type": "client",
             "local_addr": "127.0.0.1",

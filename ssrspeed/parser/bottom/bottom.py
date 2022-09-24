@@ -62,7 +62,6 @@ class BottomParser(NodeFilter, metaclass=ABCMeta):
         for link in links_arr:
             link = link.strip()
             if cfg := self._parse_link(link):
-                # 	print(cfg["remarks"])
                 self._config_list.append(cfg)
         logger.info(f"Read {len(self._config_list)} node(s)")
 
@@ -90,7 +89,6 @@ class BottomParser(NodeFilter, metaclass=ABCMeta):
                 }
                 if _dict["remarks"] == "":
                     _dict["remarks"] = _dict["server"]
-                # 	logger.info(_dict["server"])
                 self._config_list.append(_dict)
 
         logger.info(f"Read {len(self._config_list)} node(s).")

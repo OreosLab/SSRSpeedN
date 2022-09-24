@@ -1,3 +1,4 @@
+import contextlib
 import json
 from typing import Optional, Union
 
@@ -18,8 +19,8 @@ class ParserV2RayN:
             _conf = json.loads(link_decoded)
         except json.JSONDecodeError:
             return None
+
         try:
-            # logger.debug(_conf)
             cfg_version = str(_conf.get("v", "1"))
             server = _conf["add"]
             port = int(_conf["port"])
@@ -27,9 +28,8 @@ class ParserV2RayN:
             uuid = _conf["id"]
             aid = int(_conf["aid"])
             net = _conf["net"]
-            group = "N/A"
-            path = ""
             host = ""
+            path = ""
             if cfg_version == "2":
                 host = _conf.get(
                     "host", ""
@@ -37,18 +37,16 @@ class ParserV2RayN:
                 path = _conf.get(
                     "path", ""
                 )  # Websocket path, http path, quic encrypt key
-            # V2RayN Version 1 Share Link Support
             else:
-                try:
+                with contextlib.suppress(IndexError):
                     host = _conf.get("host", ";").split(";")[0]
                     path = _conf.get("host", ";").split(";")[1]
-                except IndexError:
-                    pass
             tls = _conf.get("tls", "none")  # TLS
             tls_host = host
             security = _conf.get("security", "auto")
             remarks = _conf.get("ps", server)
-            remarks = remarks or server
+            group = _conf.get("group", _conf.get("url_group", "N/A"))
+
             logger.debug(
                 f"Server : {server}, Port : {port}, tls-host : {tls_host}, Path : {path}, "
                 f"Type : {_type}, UUID : {uuid}, AlterId : {aid}, Network : {net}, "
@@ -90,12 +88,9 @@ class ParserV2RayN:
                 "allowInsecure": item.get("allowInsecure", ""),
                 "subId": item.get("subid", ""),
                 "remarks": item.get("remarks", item["address"]),
-                "group": "N/A",
+                "group": item.get("group", item.get("url_group", "N/A")),
             }
-            if not _dict["remarks"]:
-                _dict["remarks"] = _dict["server"]
-            sub_id = _dict["subId"]
-            if sub_id != "":
+            if sub_id := _dict["subId"]:
                 for sub in sub_list:
                     if sub_id == sub.get("id", ""):
                         _dict["group"] = sub.get("remarks", "N/A")
@@ -110,3 +105,8 @@ class ParserV2RayN:
                 logger.exception("Not V2RayN Config.")
                 return False
         return self.parse_gui_data(config)
+
+
+if __name__ == "__main__":
+    LINK = "vmess://eyJhZGQiOiAiczM1NC5va2dnbm9kZS50b3AiLCAiYWlkIjogIjAiLCAiaG9zdCI6ICJzMzU0Lm9rZ2dub2RlLnRvcCIsICJpZCI6ICJlNDgzMmNhMC1kNmY2LTMyYzgtODdkYS1mM2VjY2ZmZTczYzAiLCAibmV0IjogIndzIiwgInBhdGgiOiAiL3BhbmVsbXlhZG1pbiIsICJwb3J0IjogIjMzOTU0IiwgInBzIjogImdpdGh1Yi5jb20vZnJlZWZxIC0gXHU0ZTJkXHU1NmZkXHU5NjNmXHU5MWNjXHU0ZTkxIDEiLCAic2VjdXJpdHkiOiAibm9uZSIsICJ0bHMiOiAidGxzIiwgInR5cGUiOiAiIiwgInVybF9ncm91cCI6ICJ0Lm1lL3JpcGFvamllZGlhbiIsICJ2IjogIjIifQ=="
+    print(ParserV2RayN().parse_subs_config(LINK))

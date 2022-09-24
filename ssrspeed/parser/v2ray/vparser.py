@@ -14,7 +14,6 @@ class V2RayParser(V2RayBaseConfigs, BottomParser):
         )
 
     def _parse_link(self, link: str) -> dict:
-
         if link[:8] != "vmess://":
             logger.error(f"Unsupported link : {link}")
             return {}
@@ -41,7 +40,6 @@ class V2RayParser(V2RayBaseConfigs, BottomParser):
             for link in links_arr:
                 link = link.strip()
                 if cfg := self._parse_link(link):
-                    # 	print(cfg["remarks"])
                     self._config_list.append(cfg)
         except ValueError:
             logger.info("Try V2Ray Clash Parser.")
@@ -61,12 +59,7 @@ class V2RayParser(V2RayBaseConfigs, BottomParser):
             logger.info("Not Clash Config.")
             logger.critical("Gui config parse failed.")
             raw_gui_configs = []
-
         for _dict in raw_gui_configs:
             _cfg = self.__generate_config(_dict)
-            # 	logger.debug(_cfg)
             self._config_list.append(_cfg)
         logger.info(f"Read {len(self._config_list)} node(s).")
-
-
-# 	logger.critical("V2RayN configuration file will be support soon.")
