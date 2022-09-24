@@ -16,7 +16,7 @@ LOCAL_PORT = ssrconfig.get("localPort", 7890)
 TIMEOUT = 10
 
 
-class BaseParser(NodeFilter, metaclass=ABCMeta):
+class BottomParser(NodeFilter, metaclass=ABCMeta):
     def __init__(self):
         super().__init__()
         self._config_list: list = []

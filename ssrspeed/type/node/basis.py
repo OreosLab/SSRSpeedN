@@ -1,7 +1,7 @@
 from copy import deepcopy
 
 
-class BaseNode:
+class BasisNode:
     def __init__(self, config: dict):
         self._type: str = ""
         if not isinstance(config, dict):

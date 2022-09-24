@@ -1,3 +1,3 @@
-from .base import ParserShadowsocksR
+from .primary import ParserShadowsocksR
 
 __all__ = ["ParserShadowsocksR"]

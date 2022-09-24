@@ -34,7 +34,7 @@ class ClashParser:
             logger.info(f'Skip {_dict["group"]} - {_dict["remarks"]}')
         elif cfg.get("obfs") in ["http", "tls"]:
             plugin = "obfs-local"
-        else:
+        elif cfg.get("obfs"):
             logger.warning(f'Plugin {cfg.get("obfs")} not supported.')
             logger.info(f'Skip {_dict["group"]} - {_dict["remarks"]}')
 
@@ -53,7 +53,6 @@ class ClashParser:
         _dict["plugin"] = plugin
         _dict["plugin_opts"] = plugin_opts
         _dict["plugin_args"] = ""
-        self.__config_list.append(_dict)
         return _dict
 
     @staticmethod

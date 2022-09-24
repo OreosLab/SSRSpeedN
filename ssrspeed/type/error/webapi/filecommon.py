@@ -1,6 +1,6 @@
-from ssrspeed.type.error.webapi.base import WebErrorBase
+from ssrspeed.type.error.webapi.basis import WebErrorBasis
 
 
-class WebFileCommonError(WebErrorBase):
+class WebFileCommonError(WebErrorBasis):
     err_msg = "Upload failed."
     err_tag = "FILE_COMMON_ERROR"
