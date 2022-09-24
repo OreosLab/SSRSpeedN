@@ -105,4 +105,4 @@ async def google_ping(address: str, port: int) -> tuple:
 if __name__ == "__main__":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     logger.info(asyncio.run(tcp_ping("127.0.0.1", 7890)))
-    logger.info(asyncio.run(google_ping("127.0.01", 7890)))
+    logger.info(asyncio.run(google_ping("127.0.0.1", 7890)))

@@ -22,7 +22,8 @@ def set_proxy(local_address, local_port):
 
 def get_html_result(url, result, index):
     """
-    get the stuff from url in chunks of size CHUNK, and keep writing the number of bytes retrieved into result[index]
+    get the stuff from url in chunks of size CHUNK,
+    and keep writing the number of bytes retrieved into result[index]
     """
     try:
         req = urllib.request.urlopen(url)
@@ -47,16 +48,12 @@ def application_bytes_to_networkbits(bytes_):
 
 
 def find_ipv4(fqdn):
-    """
-    find IPv4 address of fqdn
-    """
+    """find IPv4 address of fqdn"""
     return socket.getaddrinfo(fqdn, 80, socket.AF_INET)[0][4][0]
 
 
 def find_ipv6(fqdn):
-    """
-    find IPv6 address of fqdn
-    """
+    """find IPv6 address of fqdn"""
     return socket.getaddrinfo(fqdn, 80, socket.AF_INET6)[0][4][0]
 
 

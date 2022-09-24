@@ -144,4 +144,4 @@ if __name__ == "__main__":
     load_path_config({"path": key_path})
     generate_config_file()
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-    asyncio.run(start(ssrconfig["fileDownload"], "127.0.0.1", 7890))
+    logger.info(asyncio.run(start(ssrconfig["fileDownload"], "127.0.0.1", 7890)))

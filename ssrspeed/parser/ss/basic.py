@@ -109,11 +109,11 @@ class ParserShadowsocksBasic:
 
 
 if __name__ == "__main__":
-    links_ = (
+    LINKS = (
         "ss://YWVzLTI1Ni1nY206aXN4Lnl0LTMxMDk1NzYxQDE5Mi4yNDEuMTkzLjI0MToxMzU0NQ==\n"
         "ss://YWVzLTEyOC1jZmI6c2hhZG93c29ja3M@156.146.38.163:443#US_13\n"
     )
     sspar = ParserShadowsocksBasic({})
-    for i in links_.split("\n"):
+    for i in LINKS.split("\n"):
         if i:
             print(sspar.parse_single_link(i))

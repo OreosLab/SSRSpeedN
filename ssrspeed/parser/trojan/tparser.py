@@ -94,7 +94,7 @@ class TrojanParser(BottomParser):
 
 
 if __name__ == "__main__":
-    links_ = (
+    LINKS = (
         "trojan://8888@[2001:1234:4321:66::33]?allowinsecure=0&tfo=1\n"
         "trojan://123@helloworld.xyz?allowinsecure=0&tfo=1#testIPv4port443\n"
         "trojan://9999@[2001:1234:4321:66::33]:444?allowinsecure=1&tfo=0#testIPv6\n"
@@ -103,6 +103,6 @@ if __name__ == "__main__":
         "trojan-go://1@ip.com:446/?sni=qq.com&type=ws&host=fast.com&path=%2Fgo&encryption=ss%3Baes-256-gcm%3Afuckgfw\n"
     )
     tropar = TrojanParser()
-    for i in links_.split("\n"):
+    for i in LINKS.split("\n"):
         if i:
             print(tropar.parse_single_link(i))

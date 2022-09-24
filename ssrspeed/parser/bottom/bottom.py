@@ -34,7 +34,7 @@ class BottomParser(NodeFilter, metaclass=ABCMeta):
 
     @abstractmethod
     def _parse_link(self, link: str) -> Optional[dict]:
-        pass
+        raise NotImplementedError
 
     def parse_single_link(self, link: str) -> Optional[dict]:
         return self._parse_link(link)

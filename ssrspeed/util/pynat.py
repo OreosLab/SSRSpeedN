@@ -188,9 +188,7 @@ def get_stun_response(sock, addr, trans_id=None, send_data=b"", max_timeouts=6):
                         elif attr_type == CHANGED_ADDRESS:
                             response["change_ip"], response["change_port"] = (ip, port)
             # Prefer, when possible, to use XORed IPs and ports
-            xor_ip, xor_port = response.get("xor_ip", None), response.get(
-                "xor_port", None
-            )
+            xor_ip, xor_port = response.get("xor_ip"), response.get("xor_port")
             if xor_ip is not None:
                 response["ext_ip"] = xor_ip
             if xor_port is not None:

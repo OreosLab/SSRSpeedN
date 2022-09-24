@@ -209,6 +209,8 @@ if __name__ == "__main__":
 
     load_path_config({"path": key_path})
     generate_config_file()
-    asyncio.run(
-        speed_test_socket(ssrconfig["fileDownload"], "127.0.0.1", 7890, True, True)
+    logger.info(
+        asyncio.run(
+            speed_test_socket(ssrconfig["fileDownload"], "127.0.0.1", 7890, True, True)
+        )
     )

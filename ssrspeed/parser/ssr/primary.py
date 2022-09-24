@@ -70,5 +70,5 @@ class ParserShadowsocksR:
 
 
 if __name__ == "__main__":
-    link_ = "ssr://NDUuMzIuMTMxLjExMTo4OTg5Om9yaWdpbjphZXMtMjU2LWNmYjpwbGFpbjpiM0JsYm5ObGMyRnRaUS8_cmVtYXJrcz1VMU5TVkU5UFRGOU9iMlJsT3VlLWp1V2J2U0RsaXFEbGlLbm5wb19sc0x6a3Vwcmx0NTdsbktQa3ZaWGxvWjVEYUc5dmNHSG1sYkRtamE3a3VLM2x2NE0mZ3JvdXA9VjFkWExsTlRVbFJQVDB3dVEwOU4"
-    print(ParserShadowsocksR({}).parse_single_link(link_))
+    LINK = "ssr://NDUuMzIuMTMxLjExMTo4OTg5Om9yaWdpbjphZXMtMjU2LWNmYjpwbGFpbjpiM0JsYm5ObGMyRnRaUS8_cmVtYXJrcz1VMU5TVkU5UFRGOU9iMlJsT3VlLWp1V2J2U0RsaXFEbGlLbm5wb19sc0x6a3Vwcmx0NTdsbktQa3ZaWGxvWjVEYUc5dmNHSG1sYkRtamE3a3VLM2x2NE0mZ3JvdXA9VjFkWExsTlRVbFJQVDB3dVEwOU4"
+    print(ParserShadowsocksR({}).parse_single_link(LINK))
