@@ -109,7 +109,7 @@ async def _fetch(url: str, sta: Statistics, host: str, port: int, buffer: int):
 
 
 async def start(
-    download_semaphore: int,
+    download_semaphore: asyncio.Semaphore,
     file_download: dict,
     proxy_host: str,
     proxy_port: int,

@@ -1,4 +1,5 @@
 import socket
+from asyncio import Semaphore
 
 import socks
 from loguru import logger
@@ -32,7 +33,7 @@ class SpeedTestMethods:
 
         address = kwargs.get("address", "127.0.0.1")
         port = kwargs.get("port", 10870)
-        download_semaphore = kwargs.get("download_semaphore", 1)
+        download_semaphore = kwargs.get("download_semaphore", Semaphore())
         file_download = kwargs.get("file_download", {})
         speed_test = kwargs.get("speed_test", False)
         method = kwargs.get("method", "ST_ASYNC")
