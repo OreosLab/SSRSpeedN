@@ -37,7 +37,7 @@ class ParserShadowsocksClash:
                 continue
             elif cfg.get("obfs") in ["http", "tls"]:
                 plugin = "obfs-local"
-            else:
+            elif cfg.get("obfs"):
                 logger.warning(f'Plugin {cfg.get("obfs")} not supported.')
                 logger.info(f'Skip {_dict["group"]} - {_dict["remarks"]}')
                 continue

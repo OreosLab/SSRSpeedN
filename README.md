@@ -289,13 +289,13 @@ SSRSpeedN
 │   ├── launcher
 │   │   ├── __init__.py
 │   │   ├── base.py
-│   │   ├── ss.py
-│   │   ├── ssr.py
+│   │   ├── shadowsocks.py
+│   │   ├── shadowsocksr.py
 │   │   ├── trojan.py
 │   │   └── v2ray.py
 │   ├── parser
 │   │   ├── __init__.py
-│   │   ├── base
+│   │   ├── bottom
 │   │   ├── clash
 │   │   ├── conf
 │   │   ├── filter

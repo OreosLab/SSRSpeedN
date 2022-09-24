@@ -1,4 +1,4 @@
-class WebErrorBase:
+class WebErrorBasis:
     err_msg: str = ""
     err_tag: str = ""
 
