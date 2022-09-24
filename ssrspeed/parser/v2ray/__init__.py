@@ -1,4 +1,4 @@
-from .clash import ParserV2RayClash
+from .vclash import ParserV2RayClash
 from .quantumult import ParserV2RayQuantumult
 from .v2rayn import ParserV2RayN
 

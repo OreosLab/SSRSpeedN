@@ -1,13 +1,13 @@
 import requests
 from loguru import logger
 
-from ssrspeed.parser.base import BaseParser
+from ssrspeed.parser.bottom import BottomParser
 from ssrspeed.parser.conf import V2RayBaseConfigs
 from ssrspeed.parser.v2ray import ParserV2RayClash, ParserV2RayN, ParserV2RayQuantumult
 from ssrspeed.util import b64plus
 
 
-class V2RayParser(V2RayBaseConfigs, BaseParser):
+class V2RayParser(V2RayBaseConfigs, BottomParser):
     def __generate_config(self, config: dict) -> dict:
         return super().generate_config(
             config, self._get_local_config()[0], self._get_local_config()[1]

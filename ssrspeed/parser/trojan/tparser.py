@@ -4,10 +4,10 @@ from urllib.parse import parse_qsl, unquote, urlparse
 
 from loguru import logger
 
-from ssrspeed.parser.base import BaseParser
+from ssrspeed.parser.bottom import BottomParser
 
 
-class TrojanParser(BaseParser):
+class TrojanParser(BottomParser):
     def __init__(self):
         super().__init__()
         self.__base_config: dict = {
@@ -65,6 +65,7 @@ class TrojanParser(BaseParser):
             logger.error(f"Not trojan URL : {link}")
             return {}
 
+        _config = self.__get_trojan_base_config()
         try:
             hostname = url.hostname
             port = url.port or 443
@@ -72,7 +73,6 @@ class TrojanParser(BaseParser):
             query = dict(parse_qsl(url.query))
             remarks = unquote(url.fragment)
 
-            _config = self.__get_trojan_base_config()
             _config["remote_addr"], _config["server"] = hostname, hostname
             _config["remote_port"], _config["server_port"] = port, port
             _config["password"][0] = password

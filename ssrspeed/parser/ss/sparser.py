@@ -1,7 +1,7 @@
 import requests
 from loguru import logger
 
-from ssrspeed.parser.base import BaseParser
+from ssrspeed.parser.bottom import BottomParser
 from ssrspeed.parser.ss import (
     ParserShadowsocksBasic,
     ParserShadowsocksClash,
@@ -11,7 +11,7 @@ from ssrspeed.parser.ss import (
 from ssrspeed.util import b64plus
 
 
-class ShadowsocksParser(BaseParser):
+class ShadowsocksParser(BottomParser):
     def _parse_link(self, link: str) -> dict:
         pssb = ParserShadowsocksBasic(self._get_shadowsocks_base_config())
         return pssb.parse_subs_config([link])[0]
