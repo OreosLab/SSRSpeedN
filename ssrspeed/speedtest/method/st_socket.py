@@ -3,7 +3,6 @@ import copy
 import socket
 import threading
 import time
-from typing import Optional
 
 import socks
 from loguru import logger
@@ -23,7 +22,7 @@ def restore_socket():
     socket.socket = DEFAULT_SOCKET
 
 
-def speed_test_thread(link: str, buffer: int) -> Optional[int]:
+def speed_test_thread(link, buffer):
     global TOTAL_RECEIVED, MAX_TIME
     logger.debug(f"Thread {threading.current_thread().ident} started.")
     link = link.replace("https://", "").replace("http://", "")
@@ -81,17 +80,13 @@ def speed_test_thread(link: str, buffer: int) -> Optional[int]:
 
 
 async def speed_test_socket(
-    file_download: dict,
-    address: str,
-    port: int,
-    speed_test: bool,
-    st_speed_test: bool,
-    buffer: int,
-    workers: int,
+    file_download: dict, address: str, port: int, speed_test: bool, st_speed_test: bool
 ) -> tuple:
     if not speed_test:
         return 0, 0, [], 0
-    avg_st_speed = 0
+    workers = file_download.get("workers", 4)
+    buffer_ = file_download.get("buffer", 4096)
+    avg_st_speed: float = 0
     global EXIT_FLAG, MAX_TIME, TOTAL_RECEIVED, MAX_FILE_SIZE
 
     dlrm = DownloadRuleMatch(file_download)
@@ -102,11 +97,11 @@ async def speed_test_socket(
     TOTAL_RECEIVED = 0
     EXIT_FLAG = False
     socks.set_default_proxy(socks.SOCKS5, address, port)
-    socket.socket = socks.socksocket
+    socket.socket = socks.socksocket  # type: ignore
 
     if st_speed_test:
         for _ in range(1):
-            nmsl = threading.Thread(target=speed_test_thread, args=(res[0], buffer))
+            nmsl = threading.Thread(target=speed_test_thread, args=(res[0], buffer_))
             nmsl.start()
 
         max_speed_list = []
@@ -140,9 +135,6 @@ async def speed_test_socket(
             logger.error("Socket Test Error !")
             return 0, 0, [], 0
 
-        max_speed_list.sort()
-        if len(max_speed_list) > 12:
-            msum = sum(max_speed_list[i] for i in range(12, len(max_speed_list) - 2))
         logger.info(
             f"SingleThread: Fetched {TOTAL_RECEIVED / 1024:.2f} KB in {MAX_TIME:.2f} s."
         )
@@ -154,7 +146,7 @@ async def speed_test_socket(
         EXIT_FLAG = False
 
     for _ in range(workers):
-        nmsl = threading.Thread(target=speed_test_thread, args=(res[0], buffer))
+        nmsl = threading.Thread(target=speed_test_thread, args=(res[0], buffer_))
         nmsl.start()
 
     max_speed_list = []
@@ -207,3 +199,16 @@ async def speed_test_socket(
         avg_speed = max_speed
 
     return avg_st_speed, avg_speed, raw_speed_list, TOTAL_RECEIVED
+
+
+if __name__ == "__main__":
+    from ssrspeed.path import ROOT_PATH, get_path_json
+
+    key_path = get_path_json(ROOT_PATH)
+    from ssrspeed.config import generate_config_file, load_path_config, ssrconfig
+
+    load_path_config({"path": key_path})
+    generate_config_file()
+    asyncio.run(
+        speed_test_socket(ssrconfig["fileDownload"], "127.0.0.1", 7890, True, True)
+    )

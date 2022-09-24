@@ -1,5 +1,4 @@
 import socket
-from asyncio import Semaphore
 
 import socks
 from loguru import logger
@@ -30,38 +29,26 @@ class SpeedTestMethods:
         socket.socket = cls.DEFAULT_SOCKET
 
     async def start_test(self, **kwargs):
-
         address = kwargs.get("address", "127.0.0.1")
         port = kwargs.get("port", 10870)
-        download_semaphore = kwargs.get("download_semaphore", Semaphore())
         file_download = kwargs.get("file_download", {})
         speed_test = kwargs.get("speed_test", False)
         method = kwargs.get("method", "ST_ASYNC")
         socket_method = kwargs.get("socket_method", "SOCKET")
         st_speed_test = kwargs.get("st_speed_test", False)
-        buffer_ = kwargs.get("buffer", 4096)
-        workers = kwargs.get("workers", 4)
+
         logger.info(f"Starting speed test with {method}.")
         if method == "ST_ASYNC":
             try:
-                result = await st_asyncio.start(
-                    download_semaphore, file_download, address, port, buffer_, workers
-                )
+                result = await st_asyncio.start(file_download, address, port)
                 return result
             except Exception:
                 logger.exception("")
-                return 0, 0, [], 0
         elif method == "SOCKET":  # Old speedtest
             try:
                 if socket_method == "SOCKET":
                     result = await stSocket.speed_test_socket(
-                        file_download,
-                        address,
-                        port,
-                        speed_test,
-                        st_speed_test,
-                        buffer_,
-                        workers,
+                        file_download, address, port, speed_test, st_speed_test
                     )
                     return result
                 if socket_method == "YOUTUBE":
@@ -72,7 +59,6 @@ class SpeedTestMethods:
                     return result
             except Exception:
                 logger.exception("")
-                return 0, 0, [], 0
         elif method == "SPEED_TEST_NET":
             try:
                 socks.set_default_proxy(socks.SOCKS5, address, port)
@@ -88,7 +74,6 @@ class SpeedTestMethods:
                 return result["download"] / 8, 0, [], 0  # bits to bytes
             except Exception:
                 logger.exception("")
-                return 0, 0, [], 0
         elif method == "FAST":
             try:
                 fast.set_proxy(address, port)
@@ -98,24 +83,17 @@ class SpeedTestMethods:
                 return result, 0, [], 0
             except Exception:
                 logger.exception("")
-                return 0, 0, [], 0
         elif method == "YOUTUBE":
             try:
                 result = await stSocket.speed_test_socket(
-                    file_download,
-                    address,
-                    port,
-                    speed_test,
-                    st_speed_test,
-                    buffer_,
-                    workers,
+                    file_download, address, port, speed_test, st_speed_test
                 )
                 return result
             except Exception:
                 logger.exception("")
-                return 0, 0, [], 0
         else:
             raise ValueError(f"Invalid test method {method}.")
+        return 0, 0, [], 0
 
     @staticmethod
     def start_tcp_ping(server, port):

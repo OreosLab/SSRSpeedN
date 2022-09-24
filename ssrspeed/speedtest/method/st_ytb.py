@@ -1,6 +1,6 @@
 import os
 import time
-from typing import List, Tuple, Union
+from typing import List, Tuple
 
 from loguru import logger
 from selenium import webdriver
@@ -11,7 +11,7 @@ from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 
 
-def speed_test_ytb(port: int) -> Tuple[int, int, List[int], int]:
+def speed_test_ytb(port: int) -> Tuple[float, float, List[float], float]:
     try:
         chrome_options = Options()
         chrome_options.add_argument("--headless")
@@ -50,9 +50,9 @@ def speed_test_ytb(port: int) -> Tuple[int, int, List[int], int]:
             + driver.find_element(By.XPATH, "//span[contains(text(),'@60')]").text
         )
 
-        st_speed: Union[int, float] = 0
-        max_speed: Union[int, float] = 0
-        total_received: Union[int, float] = 0
+        st_speed: float = 0
+        max_speed: float = 0
+        total_received: float = 0
         speed_list: list = []
         for i in range(20):
             time.sleep(1)
@@ -76,6 +76,7 @@ def speed_test_ytb(port: int) -> Tuple[int, int, List[int], int]:
             f"StartSpeed {st_speed / 1024 / 8:.2f} MB/s, "
             f"MaxSpeed {max_speed / 8 / 1024:.2f} MB/s."
         )
+        driver.close()
         return st_speed * 128, max_speed * 128, speed_list, total_received
 
     except Exception as e:

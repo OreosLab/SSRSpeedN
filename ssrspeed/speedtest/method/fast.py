@@ -95,10 +95,8 @@ def fast_com(verbose=False, max_time=15, force_ipv4=False, force_ipv6=False):
         url_result.read().decode().strip()
     )  # this is an obfuscated Javascript file
 
-    """
-    We're searching for the "token:" in this string:
-    .dummy,DEFAULT_PARAMS={https:!0,token:"YXNkZmFzZGxmbnNkYWZoYXNkZmhrYWxm",urlCount:3,e
-    """
+    # We're searching for the "token:" in this string:
+    # .dummy,DEFAULT_PARAMS={https:!0,token:"YXNkZmFzZGxmbnNkYWZoYXNkZmhrYWxm",urlCount:3,e
     for line in all_js_stuff.split(","):
         if line.find("token:") >= 0:
             if verbose:

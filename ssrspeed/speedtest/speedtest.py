@@ -36,9 +36,7 @@ FILE_DOWNLOAD = ssrconfig.get("fileDownload", {})
 SPEED_TEST = ssrconfig.get("speed", False)
 SOCKET_METHOD = ssrconfig.get("method", "SOCKET")
 ST_SPEED_TEST = ssrconfig.get("StSpeed", False)
-BUFFER = ssrconfig["fileDownload"]["buffer"]
-WORKERS = ssrconfig["fileDownload"]["workers"]
-NTT_TEST = ssrconfig["ntt"]["enabled"]
+NTT_TEST = ssrconfig.get("ntt", {}).get("enabled", True)
 
 
 class SpeedTest:
@@ -223,7 +221,7 @@ class SpeedTest:
             s.close()
 
     async def __fast_start_test(
-        self, _item, cfg, address, port, geo_ip_semaphore, download_semaphore, **kwargs
+        self, _item, cfg, address, port, geo_ip_semaphore, **kwargs
     ):
         node_info = f"[{_item['group']}] - [{_item['remarks']}] "
         geoip_log = ""
@@ -295,14 +293,11 @@ class SpeedTest:
                 st.start_test(
                     address=address,
                     port=port,
-                    download_semaphore=download_semaphore,
                     file_download=FILE_DOWNLOAD,
                     speed_test=SPEED_TEST,
                     method=self.__test_method,
                     socket_method=SOCKET_METHOD,
                     st_speed_test=ST_SPEED_TEST,
-                    buffer=BUFFER,
-                    workers=WORKERS,
                 )
             )
             task_list.append(speed_task)
@@ -355,14 +350,11 @@ class SpeedTest:
                 test_res = await st.start_test(
                     address=address,
                     port=port,
-                    download_semaphore=download_semaphore,
                     file_download=FILE_DOWNLOAD,
                     speed_test=SPEED_TEST,
                     method=self.__test_method,
                     socket_method=SOCKET_METHOD,
                     st_speed_test=ST_SPEED_TEST,
-                    buffer=BUFFER,
-                    workers=WORKERS,
                 )
 
             speed_log = (
@@ -386,7 +378,7 @@ class SpeedTest:
         )
 
     async def __base_start_test(
-        self, _item, cfg, address, port, geo_ip_semaphore, download_semaphore, **kwargs
+        self, _item, cfg, address, port, geo_ip_semaphore, **kwargs
     ):
         node_info = f"[{_item['group']}] - [{_item['remarks']}] "
         geoip_log = ""
@@ -470,28 +462,22 @@ class SpeedTest:
             test_res = await st.start_test(
                 address=address,
                 port=port,
-                download_semaphore=download_semaphore,
                 file_download=FILE_DOWNLOAD,
                 speed_test=SPEED_TEST,
                 method=self.__test_method,
                 socket_method=SOCKET_METHOD,
                 st_speed_test=ST_SPEED_TEST,
-                buffer=BUFFER,
-                workers=WORKERS,
             )
             if int(test_res[0]) == 0:
                 logger.warning("Re-testing node.")
                 test_res = await st.start_test(
                     address=address,
                     port=port,
-                    download_semaphore=download_semaphore,
                     file_download=FILE_DOWNLOAD,
                     speed_test=SPEED_TEST,
                     method=self.__test_method,
                     socket_method=SOCKET_METHOD,
                     st_speed_test=ST_SPEED_TEST,
-                    buffer=BUFFER,
-                    workers=WORKERS,
                 )
 
             speed_log = (
@@ -528,15 +514,7 @@ class SpeedTest:
         )
 
     async def __async__start_test(
-        self,
-        node,
-        dic,
-        lock,
-        port_queue,
-        inner_method,
-        geo_ip_semaphore,
-        download_semaphore,
-        **kwargs,
+        self, node, dic, lock, port_queue, inner_method, geo_ip_semaphore, **kwargs
     ):
         port = await port_queue.get()
         cfg = node.config
@@ -580,15 +558,7 @@ class SpeedTest:
                 logger.error(f"Port {port} closed.")
                 return False
 
-        await inner_method(
-            _item,
-            cfg,
-            LOCAL_ADDRESS,
-            port,
-            geo_ip_semaphore,
-            download_semaphore,
-            **kwargs,
-        )
+        await inner_method(_item, cfg, LOCAL_ADDRESS, port, geo_ip_semaphore, **kwargs)
 
         self.__results.append(_item)
         port_queue.put_nowait(port)
@@ -600,9 +570,6 @@ class SpeedTest:
     async def __run(self, **kwargs):
         lock = asyncio.Lock()
         geo_ip_semaphore = asyncio.Semaphore()
-        download_semaphore = asyncio.Semaphore(
-            ssrconfig["fileDownload"].get("taskNum", 1)
-        )
         port_queue = asyncio.Queue()
         dic = {"done_nodes": 0, "total_nodes": len(self.__configs)}
         # 根据配置文件是否选择极速模式
@@ -616,14 +583,7 @@ class SpeedTest:
         task_list = [
             asyncio.create_task(
                 self.__async__start_test(
-                    node,
-                    dic,
-                    lock,
-                    port_queue,
-                    fast_method,
-                    geo_ip_semaphore,
-                    download_semaphore,
-                    **kwargs,
+                    node, dic, lock, port_queue, fast_method, geo_ip_semaphore, **kwargs
                 )
             )
             for node in self.__configs

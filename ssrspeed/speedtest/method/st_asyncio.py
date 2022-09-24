@@ -108,14 +108,10 @@ async def _fetch(url: str, sta: Statistics, host: str, port: int, buffer: int):
         logger.error(f"Download link error: {str(e)}")
 
 
-async def start(
-    download_semaphore: asyncio.Semaphore,
-    file_download: dict,
-    proxy_host: str,
-    proxy_port: int,
-    buffer: int,
-    workers: int,
-) -> tuple:
+async def start(file_download: dict, proxy_host: str, proxy_port: int) -> tuple:
+    download_semaphore = asyncio.Semaphore(int(file_download.get("taskNum", 1)))
+    workers = file_download.get("workers", 4)
+    buffer_ = file_download.get("buffer", 4096)
     async with download_semaphore:
         dlrm = DownloadRuleMatch(file_download)
         res = dlrm.get_url(await ip_loc(proxy_port))
@@ -125,7 +121,7 @@ async def start(
         logger.info(f"Running st_async, workers: {workers}.")
         _sta = Statistics()
         tasks = [
-            asyncio.create_task(_fetch(url, _sta, proxy_host, proxy_port, buffer))
+            asyncio.create_task(_fetch(url, _sta, proxy_host, proxy_port, buffer_))
             for _ in range(workers)
         ]
         await asyncio.wait(tasks)
@@ -138,3 +134,14 @@ async def start(
                 _sta.total_red,
             )
         return 0, 0, [], 0
+
+
+if __name__ == "__main__":
+    from ssrspeed.config import generate_config_file, load_path_config, ssrconfig
+    from ssrspeed.path import ROOT_PATH, get_path_json
+
+    key_path = get_path_json(ROOT_PATH)
+    load_path_config({"path": key_path})
+    generate_config_file()
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+    asyncio.run(start(ssrconfig["fileDownload"], "127.0.0.1", 7890))

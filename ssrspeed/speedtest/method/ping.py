@@ -72,7 +72,7 @@ async def google_ping_task(loop, _list, address, port):
 async def tcp_ping(address: str, port: int) -> tuple:
     alt = fac = suc = 0
     loop = asyncio.get_running_loop()
-    _list = []
+    _list: list = []
     test_ping = [
         asyncio.create_task(tcp_ping_task(loop, _list, address, port)) for _ in range(3)
     ]
@@ -88,7 +88,7 @@ async def tcp_ping(address: str, port: int) -> tuple:
 async def google_ping(address: str, port: int) -> tuple:
     alt = fac = suc = 0
     loop = asyncio.get_running_loop()
-    _list = []
+    _list: list = []
     test_ping = [
         asyncio.create_task(google_ping_task(loop, _list, address, port))
         for _ in range(3)
