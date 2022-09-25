@@ -126,14 +126,17 @@ class SSRSpeedCore:
             "results": self.__stc.get_result() if self.__stc else [],
         }
 
-    def filter_nodes(self, **kwargs: list):
+    def filter_nodes(self, **kwargs):
+        rs = kwargs.get("rs", False)
         fk = kwargs.get("fk", [])
         fgk = kwargs.get("fgk", [])
         frk = kwargs.get("frk", [])
         ek = kwargs.get("ek", [])
         egk = kwargs.get("egk", [])
         erk = kwargs.get("erk", []) + ssrconfig["excludeRemarks"]
-        self.__parser.filter_nodes(fk=fk, fgk=fgk, frk=frk, ek=ek, egk=egk, erk=erk)
+        self.__parser.filter_nodes(
+            rs=rs, fk=fk, fgk=fgk, frk=frk, ek=ek, egk=egk, erk=erk
+        )
         self.__parser.print_nodes()
         logger.info(f"{len(self.__parser.nodes)} node(s) will be tested.")
 

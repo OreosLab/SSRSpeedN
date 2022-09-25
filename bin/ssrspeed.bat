@@ -22,7 +22,7 @@ echo [3] 参数查阅
 echo [4] 当前 SSRSpeed 版本
 echo [5] 为本次运行获取管理员权限
 echo ===============================================
-echo 请选择 [1-5]:
+echo 请选择 [1-5]: 
 choice /c 12345
 if %errorlevel%==5 ( goto :uac )
 if %errorlevel%==4 ( goto :ver )
@@ -69,9 +69,10 @@ if %errorlevel%==1 ( goto :yw )
 
 echo.
 echo usage: ssrspeed [-h] [--version] [-d DIR] [-u URL] [-i IMPORT_FILE] [-c GUICONFIG] [-mc MAX_CONNECTIONS] [-M {default,pingonly,stream,all,wps}]
-echo                [-m {stasync,socket,speedtestnet,fast}] [--include FILTER [FILTER ...]] [--include-group GROUP [GROUP ...]] [--include-remark REMARKS [REMARKS ...]]
-echo                [--exclude EFILTER [EFILTER ...]] [--exclude-group EGFILTER [EGFILTER ...]] [--exclude-remark ERFILTER [ERFILTER ...]] [-g GROUP_OVERRIDE] [-C RESULT_COLOR]
-echo                [-s {speed,rspeed,ping,rping}] [--skip-requirements-check] [-w] [-l LISTEN] [-p PORT] [--download {all,client,database}] [--debug]
+echo                 [-m {stasync,socket,speedtestnet,fast}] [--reject-same] [--include FILTER [FILTER ...]] [--include-group GROUP [GROUP ...]]
+echo                 [--include-remark REMARKS [REMARKS ...]] [--exclude EFILTER [EFILTER ...]] [--exclude-group EGFILTER [EGFILTER ...]]
+echo                 [--exclude-remark ERFILTER [ERFILTER ...]] [-g GROUP_OVERRIDE] [-C RESULT_COLOR] [-s {speed,rspeed,ping,rping}]
+echo                 [--skip-requirements-check] [-w] [-l LISTEN] [-p PORT] [--download {all,client,database}] [--debug]
 echo.
 echo optional arguments:
 echo  -h, --help            show this help message and exit
@@ -88,6 +89,7 @@ echo  -M {default,pingonly,stream,all,wps}, --mode {default,pingonly,stream,all,
 echo                        Select test mode in [default, pingonly, stream, all, wps].
 echo  -m {stasync,socket,speedtestnet,fast}, --method {stasync,socket,speedtestnet,fast}
 echo                        Select test method in [speedtestnet, fast, socket, stasync].
+echo  --reject-same         Reject nodes that appear later with the same server and port as before.
 echo  --include FILTER [FILTER ...]
 echo                        Filter nodes by group and remarks using keyword.
 echo  --include-group GROUP [GROUP ...]
@@ -137,9 +139,10 @@ goto :start
 
 echo.
 echo 用法：ssrspeed [-h] [--version] [-d DIR] [-u URL] [-i IMPORT_FILE] [-c GUICONFIG] [-mc MAX_CONNECTIONS] [-M {default,pingonly,stream,all,wps}]
-echo                [-m {stasync,socket,speedtestnet,fast}] [--include FILTER [FILTER ...]] [--include-group GROUP [GROUP ...]] [--include-remark REMARKS [REMARKS ...]]
-echo                [--exclude EFILTER [EFILTER ...]] [--exclude-group EGFILTER [EGFILTER ...]] [--exclude-remark ERFILTER [ERFILTER ...]] [-g GROUP_OVERRIDE] [-C RESULT_COLOR]
-echo                [-s {speed,rspeed,ping,rping}] [--skip-requirements-check] [-w] [-l LISTEN] [-p PORT] [--download {all,client,database}] [--debug]
+echo               [-m {stasync,socket,speedtestnet,fast}] [--reject-same] [--include FILTER [FILTER ...]] [--include-group GROUP [GROUP ...]]
+echo               [--include-remark REMARKS [REMARKS ...]] [--exclude EFILTER [EFILTER ...]] [--exclude-group EGFILTER [EGFILTER ...]]
+echo               [--exclude-remark ERFILTER [ERFILTER ...]] [-g GROUP_OVERRIDE] [-C RESULT_COLOR] [-s {speed,rspeed,ping,rping}]
+echo               [--skip-requirements-check] [-w] [-l LISTEN] [-p PORT] [--download {all,client,database}] [--debug]
 echo.
 echo 可选参数：
 echo.
@@ -157,6 +160,7 @@ echo  -M {default,pingonly,stream,all,wps}, --mode {default,pingonly,stream,all,
 echo                        在 [default, pingonly, stream, all, wps] 中选择测试模式.
 echo  -m {stasync,socket,speedtestnet,fast}, --method {stasync,socket,speedtestnet,fast}
 echo                        在 [stasync, socket, speedtestnet, fast] 中选择测试方法.
+echo  --reject-same         只保留相同服务器和端口第一次出现的节点.
 echo  --include FILTER [FILTER ...]
 echo                        通过节点标识和组名筛选节点.
 echo  --include-group GROUP [GROUP ...]

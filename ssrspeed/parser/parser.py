@@ -189,7 +189,8 @@ class UniversalParser:
 
         return result
 
-    def filter_nodes(self, **kwargs: list):
+    def filter_nodes(self, **kwargs):
+        rs = kwargs.get("rs", False)
         fk = kwargs.get("fk", [])
         fgk = kwargs.get("fgk", [])
         frk = kwargs.get("frk", [])
@@ -198,7 +199,7 @@ class UniversalParser:
         erk = kwargs.get("erk", [])
         nf = NodeFilter()
         self.__nodes = nf.filter_node(
-            self.__nodes, fk=fk, fgk=fgk, frk=frk, ek=ek, egk=egk, erk=erk
+            self.__nodes, rs=rs, fk=fk, fgk=fgk, frk=frk, ek=ek, egk=egk, erk=erk
         )
 
     def print_nodes(self):

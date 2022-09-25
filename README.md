@@ -110,6 +110,7 @@ ssrspeed
 
                         在 [stasync, socket, speedtestnet, fast] 中选择测试方法.
 
+  --reject-same         拒绝后来出现的服务器和端口与之前相同的节点.
   --include FILTER [FILTER ...]
 
                         通过节点标识和组名筛选节点.

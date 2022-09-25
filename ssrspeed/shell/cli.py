@@ -62,6 +62,13 @@ def set_opts(parser: ArgumentParser):
         help="Select test method in [stasync, socket, speedtestnet, fast].",
     )
     parser.add_argument(
+        "--reject-same",
+        action="store_true",
+        dest="reject_same",
+        default=False,
+        help="Reject nodes that appear later with the same server and port as before.",
+    )
+    parser.add_argument(
         "--include",
         action="extend",
         nargs="+",

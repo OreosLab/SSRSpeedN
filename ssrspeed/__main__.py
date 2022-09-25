@@ -216,6 +216,7 @@ def main():
             sc.set_group(args.group_override)
 
         sc.filter_nodes(
+            rs=args.reject_same,
             fk=filter_keyword,
             fgk=filter_group_keyword,
             frk=filter_remark_keyword,

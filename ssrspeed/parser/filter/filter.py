@@ -7,10 +7,11 @@ class NodeFilter:
     def __init__(self):
         self.__node_list: list = []
 
-    def filter_node(self, nodes: list, **kwargs: list) -> list:
+    def filter_node(self, nodes: list, **kwargs) -> list:
         self.__node_list.clear()
         self.__node_list = deepcopy(nodes)
-        self.__get_first_nodes(self.__node_list)
+        if kwargs.get("rs", False):
+            self.__get_first_nodes(self.__node_list)
         if kwl := kwargs.get("fk", []):
             self.__filter_node(kwl)
         if gkwl := kwargs.get("frk", []):
