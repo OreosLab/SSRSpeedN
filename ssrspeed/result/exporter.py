@@ -55,6 +55,7 @@ class ExportResult:
         self.__color_speed_list: list = []
         self.__font: ImageFont.FreeTypeFont = self.set_font(self.__config["font"])
         self.__time_used: str = "N/A"
+        self.__upload_config: dict = ssrconfig["uploadResult"]
 
     # 	self.set_colors()
 
@@ -1114,12 +1115,15 @@ class ExportResult:
         files.append(filename)
         logger.info(f"Result image saved as {filename}")
 
+        if not self.__config.get("uploadResult", False):
+            self.__upload_result(files)
+
+    def __upload_result(self, files: list):
+        sever = self.__upload_config.get("server", "")
+        token = self.__upload_config.get("token", "")
+        remark = self.__upload_config.get("remark", "")
         for _file in files:
-            if not (u := self.__config.get("uploadResult", {})):
-                break
-            push2server(
-                _file, u.get("server", ""), u.get("token", ""), u.get("remark", "")
-            )
+            push2server(_file, sever, token, remark)
 
     @staticmethod
     def __parse_traffic(traffic: float) -> str:
@@ -1127,16 +1131,12 @@ class ExportResult:
         if traffic < 1:
             return f"{traffic * 1024:.2f} KB"
         gb_traffic = traffic / 1024
-        if gb_traffic < 1:
-            return f"{traffic:.2f} MB"
-        return f"{gb_traffic:.2f} GB"
+        return f"{traffic:.2f} MB" if gb_traffic < 1 else f"{gb_traffic:.2f} GB"
 
     @staticmethod
     def __parse_speed(speed: float) -> str:
         speed = speed / 1024 / 1024
-        if speed < 1:
-            return f"{speed * 1024:.2f} KB"
-        return f"{speed:.2f} MB"
+        return f"{speed * 1024:.2f} KB" if speed < 1 else f"{speed:.2f} MB"
 
     @staticmethod
     def __new_mix_color(lc: dict, rc: dict, rt: int) -> tuple:
