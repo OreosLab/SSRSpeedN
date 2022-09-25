@@ -137,12 +137,12 @@ class SSRSpeedCore:
         self.__parser.print_nodes()
         logger.info(f"{len(self.__parser.nodes)} node(s) will be tested.")
 
-    def import_and_export(self, filename: str, split: int = 0):
+    def import_and_export(self, filename: str):
         self.__results = import_result(filename)
-        self.__export_result(split, 2)
+        self.__export_result(2)
         self.__results = []
 
-    def __export_result(self, split: int = 0, export_type: int = 0):
+    def __export_result(self, export_type: int = 0):
         er = ExportResult()
         er.set_time_used(self.__time_stamp_stop - self.__time_stamp_start)
         if self.test_mode == "TCP_PING":
@@ -163,4 +163,4 @@ class SSRSpeedCore:
             er.export_wps_result(self.__results, export_type)
             return
         er.set_colors(self.colors)
-        er.export(self.__results, split, export_type, self.sort_method)
+        er.export(self.__results, export_type, self.sort_method)

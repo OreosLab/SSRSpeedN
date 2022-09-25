@@ -25,8 +25,13 @@ class BasisNode:
         if new_cfg:
             self._config.update(new_cfg)
 
+    def __key(self):
+        return self._config["server"], self._config["server_port"]
+
+    def __hash__(self):
+        return hash(self.__key())
+
     def __eq__(self, other) -> bool:
-        return (
-            self._config["server"] == other.config["server"]
-            and self._config["server_port"] == other.config["server_port"]
-        )
+        if isinstance(other, BasisNode):
+            return self.__key() == other.__key()
+        return NotImplemented

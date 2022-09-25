@@ -96,5 +96,8 @@ class BottomParser(NodeFilter, metaclass=ABCMeta):
     def get_all_config(self) -> list:
         return self._config_list
 
+    def get_nodes_config(self) -> list:
+        return [node.config for node in self.__node_list]
+
     def get_next_config(self) -> Optional[list]:
         return self._config_list.pop(0) if self._config_list else None

@@ -102,9 +102,7 @@ class ExportResult:
         self.__time_used = time.strftime("%H:%M:%S", time.gmtime(time_used))
         logger.info(f"Time Used : {self.__time_used}")
 
-    def export(
-        self, result: list, split: int = 0, export_type: int = 0, sort_method: str = ""
-    ):
+    def export(self, result: list, export_type: int = 0, sort_method: str = ""):
         if not export_type:
             self.__export_as_json(result)
         sorter = Sorter()

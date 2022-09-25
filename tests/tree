@@ -1,4 +1,4 @@
 #!/bin/bash
 
 [ -f ./tree ] && cd .. && echo hello
-tree -L 3 -I "__pycache__|st.bat|build|data|dist|htmlcov|resources|ssrspeed.egg-info|venv" >data/tree.md
+tree -L 3 -I "__pycache__|st.bat|build|data|dist|htmlcov|paths.json|resources|ssrspeed.egg-info|venv" >data/tree.md

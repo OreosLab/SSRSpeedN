@@ -17,14 +17,14 @@ class BaseClient:
         self._clients: Dict[str, str] = clients
         self._config_file: str = file
         self._config_list: List[Dict[str, Any]] = []
-        self._config: Dict[str, Any] = {}
+        self._config_str: str = ""
         self._process: Optional[subprocess.Popen[bytes]] = None
         self._cmd: Dict[str, List[str]] = {}
 
     async def start_client(self, config: Dict[str, Any], debug: bool = False):
-        self._config = config
+        self._config_str = json.dumps(config)
         async with aiofiles.open(self._config_file, "w+", encoding="utf-8") as f:
-            await f.write(json.dumps(self._config))
+            await f.write(self._config_str)
 
         if self._process is None:
             if BaseClient._platform == "Windows":
