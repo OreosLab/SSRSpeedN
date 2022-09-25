@@ -193,6 +193,7 @@
         "sleepseconds",
         "socksocket",
         "socktype",
+        "sourcery",
         "speedtest",
         "speedtestnet",
         "sslibev",
