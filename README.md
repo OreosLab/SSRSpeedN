@@ -1,13 +1,15 @@
 <h1 align="center">
-<img src="https://i.jpg.dog/file/jpg-dog/9160396e547d9abde7ec3199c571aa47.png" alt="SSRSpeedN" width="240">
+<img src="https://s1.ax1x.com/2022/09/26/xVFWGD.png" alt="SSRSpeedN" width="240">
 </h1>
 <p align="center">
-Batch speed measuring tool based on Shadowsocks(R) and V2Ray
+Proxy performance test & export tool based on Shadowsocks(R), V2Ray, Trojan and so on.
 </p>
 <p align="center">
-  <a href="https://github.com/Oreomeow/SSRSpeedN/tags"><img src="https://img.shields.io/github/tag/Oreomeow/SSRSpeedN.svg"></a>
-  <a href="https://github.com/Oreomeow/SSRSpeedN/releases"><img src="https://img.shields.io/github/release/Oreomeow/SSRSpeedN.svg"></a>
-  <a href="https://github.com/Oreomeow/SSRSpeedN/blob/main/LICENSE"><img src="https://img.shields.io/github/license/Oreomeow/SSRSpeedN.svg"></a>
+  <a href="https://www.codacy.com/gh/OreosLab/SSRSpeedN/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=OreosLab/SSRSpeedN&amp;utm_campaign=Badge_Grade"><img src="https://app.codacy.com/project/badge/Grade/3b223d2546a94affa17c74ea37a048fb"/></a>
+  <a href="https://pypi.org/project/ssrspeed/"><img src="https://img.shields.io/pypi/v/ssrspeed?color=4b5cc4&logo=python&logoColor=44cef6" alt="PyPI version"></a>
+  <a href="https://github.com/Oreomeow/SSRSpeedN/tags"><img src="https://img.shields.io/github/tag/Oreomeow/SSRSpeedN?color=f2be45"></a>
+  <a href="https://github.com/Oreomeow/SSRSpeedN/blob/main/LICENSE"><img src="https://img.shields.io/github/license/Oreomeow/SSRSpeedN?color=ff0097"></a>
+  <a href="https://github.com/psf/black"><img src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
 </p>
 
 ## 注意事项
