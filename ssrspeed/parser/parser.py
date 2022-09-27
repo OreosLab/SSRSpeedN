@@ -176,6 +176,8 @@ class UniversalParser:
         for cfg in cfgs:
             if cfg["type"] == "ss":
                 result.append(NodeShadowsocks(cfg["config"]))
+            elif cfg["type"] == "ssr":
+                result.append(NodeShadowsocksR(cfg["config"]))
             elif cfg["type"] == "vmess":
                 result.append(
                     NodeV2Ray(

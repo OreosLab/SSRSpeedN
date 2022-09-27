@@ -55,6 +55,21 @@ class ClashParser:
         _config["plugin_args"] = ""
         return _config
 
+    def __parse_shadowsocksr(self, cfg: dict) -> dict:
+        _config = self.__get_shadowsocks_base_config()
+        _config["server"] = cfg["server"]
+        _config["server_port"] = int(cfg["port"])
+        _config["method"] = cfg["cipher"]
+        _config["password"] = cfg["password"]
+        _config["protocol"] = cfg.get("protocol", "")
+        _config["protocol_param"] = cfg.get("protocol-param", "")
+        _config["obfs"] = cfg.get("obfs", "")
+        _config["obfs_param"] = cfg.get("obfs-param", "")
+        _config["remarks"] = cfg.get("name", cfg["server"])
+        _config["group"] = "N/A"
+
+        return _config
+
     @staticmethod
     def __convert_v2ray_cfg(cfg: dict) -> dict:
         server = cfg["server"]
@@ -155,8 +170,10 @@ class ClashParser:
         clash_cfg = yaml.load(clash_cfg, Loader=yaml.FullLoader)
         for cfg in clash_cfg["proxies"]:
             _type = cfg.get("type", "N/A").lower()
-            if _type in ["ss", "ssr"]:
+            if _type in "ss":
                 ret = self.__parse_shadowsocks(cfg)
+            elif _type in "ssr":
+                ret = self.__parse_shadowsocksr(cfg)
             elif _type == "vmess":
                 ret = self.__convert_v2ray_cfg(cfg)
             elif _type == "trojan":
