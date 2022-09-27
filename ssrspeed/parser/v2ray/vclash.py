@@ -20,15 +20,15 @@ class ParserV2RayClash:
         allow_insecure = bool(clash_cfg.get("skip-cert-verify", False))
         net = clash_cfg.get("network", "tcp")  # ws, tcp
         _type = clash_cfg.get("type", "none")  # Obfs type
-        ws_header = clash_cfg.get("ws-headers", {})
-        headers = {
-            header: ws_header[header] for header in ws_header.keys() if header != "Host"
-        }
+        ws_header = clash_cfg.get(
+            "ws-headers", clash_cfg.get("ws-opts", {}).get("headers", {})
+        )
+        headers = {k: v for k, v in ws_header.items() if k != "Host"}
         # http host, web socket host, h2 host, quic encrypt method
         host = ws_header.get("Host", "")
         tls_host = host
         # Websocket path, http path, quic encrypt key
-        path = clash_cfg.get("ws-path", "")
+        path = clash_cfg.get("ws-path", clash_cfg.get("ws-opts", {}).get("path", ""))
 
         logger.debug(
             f"Server : {server}, Port : {port}, tls-host : {tls_host}, Path : {path}, "
@@ -85,4 +85,4 @@ if __name__ == "__main__":
 
     key_path = get_path_json(ROOT_PATH)
     pvc = ParserV2RayClash()
-    pvc.parse_gui_config(key_path["data"] + "clash.yaml")
+    print(pvc.parse_gui_config(key_path["data"] + "clash.yaml"))

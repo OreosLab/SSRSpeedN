@@ -83,7 +83,7 @@ class ClashParser:
         allow_insecure = bool(cfg.get("skip-cert-verify", False))
         net = cfg.get("network", "tcp")  # ws, tcp
         _type = cfg.get("type", "none")  # Obfs type
-        ws_header = cfg.get("ws-headers", {})
+        ws_header = cfg.get("ws-headers", cfg.get("ws-opts", {}).get("headers", {}))
         headers = {
             header: ws_header[header] for header in ws_header.keys() if header != "Host"
         }
@@ -91,7 +91,7 @@ class ClashParser:
         host = ws_header.get("Host", "")
         tls_host = host
         # Websocket path, http path, quic encrypt key
-        path = cfg.get("ws-path", "")
+        path = cfg.get("ws-path", cfg.get("ws-opts", {}).get("path", ""))
 
         logger.debug(
             f"Server : {server}, Port : {port}, tls-host : {tls_host}, Path : {path}, "

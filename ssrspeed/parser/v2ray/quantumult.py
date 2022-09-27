@@ -39,7 +39,7 @@ class ParserV2RayQuantumult:
             host = ""  # http host, web socket host, h2 host, quic encrypt method
             net = "tcp"
             path = ""  # Websocket path, http path, quic encrypt key
-            headers: list = []
+            headers: dict = {}
             allow_insecure = True
             i = 7
             if link_split[6].split("=")[1] == "true":
@@ -54,12 +54,11 @@ class ParserV2RayQuantumult:
                     link_split[i + 3].split("=")[1].replace('"', "").split("[Rr][Nn]")
                 ):
                     host = header[0].split(":")[1].strip()
-                    headers.extend(
+                    headers.update(
                         {
-                            "header": header[h].split(":")[0].strip(),
-                            "value": header[h].split(":")[1].strip(),
+                            h.split(":")[0].strip(): h.split(":")[1].strip()
+                            for h in header[1:]
                         }
-                        for h in range(1, len(header))
                     )
 
             _type = "none"  # Obfs type under tcp mode
