@@ -16,7 +16,7 @@ class ParserV2RayClash:
         uuid = clash_cfg["uuid"]
         aid = int(clash_cfg["alterId"])
         security = clash_cfg.get("cipher", "auto")
-        tls = "tls" if "tls" in clash_cfg else ""  # TLS
+        tls = "tls" if clash_cfg.get("tls", False) else ""  # TLS
         allow_insecure = bool(clash_cfg.get("skip-cert-verify", False))
         net = clash_cfg.get("network", "tcp")  # ws, tcp
         _type = clash_cfg.get("type", "none")  # Obfs type

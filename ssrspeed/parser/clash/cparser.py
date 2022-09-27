@@ -79,7 +79,7 @@ class ClashParser:
         uuid = cfg["uuid"]
         aid = int(cfg["alterId"])
         security = cfg.get("cipher", "auto")
-        tls = "tls" if "tls" in cfg else ""  # TLS
+        tls = "tls" if cfg.get("tls", False) else ""  # TLS
         allow_insecure = bool(cfg.get("skip-cert-verify", False))
         net = cfg.get("network", "tcp")  # ws, tcp
         _type = cfg.get("type", "none")  # Obfs type
