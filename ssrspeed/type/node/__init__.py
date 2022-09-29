@@ -1,6 +1,13 @@
 from .nss import NodeShadowsocks
 from .nssr import NodeShadowsocksR
 from .ntrojan import NodeTrojan
-from .nv2ray import NodeV2Ray
+from .nvless import NodeVless
+from .nvmess import NodeVmess
 
-__all__ = ["NodeShadowsocks", "NodeShadowsocksR", "NodeTrojan", "NodeV2Ray"]
+__all__ = [
+    "NodeShadowsocks",
+    "NodeShadowsocksR",
+    "NodeTrojan",
+    "NodeVless",
+    "NodeVmess",
+]

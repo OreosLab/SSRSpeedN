@@ -15,6 +15,7 @@ from ssrspeed.launcher import (
     ShadowsocksRClient,
     TrojanClient,
     V2RayClient,
+    XRayClient,
 )
 from ssrspeed.speedtest.methodology import SpeedTestMethods
 from ssrspeed.util import async_check_port, domain2ip, get_ip_info, ip_loc
@@ -105,15 +106,17 @@ class SpeedTest:
         return copy.deepcopy(self.__base_result)
 
     @staticmethod
-    def __get_client(client_type, file):
+    def __get_client(node_type, file):
         client = None
-        if client_type == "Shadowsocks":
+        if node_type == "Shadowsocks":
             client = ShadowsocksClient(CLIENTS_DIR, file)
-        elif client_type == "ShadowsocksR":
+        elif node_type == "ShadowsocksR":
             client = ShadowsocksRClient(CLIENTS_DIR, file)
-        elif client_type == "Trojan":
+        elif node_type == "Trojan":
             client = TrojanClient(CLIENTS_DIR, file)
-        elif client_type == "V2Ray":
+        elif node_type == "Vless":
+            client = XRayClient(CLIENTS_DIR, file)
+        elif node_type == "Vmess":
             client = V2RayClient(CLIENTS_DIR, file)
         return client
 

@@ -3,7 +3,11 @@ from loguru import logger
 
 from ssrspeed.parser.bottom import BottomParser
 from ssrspeed.parser.conf import V2RayBaseConfigs
-from ssrspeed.parser.v2ray import ParserV2RayClash, ParserV2RayN, ParserV2RayQuantumult
+from ssrspeed.parser.v2ray import (
+    ParserV2RayClash,
+    ParserV2RayQuantumult,
+    ParserV2RayVmess,
+)
 from ssrspeed.util import b64plus
 
 
@@ -17,8 +21,8 @@ class V2RayParser(V2RayBaseConfigs, BottomParser):
         if link[:8] != "vmess://":
             logger.error(f"Unsupported link : {link}")
             return {}
-        pv2rn = ParserV2RayN()
-        cfg = pv2rn.parse_subs_config(link)
+        pvmess = ParserV2RayVmess()
+        cfg = pvmess.parse_subs_config(link)
         if not cfg:
             pq = ParserV2RayQuantumult()
             cfg = pq.parse_subs_config(link)
@@ -50,8 +54,8 @@ class V2RayParser(V2RayBaseConfigs, BottomParser):
 
     def read_gui_config(self, filename):
         pv2rc = ParserV2RayClash()
-        v2rnp = ParserV2RayN()
-        raw_gui_configs = v2rnp.parse_gui_config(filename)
+        pvmess = ParserV2RayVmess()
+        raw_gui_configs = pvmess.parse_gui_config(filename)
         if raw_gui_configs is False:
             logger.info("Not V2RayN Config.")
             raw_gui_configs = pv2rc.parse_gui_config(filename)

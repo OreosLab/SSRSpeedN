@@ -18,8 +18,18 @@ from ssrspeed.parser.ss import (
 )
 from ssrspeed.parser.ssr import ParserShadowsocksR
 from ssrspeed.parser.trojan import TrojanParser
-from ssrspeed.parser.v2ray import ParserV2RayN, ParserV2RayQuantumult
-from ssrspeed.type.node import NodeShadowsocks, NodeShadowsocksR, NodeTrojan, NodeV2Ray
+from ssrspeed.parser.v2ray import (
+    ParserV2RayQuantumult,
+    ParserV2RayVless,
+    ParserV2RayVmess,
+)
+from ssrspeed.type.node import (
+    NodeShadowsocks,
+    NodeShadowsocksR,
+    NodeTrojan,
+    NodeVless,
+    NodeVmess,
+)
 from ssrspeed.util import b64plus
 
 PROXY_SETTINGS = ssrconfig["proxy"]
@@ -45,7 +55,11 @@ class UniversalParser:
         configs: List[dict],
     ) -> List[
         Union[
-            Optional[NodeShadowsocks], Optional[NodeShadowsocksR], Optional[NodeV2Ray],
+            Optional[NodeShadowsocks],
+            Optional[NodeShadowsocksR],
+            Optional[NodeVless],
+            Optional[NodeVmess],
+            Optional[NodeTrojan],
         ]
     ]:
         result: list = []
@@ -55,8 +69,10 @@ class UniversalParser:
                 result.append(NodeShadowsocks(_config["config"]))
             elif _type == "ShadowsocksR":
                 result.append(NodeShadowsocksR(_config["config"]))
-            elif _type == "V2Ray":
-                result.append(NodeV2Ray(_config["config"]))
+            elif _type == "Vless":
+                result.append(NodeVless(_config["config"]))
+            elif _type == "Vmess":
+                result.append(NodeVmess(_config["config"]))
             elif _type == "Trojan":
                 result.append(NodeTrojan(_config["config"]))
             else:
@@ -91,7 +107,8 @@ class UniversalParser:
         Union[
             Optional[NodeShadowsocks],
             Optional[NodeShadowsocksR],
-            Optional[NodeV2Ray],
+            Optional[NodeVless],
+            Optional[NodeVmess],
             Optional[NodeTrojan],
         ]
     ]:
@@ -102,7 +119,8 @@ class UniversalParser:
             node: Union[
                 Optional[NodeShadowsocks],
                 Optional[NodeShadowsocksR],
-                Optional[NodeV2Ray],
+                Optional[NodeVless],
+                Optional[NodeVmess],
                 Optional[NodeTrojan],
             ] = None
 
@@ -128,14 +146,25 @@ class UniversalParser:
                 else:
                     logger.warning(f"Invalid shadowsocksR link {link}")
 
+            elif link[:8] == "vless://":
+                # Vless
+                pvless = ParserV2RayVless()
+                if cfg := pvless.parse_subs_config(link):
+                    gen_cfg = V2RayBaseConfigs.generate_config(
+                        cfg, LOCAL_ADDRESS, LOCAL_PORT
+                    )
+                    node = NodeVless(gen_cfg)
+                else:
+                    logger.warning(f"Invalid vless link {link}")
+
             elif link[:8] == "vmess://":
                 # Vmess link (V2RayN and Quan)
                 # V2RayN Parser
                 cfg = None
                 logger.info("Try V2RayN Parser.")
-                pv2rn = ParserV2RayN()
+                pvmess = ParserV2RayVmess()
                 with contextlib.suppress(ValueError):
-                    cfg = pv2rn.parse_subs_config(link)
+                    cfg = pvmess.parse_subs_config(link)
                 if not cfg:
                     # Quantumult Parser
                     logger.info("Try Quantumult Parser.")
@@ -148,7 +177,7 @@ class UniversalParser:
                     gen_cfg = V2RayBaseConfigs.generate_config(
                         cfg, LOCAL_ADDRESS, LOCAL_PORT
                     )
-                    node = NodeV2Ray(gen_cfg)
+                    node = NodeVmess(gen_cfg)
 
             elif link[:9] == "trojan://":
                 cfg = None
@@ -180,7 +209,7 @@ class UniversalParser:
                 result.append(NodeShadowsocksR(cfg["config"]))
             elif cfg["type"] == "vmess":
                 result.append(
-                    NodeV2Ray(
+                    NodeVmess(
                         V2RayBaseConfigs.generate_config(
                             cfg["config"], LOCAL_ADDRESS, LOCAL_PORT
                         )
@@ -216,6 +245,7 @@ class UniversalParser:
             if (
                 url.startswith("ss://")
                 or url.startswith("ssr://")
+                or url.startswith("vless://")
                 or url.startswith("vmess://")
                 or url.startswith("trojan://")
             ):
@@ -306,11 +336,11 @@ class UniversalParser:
                     self.__nodes.append(NodeShadowsocksR(cfg))
             # V2RayN
             else:
-                pv2n = ParserV2RayN()
-                cfgs = pv2n.parse_gui_data(data)
+                pvmess = ParserV2RayVmess()
+                cfgs = pvmess.parse_gui_data(data)
                 for cfg in cfgs:
                     self.__nodes.append(
-                        NodeV2Ray(
+                        NodeVmess(
                             V2RayBaseConfigs.generate_config(
                                 cfg, LOCAL_ADDRESS, LOCAL_PORT
                             )

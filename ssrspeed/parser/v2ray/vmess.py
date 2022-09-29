@@ -7,7 +7,7 @@ from loguru import logger
 from ssrspeed.util import b64plus
 
 
-class ParserV2RayN:
+class ParserV2RayVmess:
     def __init__(self):
         self.__decoded_configs = []
 
@@ -53,6 +53,7 @@ class ParserV2RayN:
                 f"Host : {host}, TLS : {tls}, Remarks : {remarks}, group={group}"
             )
             return {
+                "protocol": "vmess",
                 "remarks": remarks,
                 "server": server,
                 "server_port": port,
@@ -68,7 +69,7 @@ class ParserV2RayN:
             }
 
         except Exception:
-            logger.exception(f"Parse {raw_link} failed. (V2RayN Method)")
+            logger.exception(f"Parse {raw_link} failed. (V2RayN Vmess)")
             return None
 
     def parse_gui_data(self, data: dict) -> list:
@@ -109,4 +110,4 @@ class ParserV2RayN:
 
 if __name__ == "__main__":
     LINK = "vmess://eyJhZGQiOiAiczM1NC5va2dnbm9kZS50b3AiLCAiYWlkIjogIjAiLCAiaG9zdCI6ICJzMzU0Lm9rZ2dub2RlLnRvcCIsICJpZCI6ICJlNDgzMmNhMC1kNmY2LTMyYzgtODdkYS1mM2VjY2ZmZTczYzAiLCAibmV0IjogIndzIiwgInBhdGgiOiAiL3BhbmVsbXlhZG1pbiIsICJwb3J0IjogIjMzOTU0IiwgInBzIjogImdpdGh1Yi5jb20vZnJlZWZxIC0gXHU0ZTJkXHU1NmZkXHU5NjNmXHU5MWNjXHU0ZTkxIDEiLCAic2VjdXJpdHkiOiAibm9uZSIsICJ0bHMiOiAidGxzIiwgInR5cGUiOiAiIiwgInVybF9ncm91cCI6ICJ0Lm1lL3JpcGFvamllZGlhbiIsICJ2IjogIjIifQ=="
-    print(ParserV2RayN().parse_subs_config(LINK))
+    print(ParserV2RayVmess().parse_subs_config(LINK))

@@ -99,6 +99,7 @@ class ClashParser:
             f"Host : {host}, TLS : {tls}, Remarks : {remarks}, group={group}"
         )
         return {
+            "protocol": "vmess",
             "remarks": remarks,
             "group": group,
             "server": server,

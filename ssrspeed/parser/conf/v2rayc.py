@@ -43,7 +43,7 @@ V2RayBaseConfig: dict = {
                 "httpSettings": {},
                 "quicSettings": {},
             },
-            "mux": {"enabled": True},
+            "mux": {},
         },
         {
             "tag": "direct",
@@ -89,25 +89,34 @@ tcpSettingsObject: dict = {
     },
 }
 
+webSocketSettingsObject: dict = {
+    "path": "",
+    "headers": {"Host": ""},
+}
+
+httpSettingsObject: dict = {"path": "", "host": ["aes-128-gcm"]}
+
 quicSettingsObject: dict = {
     "security": "none",
     "key": "",
     "header": {"type": "none", "request": None, "response": None},
 }
-httpSettingsObject: dict = {"path": "", "host": ["aes-128-gcm"]}
-webSocketSettingsObject: dict = {
-    "connectionReuse": True,
-    "path": "",
-    "headers": {"Host": ""},
-}
+
+grpcSettingsObject: dict = {"serviceName": "", "multiMode": False}
 
 tlsSettingsObject: dict = {"allowInsecure": True, "serverName": ""}
+
+xtlsSettingsObject: dict = {"allowInsecure": True, "serverName": ""}
 
 
 class V2RayBaseConfigs:
     @staticmethod
-    def get_tls_object() -> dict:
-        return copy.deepcopy(tlsSettingsObject)
+    def get_config() -> dict:
+        return copy.deepcopy(V2RayBaseConfig)
+
+    @staticmethod
+    def get_tcp_object() -> dict:
+        return copy.deepcopy(tcpSettingsObject)
 
     @staticmethod
     def get_ws_object() -> dict:
@@ -118,16 +127,20 @@ class V2RayBaseConfigs:
         return copy.deepcopy(httpSettingsObject)
 
     @staticmethod
-    def get_tcp_object() -> dict:
-        return copy.deepcopy(tcpSettingsObject)
-
-    @staticmethod
     def get_quic_object() -> dict:
         return copy.deepcopy(quicSettingsObject)
 
     @staticmethod
-    def get_config() -> dict:
-        return copy.deepcopy(V2RayBaseConfig)
+    def get_grpc_object() -> dict:
+        return copy.deepcopy(grpcSettingsObject)
+
+    @staticmethod
+    def get_tls_object() -> dict:
+        return copy.deepcopy(tlsSettingsObject)
+
+    @staticmethod
+    def get_xtls_object() -> dict:
+        return copy.deepcopy(xtlsSettingsObject)
 
     @staticmethod
     def generate_config(
@@ -173,6 +186,10 @@ class V2RayBaseConfigs:
             quic_settings["key"] = config["path"]
             quic_settings["header"]["type"] = config["type"]
             stream_settings["quicSettings"] = quic_settings
+        elif config["network"] == "grpc":
+            grpc_settings = V2RayBaseConfigs.get_grpc_object()
+            grpc_settings["serviceName"] = config["serviceName"]
+            stream_settings["grpcSettings"] = grpc_settings
 
         stream_settings["security"] = config["tls"]
         if config["tls"] == "tls":
@@ -181,7 +198,16 @@ class V2RayBaseConfigs:
                 config.get("allowInsecure", "false") == "true"
             )
             tls_settings["serverName"] = config.get("tls-host", "")
+            if config.get("alpn"):
+                tls_settings["alpn"] = config["alpn"].split(",")
             stream_settings["tlsSettings"] = tls_settings
+        elif config["tls"] == "xtls":
+            xtls_settings = V2RayBaseConfigs.get_xtls_object()
+            xtls_settings["allowInsecure"] = (
+                config.get("allowInsecure", "false") == "true"
+            )
+            xtls_settings["serverName"] = config.get("tls-host", "")
+            stream_settings["xtlsSettings"] = xtls_settings
 
         _config["outbounds"][0]["streamSettings"] = stream_settings
 
@@ -189,7 +215,15 @@ class V2RayBaseConfigs:
         outbound["address"] = config["server"]
         outbound["port"] = config["server_port"]
         outbound["users"][0]["id"] = config["id"]
-        outbound["users"][0]["alterId"] = config["alterId"]
-        outbound["users"][0]["security"] = config["security"]
+        if config["protocol"] == "vmess":
+            _config["outbounds"][0]["protocol"] = "vmess"
+            outbound["users"][0]["alterId"] = config["alterId"]
+            outbound["users"][0]["security"] = config["security"]
+        elif config["protocol"] == "vless":
+            _config["outbounds"][0]["protocol"] = "vless"
+            outbound["users"][0]["encryption"] = "none"
+            if config["flow"]:
+                outbound["users"][0]["flow"] = config["flow"]
         _config["outbounds"][0]["settings"]["vnext"][0] = outbound
+
         return _config

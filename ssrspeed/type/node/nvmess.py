@@ -1,7 +1,7 @@
 from ssrspeed.type.node.basis import BasisNode
 
 
-class NodeV2Ray(BasisNode):
+class NodeVmess(BasisNode):
     def __init__(self, config: dict):
         super().__init__(config)
-        self._type = "V2Ray"
+        self._type = "Vmess"
