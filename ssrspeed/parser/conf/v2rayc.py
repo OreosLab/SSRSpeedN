@@ -89,10 +89,7 @@ tcpSettingsObject: dict = {
     },
 }
 
-webSocketSettingsObject: dict = {
-    "path": "",
-    "headers": {"Host": ""},
-}
+webSocketSettingsObject: dict = {"path": "", "headers": {"Host": ""}}
 
 httpSettingsObject: dict = {"path": "", "host": ["aes-128-gcm"]}
 
