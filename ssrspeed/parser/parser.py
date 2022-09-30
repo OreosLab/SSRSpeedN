@@ -207,6 +207,14 @@ class UniversalParser:
                 result.append(NodeShadowsocks(cfg["config"]))
             elif cfg["type"] == "ssr":
                 result.append(NodeShadowsocksR(cfg["config"]))
+            elif cfg["type"] == "vless":
+                result.append(
+                    NodeVless(
+                        V2RayBaseConfigs.generate_config(
+                            cfg["config"], LOCAL_ADDRESS, LOCAL_PORT
+                        )
+                    )
+                )
             elif cfg["type"] == "vmess":
                 result.append(
                     NodeVmess(

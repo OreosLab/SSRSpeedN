@@ -28,6 +28,7 @@ class RequirementsCheck:
                 f"{client_dir}v2ray-core/v2ctl.exe",
                 f"{client_dir}v2ray-core/v2ray.exe",
             ],
+            "Xray-Core": [f"{client_dir}xray-core/xray.exe"],
             "GeoIP2 Databases": [
                 f"{databases_dir}GeoLite2-City.mmdb",
                 f"{databases_dir}GeoLite2-ASN.mmdb",
@@ -45,6 +46,7 @@ class RequirementsCheck:
                 f"{client_dir}v2ray-core/v2ctl",
                 f"{client_dir}v2ray-core/v2ray",
             ],
+            "Xray-Core": [f"{client_dir}xray-core/xray"],
             "GeoIP2 Databases": [
                 f"{databases_dir}GeoLite2-City.mmdb",
                 f"{databases_dir}GeoLite2-ASN.mmdb",

@@ -71,7 +71,7 @@ class ClashParser:
         return _config
 
     @staticmethod
-    def __convert_v2ray_cfg(cfg: dict) -> dict:
+    def __convert_vmess_cfg(cfg: dict) -> dict:
         server = cfg["server"]
         remarks = cfg.get("name", server)
         group = "N/A"
@@ -115,6 +115,52 @@ class ClashParser:
             "tls-host": tls_host,
             "host": host,
             "tls": tls,
+        }
+
+    @staticmethod
+    def __convert_vless_cfg(cfg: dict) -> dict:
+        server = cfg["server"]
+        remarks = cfg.get("name", server)
+        group = "N/A"
+        port = int(cfg["port"])
+        uuid = cfg["uuid"]
+        allow_insecure = bool(cfg.get("skip-cert-verify", False))
+        network = cfg.get("network", "tcp")
+        alpn = cfg.get("alpn", "h2") if network == "grpc" else ""
+        _type = network
+        flow = cfg.get("flow", "")
+        servername = cfg.get("servername", "")
+        tls = "tls" if cfg.get("tls", False) else "xtls"  # TLS or XTLS
+        ws_opts = cfg.get("ws-opts", {})
+        ws_header = ws_opts.get("headers", {})
+        path = ws_opts.get("Path", "")
+        host = ws_header.get("Host", "")
+        tls_host = servername
+        service_name = cfg.get("grpc-opts", {}).get("grpc-service-name", "")
+
+        logger.debug(
+            f"Server : {server}, Port : {port}, tls-host : {tls_host}, Path : {path}, "
+            f"Type : {_type}, UUID : {uuid}, Network : {_type}, Host : {host}, "
+            f"Flow: {flow}, TLS : {tls}, alpn: {alpn}, serviceName: {service_name}, "
+            f"Remarks : {remarks}, group={group}"
+        )
+        return {
+            "protocol": "vless",
+            "remarks": remarks,
+            "group": group,
+            "server": server,
+            "server_port": port,
+            "id": uuid,
+            "type": _type,
+            "path": path,
+            "allowInsecure": allow_insecure,
+            "network": _type,
+            "tls-host": tls_host,
+            "host": host,
+            "tls": tls,
+            "alpn": alpn,
+            "serviceName": service_name,
+            "flow": flow,
         }
 
     @staticmethod
@@ -175,8 +221,10 @@ class ClashParser:
                 ret = self.__parse_shadowsocks(cfg)
             elif _type in "ssr":
                 ret = self.__parse_shadowsocksr(cfg)
+            elif _type in "vless":
+                ret = self.__convert_vless_cfg(cfg)
             elif _type == "vmess":
-                ret = self.__convert_v2ray_cfg(cfg)
+                ret = self.__convert_vmess_cfg(cfg)
             elif _type == "trojan":
                 ret = self.__convert_trojan_cfg(cfg)
             else:
