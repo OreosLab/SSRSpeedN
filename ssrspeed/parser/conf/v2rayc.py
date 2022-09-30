@@ -219,7 +219,7 @@ class V2RayBaseConfigs:
         elif config["protocol"] == "vless":
             _config["outbounds"][0]["protocol"] = "vless"
             outbound["users"][0]["encryption"] = "none"
-            if config["flow"]:
+            if config.get("flow"):
                 outbound["users"][0]["flow"] = config["flow"]
         _config["outbounds"][0]["settings"]["vnext"][0] = outbound
 

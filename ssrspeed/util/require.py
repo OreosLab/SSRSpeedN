@@ -22,12 +22,8 @@ class RequirementsCheck:
                 f"{client_dir}shadowsocksr-libev/libcrypto-1_1.dll",
                 f"{client_dir}shadowsocksr-libev/ssr-local.exe",
             ],
-            "ShadowsocksR-C#": [f"{client_dir}shadowsocksr-win/shadowsocksr.exe"],
             "Trojan": [f"{client_dir}trojan/trojan.exe"],
-            "V2Ray-Core": [
-                f"{client_dir}v2ray-core/v2ctl.exe",
-                f"{client_dir}v2ray-core/v2ray.exe",
-            ],
+            "V2Ray-Core": [f"{client_dir}v2ray-core/v2ray.exe"],
             "Xray-Core": [f"{client_dir}xray-core/xray.exe"],
             "GeoIP2 Databases": [
                 f"{databases_dir}GeoLite2-City.mmdb",
@@ -42,10 +38,7 @@ class RequirementsCheck:
             ],
             "ShadowsocksR-Python": [f"{client_dir}shadowsocksr/shadowsocks/local.py"],
             "Trojan": [f"{client_dir}trojan/trojan"],
-            "V2Ray-Core": [
-                f"{client_dir}v2ray-core/v2ctl",
-                f"{client_dir}v2ray-core/v2ray",
-            ],
+            "V2Ray-Core": [f"{client_dir}v2ray-core/v2ray"],
             "Xray-Core": [f"{client_dir}xray-core/xray"],
             "GeoIP2 Databases": [
                 f"{databases_dir}GeoLite2-City.mmdb",

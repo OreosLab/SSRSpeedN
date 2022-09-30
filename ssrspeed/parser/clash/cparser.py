@@ -3,6 +3,8 @@ from copy import deepcopy
 import yaml
 from loguru import logger
 
+from ssrspeed.util.system import PLATFORM
+
 
 class ClashParser:
     def __init__(self, ss_base_config):
@@ -32,11 +34,13 @@ class ClashParser:
         elif plugin == "v2ray-plugin":
             logger.warning("V2Ray plugin not supported.")
             logger.info(f'Skip {_config["group"]} - {_config["remarks"]}')
+            return {}
         elif cfg.get("obfs") in ["http", "tls"]:
             plugin = "obfs-local"
         elif cfg.get("obfs"):
             logger.warning(f'Plugin {cfg.get("obfs")} not supported.')
             logger.info(f'Skip {_config["group"]} - {_config["remarks"]}')
+            return {}
 
         plugin_opts = ""
         p_opts = cfg.get("plugin-opts", {})
@@ -129,13 +133,16 @@ class ClashParser:
         alpn = cfg.get("alpn", "h2") if network == "grpc" else ""
         _type = network
         flow = cfg.get("flow", "")
+        if PLATFORM != "Linux" and "splice" in flow:
+            logger.warning("Flow xtls-rprx-splice is only supported on Linux.")
+            return {}
         servername = cfg.get("servername", "")
         tls = "tls" if cfg.get("tls", False) else "xtls"  # TLS or XTLS
         ws_opts = cfg.get("ws-opts", {})
         ws_header = ws_opts.get("headers", {})
-        path = ws_opts.get("Path", "")
+        path = ws_opts.get("path", "")
         host = ws_header.get("Host", "")
-        tls_host = servername
+        tls_host = servername or ws_opts.get("servername", "")
         service_name = cfg.get("grpc-opts", {}).get("grpc-service-name", "")
 
         logger.debug(

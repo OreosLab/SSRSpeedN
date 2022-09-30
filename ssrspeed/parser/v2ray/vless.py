@@ -3,6 +3,8 @@ from urllib.parse import parse_qsl, urlparse
 
 from loguru import logger
 
+from ssrspeed.util.system import PLATFORM
+
 
 class ParserV2RayVless:
     @staticmethod
@@ -21,7 +23,10 @@ class ParserV2RayVless:
             tls_host = query["sni"]
             alpn = query.get("alpn")
             service_name = query.get("serviceName")
-            flow = query.get("flow")
+            flow = query.get("flow", "")
+            if PLATFORM != "Linux" and "splice" in flow:
+                logger.warning("Flow xtls-rprx-splice is only supported on Linux.")
+                return None
             remarks = url.fragment or hostname
             group = query.get("group", query.get("url_group", "N/A"))
 
