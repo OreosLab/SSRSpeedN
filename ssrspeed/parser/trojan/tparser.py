@@ -8,44 +8,9 @@ from ssrspeed.parser.bottom import BottomParser
 
 
 class TrojanParser(BottomParser):
-    def __init__(self):
+    def __init__(self, base_config: dict):
         super().__init__()
-        self.__base_config: dict = {
-            "run_type": "client",
-            "local_addr": "127.0.0.1",
-            "local_port": 10870,
-            "remote_addr": "example.com",
-            "remote_port": 443,
-            "password": ["password1"],
-            "log_level": 1,
-            "ssl": {
-                "verify": "true",
-                "verify_hostname": "true",
-                "cert": "",
-                "cipher": "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:"
-                "ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:"
-                "ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:"
-                "ECDHE-ECDSA-AES256-SHA:ECDHE-ECDSA-AES128-SHA:"
-                "ECDHE-RSA-AES128-SHA:ECDHE-RSA-AES256-SHA:"
-                "DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA:"
-                "AES128-SHA:AES256-SHA:DES-CBC3-SHA",
-                "cipher_tls13": "TLS_AES_128_GCM_SHA256:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384",
-                "sni": "",
-                "alpn": ["h2", "http/1.1"],
-                "reuse_session": "true",
-                "session_ticket": "false",
-                "curves": "",
-            },
-            "tcp": {
-                "no_delay": "true",
-                "keep_alive": "true",
-                "reuse_port": "false",
-                "fast_open": "false",
-                "fast_open_qlen": 20,
-            },
-            "websocket": {"enabled": "false", "path": "", "host": ""},
-            "group": "N/A",
-        }
+        self.__base_config: dict = base_config
 
     def __get_trojan_base_config(self) -> dict:
         return deepcopy(self.__base_config)
@@ -94,6 +59,9 @@ class TrojanParser(BottomParser):
 
 
 if __name__ == "__main__":
+
+    from ssrspeed.parser.conf import trojan_get_config
+
     LINKS = (
         "trojan://8888@[2001:1234:4321:66::33]?allowinsecure=0&tfo=1\n"
         "trojan://123@helloworld.xyz?allowinsecure=0&tfo=1#testIPv4port443\n"
@@ -102,7 +70,7 @@ if __name__ == "__main__":
         "trojan://12345@a.b.c:445?security=tls&sni=a.b.c&alpn=http%2F1.1&type=tcp&headerType=none\n"
         "trojan-go://1@ip.com:446/?sni=qq.com&type=ws&host=fast.com&path=%2Fgo&encryption=ss%3Baes-256-gcm%3Afuckgfw\n"
     )
-    tropar = TrojanParser()
+    tropar = TrojanParser(trojan_get_config())
     for i in LINKS.split("\n"):
         if i:
-            print(tropar.parse_single_link(i))
+            print(tropar.parse_single_link(i), "\n")

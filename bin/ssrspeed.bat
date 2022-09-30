@@ -11,7 +11,6 @@ if exist "%SystemRoot%\SysWOW64" path %path%;%windir%\SysNative;%SystemRoot%\Sys
 bcdedit >nul
 if '%errorlevel%' NEQ '0' ( echo 当前权限 普通用户 ) else ( echo 当前权限 管理员 )
 if exist "%SSRSpeed%\resources\clients\v2ray-core\v2ray.exe" ( set v1=1 ) else ( set v1=0 )
-if exist "%SSRSpeed%\resources\clients\v2ray-core\v2ctl.exe" ( set v2=1 ) else ( set v2=0 )
 set /a v3=v1+v2
 if %v3%==2 ( echo 已经安装 V2ray-core ) else ( echo 尚未安装 V2ray-core )
 :start

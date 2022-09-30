@@ -41,7 +41,7 @@ class ParserV2RayVmess:
                 with contextlib.suppress(IndexError):
                     host = _conf.get("host", ";").split(";")[0]
                     path = _conf.get("host", ";").split(";")[1]
-            tls = _conf.get("tls", "none")  # TLS
+            tls = _conf.get("tls")  # TLS
             tls_host = host
             security = _conf.get("security", "auto")
             remarks = _conf.get("ps", server)

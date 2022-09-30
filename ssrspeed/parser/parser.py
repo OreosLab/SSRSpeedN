@@ -9,7 +9,11 @@ from loguru import logger
 
 from ssrspeed.config import ssrconfig
 from ssrspeed.parser.clash import ClashParser
-from ssrspeed.parser.conf import V2RayBaseConfigs, shadowsocks_get_config
+from ssrspeed.parser.conf import (
+    V2RayBaseConfigs,
+    shadowsocks_get_config,
+    trojan_get_config,
+)
 from ssrspeed.parser.filter import NodeFilter
 from ssrspeed.parser.ss import (
     ParserShadowsocksBasic,
@@ -182,7 +186,7 @@ class UniversalParser:
             elif link[:9] == "trojan://":
                 cfg = None
                 logger.info("Try Trojan Parser.")
-                ptrojan = TrojanParser()
+                ptrojan = TrojanParser(trojan_get_config(LOCAL_ADDRESS, LOCAL_PORT))
                 with contextlib.suppress(ValueError):
                     cfg = ptrojan.parse_single_link(link)
                 if cfg:
@@ -199,7 +203,9 @@ class UniversalParser:
     @staticmethod
     def __parse_clash(clash_cfg: str) -> list:
         result: list = []
-        pc = ClashParser(shadowsocks_get_config(LOCAL_ADDRESS, LOCAL_PORT, TIMEOUT))
+        ss_base_config = shadowsocks_get_config(LOCAL_ADDRESS, LOCAL_PORT, TIMEOUT)
+        trojan_base_config = trojan_get_config(LOCAL_ADDRESS, LOCAL_PORT)
+        pc = ClashParser(ss_base_config, trojan_base_config)
         pc.parse_config(clash_cfg)
         cfgs = pc.config_list
         for cfg in cfgs:

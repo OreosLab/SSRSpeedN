@@ -7,19 +7,23 @@ from ssrspeed.util.system import PLATFORM
 
 
 class ClashParser:
-    def __init__(self, ss_base_config):
+    def __init__(self, ss_config, trojan_config):
         self.__config_list: list = []
-        self.__ss_base_config: dict = ss_base_config
+        self.__ss_base_config = ss_config
+        self.__trojan_base_config = trojan_config
 
     @property
     def config_list(self) -> list:
         return deepcopy(self.__config_list)
 
-    def __get_shadowsocks_base_config(self) -> dict:
+    def __get_ss_base_config(self) -> dict:
         return deepcopy(self.__ss_base_config)
 
+    def __get_trojan_base_config(self) -> dict:
+        return deepcopy(self.__trojan_base_config)
+
     def __parse_shadowsocks(self, cfg: dict) -> dict:
-        _config = self.__get_shadowsocks_base_config()
+        _config = self.__get_ss_base_config()
         _config["server"] = cfg["server"]
         _config["server_port"] = int(cfg["port"])
         _config["password"] = cfg["password"]
@@ -60,7 +64,7 @@ class ClashParser:
         return _config
 
     def __parse_shadowsocksr(self, cfg: dict) -> dict:
-        _config = self.__get_shadowsocks_base_config()
+        _config = self.__get_ss_base_config()
         _config["server"] = cfg["server"]
         _config["server_port"] = int(cfg["port"])
         _config["method"] = cfg["cipher"]
@@ -170,55 +174,22 @@ class ClashParser:
             "flow": flow,
         }
 
-    @staticmethod
-    def __convert_trojan_cfg(cfg: dict) -> dict:
+    def __parse_trojan(self, cfg: dict) -> dict:
         logger.debug(cfg)
 
-        password = cfg["password"]
+        _config = self.__get_trojan_base_config()
         server = cfg["server"]
-        remarks = cfg.get("name", server)
-        group = cfg.get("peer", "N/A")
-        sni = cfg.get("sni", "")
         port = int(cfg["port"])
-        allow_insecure = bool(cfg.get("skip-cert-verify", False))
-        return {
-            "run_type": "client",
-            "local_addr": "127.0.0.1",
-            "local_port": 10870,
-            "remote_addr": server,
-            "remote_port": port,
-            "password": [password],
-            "log_level": 1,
-            "ssl": {
-                "verify": allow_insecure,
-                "verify_hostname": "true",
-                "cert": "",
-                "cipher": "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:"
-                "ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:"
-                "ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:"
-                "ECDHE-ECDSA-AES256-SHA:ECDHE-ECDSA-AES128-SHA:"
-                "ECDHE-RSA-AES128-SHA:ECDHE-RSA-AES256-SHA:"
-                "DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA:"
-                "AES128-SHA:AES256-SHA:DES-CBC3-SHA",
-                "cipher_tls13": "TLS_AES_128_GCM_SHA256:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384",
-                "sni": sni,
-                "alpn": ["h2", "http/1.1"],
-                "reuse_session": "true",
-                "session_ticket": "false",
-                "curves": "",
-            },
-            "tcp": {
-                "no_delay": "true",
-                "keep_alive": "true",
-                "reuse_port": "false",
-                "fast_open": "false",
-                "fast_open_qlen": 20,
-            },
-            "group": group,
-            "remarks": remarks,
-            "server": server,
-            "server_port": port,
-        }
+        _config["remote_addr"] = server
+        _config["server"] = server
+        _config["remote_port"] = port
+        _config["server_port"] = port
+        _config["password"] = [cfg["password"]]
+        _config["ssl"]["verify"] = bool(cfg.get("skip-cert-verify", False))
+        _config["ssl"]["sni"] = cfg.get("sni", "")
+        _config["remarks"] = cfg.get("name", server)
+        _config["group"] = cfg.get("peer", "N/A")
+        return _config
 
     def parse_config(self, clash_cfg):
         clash_cfg = yaml.load(clash_cfg, Loader=yaml.FullLoader)
@@ -233,7 +204,7 @@ class ClashParser:
             elif _type == "vmess":
                 ret = self.__convert_vmess_cfg(cfg)
             elif _type == "trojan":
-                ret = self.__convert_trojan_cfg(cfg)
+                ret = self.__parse_trojan(cfg)
             else:
                 logger.error(f"Unsupported type {_type}.")
                 continue
