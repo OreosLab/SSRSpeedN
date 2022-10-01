@@ -45,6 +45,7 @@ Proxy performance test & export tool based on Shadowsocks(R), V2Ray, Trojan and 
 
 本项目在原 SSRSpeed (已跑路) 的基础上，集成了如下特性
 
+* 支持 Shadowsocks(R) / Vless / Vmess / Trojan / Hysteria 协议
 * 支持单线程 / 多线程同时测速，可以同时反映视频播放 / 多线程下载等场景的节点速度
 * 支持 fast.com / YOUTUBE 码率等多种测速方式（仅限 Windows）
 * 支持 Netflix 解锁测试，分为 原生全解锁 / DNS 全解锁 / 仅解锁自制剧 / 无解锁 四档
@@ -292,16 +293,19 @@ SSRSpeedN
 │   ├── launcher
 │   │   ├── __init__.py
 │   │   ├── base.py
+│   │   ├── hysteria.py
 │   │   ├── shadowsocks.py
 │   │   ├── shadowsocksr.py
 │   │   ├── trojan.py
-│   │   └── v2ray.py
+│   │   ├── v2ray.py
+│   │   └── xray.py
 │   ├── parser
 │   │   ├── __init__.py
 │   │   ├── bottom
 │   │   ├── clash
 │   │   ├── conf
 │   │   ├── filter
+│   │   ├── hy
 │   │   ├── parser.py
 │   │   ├── ss
 │   │   ├── ssr
@@ -309,7 +313,7 @@ SSRSpeedN
 │   │   └── v2ray
 │   ├── path
 │   │   ├── __init__.py
-│   │   └── path.py
+│   │   ├── path.py
 │   ├── resource
 │   │   ├── ssrspeed.example.json
 │   │   ├── static
