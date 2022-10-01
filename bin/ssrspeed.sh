@@ -3,13 +3,13 @@
 # shellcheck disable=SC2015,2034,2089,2090
 
 # 当前脚本版本号，设置工作文件夹
-VERSION=1.0.4
+VERSION=1.0.5
 WORKDIR=SSRSpeedN
 
 E[0]="Language:\n 1. English (default) \n 2. 简体中文"
 C[0]="${E[0]}"
-E[1]="New Features: 1. Support SSRSpeedN V1.4.6; 2. Add IPv4 network detection."
-C[1]="新特性: 1. 支持 SSRSpeedN V1.4.6; 2. 增加 ipv4 网络检测"
+E[1]="New Features: Support SSRSpeedN V1.5.0"
+C[1]="新特性: 支持 SSRSpeedN V1.5.0"
 E[2]="Speed test and unlocking test is for reference only and does not represent the actual usage, due to network changes, Netflix blocking and ip replacement. Speed test is time-sensitive."
 C[2]="测速及解锁测试仅供参考, 不代表实际使用情况, 由于网络情况变化, Netflix 封锁及 ip 更换, 测速具有时效性。"
 E[3]="Choose:"
@@ -70,10 +70,12 @@ E[30]="Failed to download the GeoIP files."
 C[30]="下载 GeoIP 文件失败"
 E[31]="The installation path of the program is: $PWD/$WORKDIR/"
 C[31]="程序的安装路径为: $PWD/$WORKDIR/"
-E[32]="Maximum number of concurrent connections. Input 1 if the airport does not support concurrency. ( Range: 1-999, default: 50):"
-C[32]="最大并发连接数, 如机场不支持并发, 请输入 1 (数字范围: 1-999, 默认: 50):"
+E[32]="Maximum number of concurrent connections. Input 1 if the airport does not support concurrency. ( Range: 1-999, default: 1):"
+C[32]="最大并发连接数, 如机场不支持并发, 请输入 1 (数字范围: 1-999, 默认: 1):"
 E[33]="This device does not have the IPv4 required for the program and the script exits."
 C[33]="本设备没有程序所需的 IPv4，脚本退出。"
+E[34]="The latest version of GeoIP is: \$GEOIP_LATEST. The current version is: \$GEOIP_NOW. Please press [y] to update, the default is no update:"
+C[34]="GeoIP 最新版本是: \$GEOIP_LATEST， 当前版本是: \$GEOIP_NOW， 更新请按 [y], 默认为不更新:"
 
 # 彩色 log 函数, read 函数, text 函数
 error() { echo -e "\033[31m\033[01m$1\033[0m" && exit 1; }
@@ -81,6 +83,7 @@ info() { echo -e "\033[32m\033[01m$1\033[0m"; }
 warning() { echo -e "\033[33m\033[01m$1\033[0m"; }
 reading() { read -rp "$(info "$1")" "$2"; }
 text() { eval echo "\${${L}[$*]}"; }
+text_eval() { eval echo "\$(eval echo "\${${L}[$*]}")"; }
 
 # 选择语言, 先判断 $WORKDIR/data/setting 里的语言选择, 没有的话再让用户选择, 默认英语
 select_language() {
@@ -195,7 +198,7 @@ mode() {
     [ "$i" = 6 ] && error "\n $(text 5) "
     reading "\n $(text 32) " MAXCONNECTIONS
   done
-  MAXCONNECTIONS=${MAXCONNECTIONS:-50}
+  MAXCONNECTIONS=${MAXCONNECTIONS:-1}
   MAXCONNECTIONS="--max-connection=$MAXCONNECTIONS"
   if [ "$MODE_CHOICE" != 2 ]; then
     warning "\n $(text 12) \n" && reading " $(text 3) " METHOD_CHOICE
@@ -244,25 +247,30 @@ check_ssrspeedn() {
   [ ! -d $WORKDIR ] && sudo git clone https://github.com/Oreomeow/SSRSpeedN
   [ ! -d $WORKDIR/resources/databases ] && sudo mkdir -p $WORKDIR/resources/databases
   [ ! -d $WORKDIR/data ] && sudo mkdir -p $WORKDIR/data
-  if [ ! -d $WORKDIR/resources/clients ]; then
+  if [ ! -e $WORKDIR/resources/clients/xray-core/xray ]; then
     LATEST=$(sudo wget --no-check-certificate -qO- "https://api.github.com/repos/Oreomeow/SSRSpeedN/releases/latest" | grep tag_name | sed -E 's/.*"([^"]+)".*/\1/' | cut -c 2-)
     LATEST=${LATEST:-'1.4.6'}
     sudo wget --no-check-certificate -O $WORKDIR/resources/$FILE https://github.com/OreosLab/SSRSpeedN/releases/download/v"$LATEST"/$FILE
     [ ! -e $WORKDIR/resources/$FILE ] && error " $(text 18) " || sudo unzip -d $WORKDIR/resources/clients $WORKDIR/resources/$FILE
-    [ ! -d $WORKDIR/resources/clients ] && error " $(text 19) " || sudo rm -f $WORKDIR/resources/$FILE
+    [ ! -e $WORKDIR/resources/clients/xray-core/xray ] && error " $(text 19) " || sudo rm -f $WORKDIR/resources/$FILE
   fi
   sudo chmod -R +x $WORKDIR
   cd $WORKDIR || exit 1
   sudo git pull || sudo git fetch --all && sudo git reset --hard origin/main
   GEOIP_LATEST=$(sudo wget --no-check-certificate -qO- "https://api.github.com/repos/P3TERX/GeoLite.mmdb/releases/latest" | grep 'tag_name' | head -n 1 | cut -d\" -f4)
-  if [[ ${GEOIP_LATEST//./} -gt $(grep 'GeoIP' data/setting 2>/dev/null | cut -d= -f2 | sed "s#[.]##g") ]]; then
+  GEOIP_NOW=$(grep 'GeoIP' data/setting 2>/dev/null | cut -d= -f2)
+  if [[ ${GEOIP_LATEST//./} -gt ${GEOIP_NOW//./} ]]; then
+    [ -z "$GEOIP_NOW" ] && GEOIP_UPDATE=y
+    [ -z "$GEOIP_UPDATE" ] && reading " $(text_eval 34) " GEOIP_UPDATE
+    grep -iq 'y' <<< $GEOIP_UPDATE &&
     for a in {GeoLite2-ASN.mmdb,GeoLite2-City.mmdb}; do
       sudo wget --no-check-certificate -O resources/databases/"$a" https://github.com/P3TERX/GeoLite.mmdb/releases/download/"$GEOIP_LATEST"/"$a"
+      chmod +x resources/databases/"$a"
     done
+    GEOIP_NOW="$GEOIP_LATEST"
   fi
   [[ ! -e resources/databases/GeoLite2-ASN.mmdb || ! -e resources/databases/GeoLite2-City.mmdb ]] && error " $(text 30) "
-  echo -e "language=$L\nGeoIP=$GEOIP_LATEST" | sudo tee data/setting >/dev/null 2>&1
-  #  echo -e "language=$L" | sudo tee data/setting >/dev/null 2>&1
+  echo -e "language=$L\nGeoIP=$GEOIP_NOW" | sudo tee data/setting >/dev/null 2>&1
   sudo pip3 install --upgrade pip
   sudo pip3 install six
   sudo pip3 install -r requirements.txt
