@@ -3,13 +3,14 @@
 # shellcheck disable=SC2015,2034,2089,2090
 
 # 当前脚本版本号，设置工作文件夹
-VERSION=1.0.5
+VERSION=1.0.6
 WORKDIR=SSRSpeedN
+GH_PROXY='https://ghproxy.com/'
 
 E[0]="Language:\n 1. English (default) \n 2. 简体中文"
 C[0]="${E[0]}"
-E[1]="New Features: Support SSRSpeedN V1.5.0"
-C[1]="新特性: 支持 SSRSpeedN V1.5.0"
+E[1]="New Features: 1. Support SSRSpeedN V1.5.1 - test VLESS and hysteria protocols; 2. Support github proxy."
+C[1]="新特性: 1. 支持 SSRSpeedN V1.5.1 -  测试 VLESS 和 hysteria; 2. 支持 github 代理"
 E[2]="Speed test and unlocking test is for reference only and does not represent the actual usage, due to network changes, Netflix blocking and ip replacement. Speed test is time-sensitive."
 C[2]="测速及解锁测试仅供参考, 不代表实际使用情况, 由于网络情况变化, Netflix 封锁及 ip 更换, 测速具有时效性。"
 E[3]="Choose:"
@@ -108,7 +109,7 @@ help() {
  -c        中文
  -e        英文
  -r URL    从订阅 URL 加载 ssr 配置
- -m NUM    测试模式 [1-只测 Ping; 2-只测流媒体; 3-以上全部 (默认); 4-只测 geoip ping 和 wps， 网页输出， 结果为图形化]
+ -m NUM    测试模式 [1-只测 Ping; 2-只测流媒体; 3-以上全部 (默认); 4-只测 geoip ping 和 wps， 网页输出，结果为图形化]
  -n NUM    连接并发数, 默认: 50
  -u        卸载
 "
@@ -199,7 +200,7 @@ mode() {
     reading "\n $(text 32) " MAXCONNECTIONS
   done
   MAXCONNECTIONS=${MAXCONNECTIONS:-1}
-  MAXCONNECTIONS="--max-connection=$MAXCONNECTIONS"
+  MAXCONNECTIONS="--max-connections=$MAXCONNECTIONS"
   if [ "$MODE_CHOICE" != 2 ]; then
     warning "\n $(text 12) \n" && reading " $(text 3) " METHOD_CHOICE
     case "$METHOD_CHOICE" in 1) SORT_METHOD="--sort=speed" ;; 2) SORT_METHOD="--sort=rspeed" ;; 3) SORT_METHOD="--sort=ping" ;; 4) SORT_METHOD="--sort=rping" ;; esac
@@ -244,15 +245,15 @@ check_dependencies_Linux() {
 
 check_ssrspeedn() {
   info "\n $(text 15) \n"
-  [ ! -d $WORKDIR ] && sudo git clone https://github.com/Oreomeow/SSRSpeedN
+  [ ! -d $WORKDIR ] && sudo git clone ${GH_PROXY}https://github.com/Oreomeow/SSRSpeedN
   [ ! -d $WORKDIR/resources/databases ] && sudo mkdir -p $WORKDIR/resources/databases
   [ ! -d $WORKDIR/data ] && sudo mkdir -p $WORKDIR/data
-  if [ ! -e $WORKDIR/resources/clients/xray-core/xray ]; then
+  if [ ! -e $WORKDIR/resources/clients/hysteria/hysteria ]; then
     LATEST=$(sudo wget --no-check-certificate -qO- "https://api.github.com/repos/Oreomeow/SSRSpeedN/releases/latest" | grep tag_name | sed -E 's/.*"([^"]+)".*/\1/' | cut -c 2-)
-    LATEST=${LATEST:-'1.4.6'}
-    sudo wget --no-check-certificate -O $WORKDIR/resources/$FILE https://github.com/OreosLab/SSRSpeedN/releases/download/v"$LATEST"/$FILE
-    [ ! -e $WORKDIR/resources/$FILE ] && error " $(text 18) " || sudo unzip -d $WORKDIR/resources/clients $WORKDIR/resources/$FILE
-    [ ! -e $WORKDIR/resources/clients/xray-core/xray ] && error " $(text 19) " || sudo rm -f $WORKDIR/resources/$FILE
+    LATEST=${LATEST:-'1.5.1'}
+    sudo wget --no-check-certificate -O $WORKDIR/resources/$FILE ${GH_PROXY}https://github.com/OreosLab/SSRSpeedN/releases/download/v"$LATEST"/$FILE
+    [ ! -e $WORKDIR/resources/$FILE ] && error " $(text 18) " || sudo unzip -nd $WORKDIR/resources/clients $WORKDIR/resources/$FILE
+    [ ! -e $WORKDIR/resources/clients/hysteria/hysteria ] && error " $(text 19) " || sudo rm -f $WORKDIR/resources/$FILE
   fi
   sudo chmod -R +x $WORKDIR
   cd $WORKDIR || exit 1
@@ -264,7 +265,7 @@ check_ssrspeedn() {
     [ -z "$GEOIP_UPDATE" ] && reading " $(text_eval 34) " GEOIP_UPDATE
     grep -iq 'y' <<< $GEOIP_UPDATE &&
     for a in {GeoLite2-ASN.mmdb,GeoLite2-City.mmdb}; do
-      sudo wget --no-check-certificate -O resources/databases/"$a" https://github.com/P3TERX/GeoLite.mmdb/releases/download/"$GEOIP_LATEST"/"$a"
+      sudo wget --no-check-certificate -O resources/databases/"$a" ${GH_PROXY}https://github.com/P3TERX/GeoLite.mmdb/releases/download/"$GEOIP_LATEST"/"$a"
       chmod +x resources/databases/"$a"
     done
     GEOIP_NOW="$GEOIP_LATEST"
