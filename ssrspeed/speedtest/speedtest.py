@@ -11,6 +11,7 @@ from loguru import logger
 
 from ssrspeed.config import ssrconfig
 from ssrspeed.launcher import (
+    HysteriaClient,
     ShadowsocksClient,
     ShadowsocksRClient,
     TrojanClient,
@@ -112,12 +113,15 @@ class SpeedTest:
             client = ShadowsocksClient(CLIENTS_DIR, file)
         elif node_type == "ShadowsocksR":
             client = ShadowsocksRClient(CLIENTS_DIR, file)
-        elif node_type == "Trojan":
-            client = TrojanClient(CLIENTS_DIR, file)
         elif node_type == "Vless":
             client = XRayClient(CLIENTS_DIR, file)
         elif node_type == "Vmess":
             client = V2RayClient(CLIENTS_DIR, file)
+        elif node_type == "Trojan":
+            client = TrojanClient(CLIENTS_DIR, file)
+        elif node_type == "Hysteria":
+            client = HysteriaClient(CLIENTS_DIR, file)
+
         return client
 
     def reset_status(self):
@@ -560,6 +564,9 @@ class SpeedTest:
             else:
                 logger.error(f"Port {port} closed.")
                 return False
+
+        # hysteria server
+        cfg["server"] = cfg.get("hy_server", cfg["server"])
 
         await inner_method(_item, cfg, LOCAL_ADDRESS, port, geo_ip_semaphore, **kwargs)
 

@@ -11,10 +11,12 @@ from ssrspeed.config import ssrconfig
 from ssrspeed.parser.clash import ClashParser
 from ssrspeed.parser.conf import (
     V2RayBaseConfigs,
+    hysteria_get_config,
     shadowsocks_get_config,
     trojan_get_config,
 )
 from ssrspeed.parser.filter import NodeFilter
+from ssrspeed.parser.hy import HysteriaParser
 from ssrspeed.parser.ss import (
     ParserShadowsocksBasic,
     ParserShadowsocksD,
@@ -28,6 +30,7 @@ from ssrspeed.parser.v2ray import (
     ParserV2RayVmess,
 )
 from ssrspeed.type.node import (
+    NodeHysteria,
     NodeShadowsocks,
     NodeShadowsocksR,
     NodeTrojan,
@@ -59,6 +62,7 @@ class UniversalParser:
         configs: List[dict],
     ) -> List[
         Union[
+            Optional[NodeHysteria],
             Optional[NodeShadowsocks],
             Optional[NodeShadowsocksR],
             Optional[NodeVless],
@@ -79,6 +83,8 @@ class UniversalParser:
                 result.append(NodeVmess(_config["config"]))
             elif _type == "Trojan":
                 result.append(NodeTrojan(_config["config"]))
+            elif _type == "Hysteria":
+                result.append(NodeHysteria(_config["config"]))
             else:
                 logger.warning(f"Unknown node type: {_type}")
         return result
@@ -114,6 +120,7 @@ class UniversalParser:
             Optional[NodeVless],
             Optional[NodeVmess],
             Optional[NodeTrojan],
+            Optional[NodeHysteria],
         ]
     ]:
         # Single link parse
@@ -126,6 +133,7 @@ class UniversalParser:
                 Optional[NodeVless],
                 Optional[NodeVmess],
                 Optional[NodeTrojan],
+                Optional[NodeHysteria],
             ] = None
 
             if link[:5] == "ss://":
@@ -192,6 +200,15 @@ class UniversalParser:
                 if cfg:
                     node = NodeTrojan(cfg)
 
+            elif link[:11] == "hysteria://":
+                cfg = None
+                logger.info("Try Hysteria Parser.")
+                ph = HysteriaParser(hysteria_get_config(LOCAL_ADDRESS, LOCAL_PORT))
+                with contextlib.suppress(ValueError):
+                    cfg = ph.parse_single_link(link)
+                if cfg:
+                    node = NodeHysteria(cfg)
+
             else:
                 logger.warning(f"Unsupported link: {link}")
 
@@ -205,7 +222,8 @@ class UniversalParser:
         result: list = []
         ss_base_config = shadowsocks_get_config(LOCAL_ADDRESS, LOCAL_PORT, TIMEOUT)
         trojan_base_config = trojan_get_config(LOCAL_ADDRESS, LOCAL_PORT)
-        pc = ClashParser(ss_base_config, trojan_base_config)
+        hysteria_base_config = hysteria_get_config(LOCAL_ADDRESS, LOCAL_PORT)
+        pc = ClashParser(ss_base_config, trojan_base_config, hysteria_base_config)
         pc.parse_config(clash_cfg)
         cfgs = pc.config_list
         for cfg in cfgs:
@@ -231,6 +249,8 @@ class UniversalParser:
                 )
             elif cfg["type"] == "trojan":
                 result.append(NodeTrojan(cfg["config"]))
+            elif cfg["type"] == "hysteria":
+                result.append(NodeHysteria(cfg["config"]))
 
         return result
 
@@ -256,12 +276,16 @@ class UniversalParser:
             if not url:
                 continue
 
-            if (
-                url.startswith("ss://")
-                or url.startswith("ssr://")
-                or url.startswith("vless://")
-                or url.startswith("vmess://")
-                or url.startswith("trojan://")
+            if any(
+                url.startswith(x)
+                for x in [
+                    "ss://",
+                    "ssr://",
+                    "vless://",
+                    "vmess://",
+                    "trojan://",
+                    "hysteria://",
+                ]
             ):
                 self.__nodes.extend(self.parse_links([url]))
                 continue

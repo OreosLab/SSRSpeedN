@@ -26,6 +26,9 @@ class BaseClient:
         async with aiofiles.open(self._config_file, "w+", encoding="utf-8") as f:
             await f.write(self._config_str)
 
+        # hysteria server
+        config["server"] = config.get("hy_server", config["server"])
+
         if self._process is None:
             if BaseClient._platform == "Windows":
                 self._process = (

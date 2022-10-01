@@ -10,9 +10,10 @@ if defined VIRTUAL_ENV ( echo 当前环境 %VIRTUAL_ENV% ) else ( echo 当前目录 %SSR
 if exist "%SystemRoot%\SysWOW64" path %path%;%windir%\SysNative;%SystemRoot%\SysWOW64;%SSRSpeed%
 bcdedit >nul
 if '%errorlevel%' NEQ '0' ( echo 当前权限 普通用户 ) else ( echo 当前权限 管理员 )
-if exist "%SSRSpeed%\resources\clients\v2ray-core\v2ray.exe" ( set v1=1 ) else ( set v1=0 )
+if exist "%SSRSpeed%\resources\clients\xray-core\xray.exe" ( set v1=1 ) else ( set v1=0 )
+if exist "%SSRSpeed%\resources\clients\hysteria\hysteria.exe" ( set v2=1 ) else ( set v2=0 )
 set /a v3=v1+v2
-if %v3%==2 ( echo 已经安装 V2ray-core ) else ( echo 尚未安装 V2ray-core )
+if %v3%==2 ( echo 已经安装 Hysteria ) else ( echo 尚未安装 Hysteria )
 :start
 echo ===============================================
 echo [1] 开始测速（自定义设置）

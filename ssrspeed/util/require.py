@@ -25,6 +25,7 @@ class RequirementsCheck:
             "Trojan": [f"{client_dir}trojan/trojan.exe"],
             "V2Ray-Core": [f"{client_dir}v2ray-core/v2ray.exe"],
             "Xray-Core": [f"{client_dir}xray-core/xray.exe"],
+            "Hysteria": [f"{client_dir}hysteria/hysteria.exe"],
             "GeoIP2 Databases": [
                 f"{databases_dir}GeoLite2-City.mmdb",
                 f"{databases_dir}GeoLite2-ASN.mmdb",
@@ -40,6 +41,7 @@ class RequirementsCheck:
             "Trojan": [f"{client_dir}trojan/trojan"],
             "V2Ray-Core": [f"{client_dir}v2ray-core/v2ray"],
             "Xray-Core": [f"{client_dir}xray-core/xray"],
+            "Hysteria": [f"{client_dir}hysteria/hysteria"],
             "GeoIP2 Databases": [
                 f"{databases_dir}GeoLite2-City.mmdb",
                 f"{databases_dir}GeoLite2-ASN.mmdb",

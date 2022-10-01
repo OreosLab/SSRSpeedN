@@ -7,10 +7,11 @@ from ssrspeed.util.system import PLATFORM
 
 
 class ClashParser:
-    def __init__(self, ss_config, trojan_config):
+    def __init__(self, ss_config, trojan_config, hysteria_config):
         self.__config_list: list = []
         self.__ss_base_config = ss_config
         self.__trojan_base_config = trojan_config
+        self.__hysteria_base_config = hysteria_config
 
     @property
     def config_list(self) -> list:
@@ -21,6 +22,9 @@ class ClashParser:
 
     def __get_trojan_base_config(self) -> dict:
         return deepcopy(self.__trojan_base_config)
+
+    def __get_hysteria_base_config(self) -> dict:
+        return deepcopy(self.__hysteria_base_config)
 
     def __parse_shadowsocks(self, cfg: dict) -> dict:
         _config = self.__get_ss_base_config()
@@ -191,6 +195,25 @@ class ClashParser:
         _config["group"] = cfg.get("peer", "N/A")
         return _config
 
+    def __parse_hysteria(self, cfg: dict) -> dict:
+        logger.debug(cfg)
+
+        _config = self.__get_hysteria_base_config()
+        server = cfg["server"]
+        port = int(cfg["port"])
+        _config["server"] = f"{server}:{port}"
+        _config["hy_server"] = server
+        _config["server_port"] = port
+        _config["protocol"] = cfg.get("protocol", "udp")
+        _config["up_mbps"] = int(cfg.get("up", 12))
+        _config["down_mbps"] = int(cfg.get("down", 62))
+        _config["obfs"] = cfg.get("obfs")
+        _config["auth_str"] = cfg.get("auth_str")
+        _config["server_name"] = cfg.get("sni")
+        _config["insecure"] = cfg.get("skip-cert-verify", True)
+        _config["remarks"] = cfg.get("name", server)
+        return _config
+
     def parse_config(self, clash_cfg):
         clash_cfg = yaml.load(clash_cfg, Loader=yaml.FullLoader)
         for cfg in clash_cfg["proxies"]:
@@ -205,6 +228,8 @@ class ClashParser:
                 ret = self.__convert_vmess_cfg(cfg)
             elif _type == "trojan":
                 ret = self.__parse_trojan(cfg)
+            elif _type == "hysteria":
+                ret = self.__parse_hysteria(cfg)
             else:
                 logger.error(f"Unsupported type {_type}.")
                 continue
