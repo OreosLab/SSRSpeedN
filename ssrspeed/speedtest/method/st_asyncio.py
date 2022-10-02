@@ -40,18 +40,8 @@ class Statistics:
         return copy.deepcopy(self._speed_list)
 
     @property
-    def max_speed(self) -> Union[int, float]:
-        tmp_speed_list = self.speed_list
-        tmp_speed_list.sort()
-        max_speed: Union[int, float] = 0
-        if len(tmp_speed_list) > 12:
-            msum = 0
-            for i in range(12, len(tmp_speed_list) - 2):
-                msum += tmp_speed_list[i]
-                max_speed = msum / (len(tmp_speed_list) - 2 - 12)
-        else:
-            max_speed = self._total_red / self._time_used
-        return max_speed
+    def max_speed(self) -> float:
+        return max(self.speed_list)
 
     async def record(self, received: Union[int, float]):
         cur_time = time.time()

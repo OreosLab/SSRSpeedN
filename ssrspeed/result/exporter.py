@@ -47,7 +47,8 @@ class ExportResult:
         self.__hide_netflix: bool = not ssrconfig["netflix"]
         self.__hide_bilibili = not ssrconfig["bilibili"]
         self.__hide_speed: bool = not ssrconfig["speed"]
-        self.__test_method: bool = not ssrconfig["method"]
+        self.__test_method: str = "ST_ASYNC"
+        self.__socket_method: bool = not ssrconfig["method"]
         self.__hide_stspeed: bool = not ssrconfig["StSpeed"]
         self.__hide_port: bool = not ssrconfig["port"]
         self.__hide_multiplex: bool = not ssrconfig["multiplex"]
@@ -58,6 +59,9 @@ class ExportResult:
         self.__upload_config: dict = ssrconfig["uploadResult"]
 
     # 	self.set_colors()
+
+    def get_test_method(self, test_method: str):
+        self.__test_method = test_method
 
     def set_hide(self, **kwargs: bool):
         self.__hide_ntt = kwargs.get("ntt", True)
@@ -510,112 +514,41 @@ class ExportResult:
                 fill=(0, 0, 0),
             )
 
-        if not (self.__hide_stspeed or self.__hide_speed):
-            if self.__test_method == "NETFLIX":
-                draw.text(
-                    (
-                        port_right_position
-                        + self.__get_base_pos(
-                            dspeed_right_position - port_right_position, "EndSpeed"
-                        ),
-                        30 + 4,
+        if not self.__hide_speed:
+            avg_title = "AvgSpeed"
+            if self.__test_method != "ST_ASYNC":
+                if self.__socket_method == "NETFLIX":
+                    avg_title = "EndSpeed"
+                elif self.__socket_method == "YOUTUBE":
+                    avg_title = "StSpeed"
+                else:
+                    if not self.__hide_stspeed:
+                        avg_title = "单线程"
+            draw.text(
+                (
+                    port_right_position
+                    + self.__get_base_pos(
+                        dspeed_right_position - port_right_position, avg_title
                     ),
-                    "EndSpeed",
-                    font=result_font,
-                    fill=(0, 0, 0),
-                )
-            elif self.__test_method == "YOUTUBE":
-                draw.text(
-                    (
-                        port_right_position
-                        + self.__get_base_pos(
-                            dspeed_right_position - port_right_position, "StSpeed"
-                        ),
-                        30 + 4,
-                    ),
-                    "StSpeed",
-                    font=result_font,
-                    fill=(0, 0, 0),
-                )
-            else:
-                draw.text(
-                    (
-                        port_right_position
-                        + self.__get_base_pos(
-                            dspeed_right_position - port_right_position, "单线程"
-                        ),
-                        30 + 4,
-                    ),
-                    "单线程",
-                    font=result_font,
-                    fill=(0, 0, 0),
-                )
-        elif not self.__hide_speed:
-            if self.__test_method == "NETFLIX":
-                draw.text(
-                    (
-                        port_right_position
-                        + self.__get_base_pos(
-                            dspeed_right_position - port_right_position, "EndSpeed"
-                        ),
-                        30 + 4,
-                    ),
-                    "EndSpeed",
-                    font=result_font,
-                    fill=(0, 0, 0),
-                )
-            elif self.__test_method == "YOUTUBE":
-                draw.text(
-                    (
-                        port_right_position
-                        + self.__get_base_pos(
-                            dspeed_right_position - port_right_position, "StSpeed"
-                        ),
-                        30 + 4,
-                    ),
-                    "StSpeed",
-                    font=result_font,
-                    fill=(0, 0, 0),
-                )
-            else:
-                draw.text(
-                    (
-                        port_right_position
-                        + self.__get_base_pos(
-                            dspeed_right_position - port_right_position, "AvgSpeed"
-                        ),
-                        30 + 4,
-                    ),
-                    "AvgSpeed",
-                    font=result_font,
-                    fill=(0, 0, 0),
-                )
-
-        if not (self.__hide_max_speed or self.__hide_speed):
-            if not self.__hide_stspeed:
+                    30 + 4,
+                ),
+                avg_title,
+                font=result_font,
+                fill=(0, 0, 0),
+            )
+            if not self.__hide_max_speed:
+                max_title = "MaxSpeed"
+                if not (self.__test_method == "ST_ASYNC" or self.__hide_stspeed):
+                    max_title = "多线程"
                 draw.text(
                     (
                         dspeed_right_position
                         + self.__get_base_pos(
-                            max_dspeed_right_position - dspeed_right_position, "多线程"
+                            max_dspeed_right_position - dspeed_right_position, max_title
                         ),
                         30 + 4,
                     ),
-                    "多线程",
-                    font=result_font,
-                    fill=(0, 0, 0),
-                )
-            else:
-                draw.text(
-                    (
-                        dspeed_right_position
-                        + self.__get_base_pos(
-                            max_dspeed_right_position - dspeed_right_position,
-                            "MaxSpeed",
-                        ),
-                        30 + 4,
-                    ),
-                    "MaxSpeed",
+                    max_title,
                     font=result_font,
                     fill=(0, 0, 0),
                 )

@@ -1,5 +1,4 @@
 import asyncio
-import copy
 import socket
 import threading
 import time
@@ -182,13 +181,7 @@ async def speed_test_socket(
         return 0, 0, [], 0
 
     restore_socket()
-    raw_speed_list = copy.deepcopy(max_speed_list)
-    max_speed_list.sort()
-    if len(max_speed_list) > 7:
-        msum = sum(max_speed_list[i] for i in range(7, len(max_speed_list) - 2))
-        max_speed = msum / (len(max_speed_list) - 2 - 7)
-    else:
-        max_speed = current_speed
+    max_speed = max(max_speed_list)
     logger.info(
         f"MultiThread: Fetched {TOTAL_RECEIVED / 1024:.2f} KB in {MAX_TIME:.2f} s."
     )
@@ -198,7 +191,7 @@ async def speed_test_socket(
         avg_st_speed = avg_speed
         avg_speed = max_speed
 
-    return avg_st_speed, avg_speed, raw_speed_list, TOTAL_RECEIVED
+    return avg_st_speed, avg_speed, max_speed_list, TOTAL_RECEIVED
 
 
 if __name__ == "__main__":

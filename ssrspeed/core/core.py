@@ -166,4 +166,5 @@ class SSRSpeedCore:
             er.export_wps_result(self.__results, export_type)
             return
         er.set_colors(self.colors)
+        er.get_test_method(self.test_method)
         er.export(self.__results, export_type, self.sort_method)
