@@ -20,6 +20,7 @@ pylint
 twine
 
 types-aiofiles
+types-emoji
 types-PyYAML
 types-requests
 types-simplejson

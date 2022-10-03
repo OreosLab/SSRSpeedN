@@ -11,6 +11,7 @@ from ssrspeed.config import ssrconfig
 from ssrspeed.result.pusher import push2server
 from ssrspeed.result.render import ExporterWps
 from ssrspeed.result.sorter import Sorter
+from ssrspeed.util import TwitterPediaSource
 
 TMP_DIR = ssrconfig["path"]["tmp"]
 if not os.path.exists(TMP_DIR):
@@ -122,7 +123,9 @@ class ExportResult:
 
     def __get_max_width(self, result: list) -> tuple:
         font = self.__font
-        pilmoji = Pilmoji(Image.new("RGB", (1, 1), (255, 255, 255)))
+        pilmoji = Pilmoji(
+            Image.new("RGB", (1, 1), (255, 255, 255)), source=TwitterPediaSource
+        )
         max_group_width = 0
         max_remark_width = 0
         len_in = 0
@@ -246,7 +249,9 @@ class ExportResult:
             "RGB", (image_right_position, new_image_height), (255, 255, 255)
         )
         draw = ImageDraw.Draw(result_img)
-        pilmoji = Pilmoji(result_img, emoji_position_offset=(0, 3))
+        pilmoji = Pilmoji(
+            result_img, source=TwitterPediaSource, emoji_position_offset=(0, 3)
+        )
 
         # draw.line(
         #     (
