@@ -6,6 +6,7 @@ from typing import ClassVar, Optional
 import pilmoji
 import requests
 from emoji import demojize
+from unidecode import unidecode
 
 
 class EmojiPediaSource(pilmoji.source.DiscordEmojiSourceMixin):
@@ -20,14 +21,13 @@ class EmojiPediaSource(pilmoji.source.DiscordEmojiSourceMixin):
         if self.STYLE is None:
             raise TypeError("STYLE class variable unfilled.")
 
-        name = demojize(emoji).strip(":️").replace("_", "-")
+        name = unidecode(
+            demojize(emoji).strip(":️").replace("_", "-").replace("-&-", "-")
+        )
         if name[0].isupper():
             name = f"flag-{name.lower()}"
         uni = re.sub(
-            r"\\u0*",
-            "-",
-            emoji.encode("unicode_escape").decode("utf-8"),
-            flags=re.IGNORECASE,
+            r"\\u0*", "-", emoji.encode("unicode_escape").decode("utf-8"), flags=re.I
         ).lstrip("-")
         url = self.BASE_EMOJIPEDIA_URL + self.STYLE + name + "_" + uni + ".png"
 
@@ -120,7 +120,7 @@ if __name__ == "__main__":
     from PIL import Image, ImageFont
 
     my_string = """
-    Hello, world! 👋 Here are some emojis: 🎨 🌊 😎
+    Hello, world! 👋 Here are some flags: 🇧🇦 🇷🇪 🇨🇼
     """
 
     with Image.new("RGB", (550, 80), (255, 255, 255)) as image:

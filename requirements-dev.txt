@@ -9,6 +9,7 @@ PyYAML
 requests
 selenium==4.4.3
 tqdm
+unidecode
 webdriver-manager
 
 black
