@@ -73,7 +73,7 @@ class StreamTest:
                         ","
                     )[0]
                     logger.info(f"Netflix IP : {netflix_ip}")
-                    if locate:
+                    if locate > 0:
                         region = text[locate + 29:locate + 31]
                     else:
                         region = "未知"
