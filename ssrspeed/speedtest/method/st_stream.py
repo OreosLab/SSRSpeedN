@@ -60,21 +60,19 @@ class StreamTest:
         logger.info(f"Performing netflix(new) test LOCAL_PORT: {port}.")
         try:
             async with aiohttp.ClientSession(
-                    headers=headers,
-                    connector=ProxyConnector(host=host, port=port),
-                    timeout=aiohttp.ClientTimeout(connect=10),
+                headers=headers,
+                connector=ProxyConnector(host=host, port=port),
+                timeout=aiohttp.ClientTimeout(connect=10),
             ) as session, session.get(
                 url="https://www.netflix.com/title/70143836"  # "https://www.netflix.com/title/70242311"
             ) as response1:
                 if response1.status == 200:
                     text = str(await response1.read())
                     locate = text.find("preferredLocale")
-                    netflix_ip = nf_ip_re.findall(text)[0].split(
-                        ","
-                    )[0]
+                    netflix_ip = nf_ip_re.findall(text)[0].split(",")[0]
                     logger.info(f"Netflix IP : {netflix_ip}")
                     if locate > 0:
-                        region = text[locate + 29:locate + 31]
+                        region = text[locate + 29 : locate + 31]
                     else:
                         region = "未知"
                     if outbound_ip == netflix_ip:
@@ -85,7 +83,7 @@ class StreamTest:
                         inner_dict["Ntype"] = f"Full DNS({region})"
                     return
                 async with session.get(
-                        url="https://www.netflix.com/title/70242311"
+                    url="https://www.netflix.com/title/70242311"
                 ) as response2:
                     rg = ""
                     if response2.status == 200:
@@ -104,9 +102,9 @@ class StreamTest:
         logger.info(f"Performing HBO max test LOCAL_PORT: {port}.")
         try:
             async with aiohttp.ClientSession(
-                    headers=headers,
-                    connector=ProxyConnector(host=host, port=port),
-                    timeout=aiohttp.ClientTimeout(connect=10),
+                headers=headers,
+                connector=ProxyConnector(host=host, port=port),
+                timeout=aiohttp.ClientTimeout(connect=10),
             ) as session, session.get(
                 url="https://www.hbomax.com/", allow_redirects=False
             ) as response:
@@ -119,9 +117,9 @@ class StreamTest:
         logger.info(f"Performing Disney plus test LOCAL_PORT: {port}.")
         try:
             async with aiohttp.ClientSession(
-                    headers=headers,
-                    connector=ProxyConnector(host=host, port=port),
-                    timeout=aiohttp.ClientTimeout(connect=5),
+                headers=headers,
+                connector=ProxyConnector(host=host, port=port),
+                timeout=aiohttp.ClientTimeout(connect=5),
             ) as session, session.get(
                 url="https://www.disneyplus.com/"
             ) as response1, session.get(
@@ -146,9 +144,9 @@ class StreamTest:
         logger.info(f"Performing Youtube Premium test LOCAL_PORT: {port}.")
         try:
             async with aiohttp.ClientSession(
-                    headers=headers,
-                    connector=ProxyConnector(host=host, port=port),
-                    timeout=aiohttp.ClientTimeout(connect=10),
+                headers=headers,
+                connector=ProxyConnector(host=host, port=port),
+                timeout=aiohttp.ClientTimeout(connect=10),
             ) as session, session.get(
                 url="https://music.youtube.com/", allow_redirects=False
             ) as response:
@@ -166,9 +164,9 @@ class StreamTest:
         logger.info(f"Performing Abema test LOCAL_PORT: {port}.")
         try:
             async with aiohttp.ClientSession(
-                    headers=headers,
-                    connector=ProxyConnector(host=host, port=port),
-                    timeout=aiohttp.ClientTimeout(connect=10),
+                headers=headers,
+                connector=ProxyConnector(host=host, port=port),
+                timeout=aiohttp.ClientTimeout(connect=10),
             ) as session, session.get(
                 url="https://api.abema.io/v1/ip/check?device=android",
                 allow_redirects=False,
@@ -183,9 +181,9 @@ class StreamTest:
         logger.info(f"Performing Bahamut test LOCAL_PORT: {port}.")
         try:
             async with aiohttp.ClientSession(
-                    headers=headers,
-                    connector=ProxyConnector(host=host, port=port),
-                    timeout=aiohttp.ClientTimeout(connect=10),
+                headers=headers,
+                connector=ProxyConnector(host=host, port=port),
+                timeout=aiohttp.ClientTimeout(connect=10),
             ) as session, session.get(
                 url="https://ani.gamer.com.tw/ajax/token.php?adID=89422&sn=14667",
                 allow_redirects=False,
@@ -200,9 +198,9 @@ class StreamTest:
         logger.info(f"Performing Dazn test LOCAL_PORT: {port}.")
         try:
             async with aiohttp.ClientSession(
-                    headers=headers,
-                    connector=ProxyConnector(host=host, port=port, verify_ssl=False),
-                    timeout=aiohttp.ClientTimeout(connect=10),
+                headers=headers,
+                connector=ProxyConnector(host=host, port=port, verify_ssl=False),
+                timeout=aiohttp.ClientTimeout(connect=10),
             ) as session:
                 payload = {
                     "LandingPageKey": "generic",
@@ -214,9 +212,9 @@ class StreamTest:
                     "Version": "2",
                 }
                 async with session.post(
-                        url="https://startup.core.indazn.com/misl/v5/Startup",
-                        json=payload,
-                        allow_redirects=False,
+                    url="https://startup.core.indazn.com/misl/v5/Startup",
+                    json=payload,
+                    allow_redirects=False,
                 ) as response:
                     inner_dict["Dztype"] = response.status == 200
         except Exception as e:
@@ -227,9 +225,9 @@ class StreamTest:
         logger.info(f"Performing TVB test LOCAL_PORT: {port}.")
         try:
             async with aiohttp.ClientSession(
-                    headers=headers,
-                    connector=ProxyConnector(host=host, port=port),
-                    timeout=aiohttp.ClientTimeout(connect=10),
+                headers=headers,
+                connector=ProxyConnector(host=host, port=port),
+                timeout=aiohttp.ClientTimeout(connect=10),
             ) as session, session.get(
                 url="https://www.mytvsuper.com/api/auth/getSession/self/",
                 allow_redirects=False,
@@ -244,9 +242,9 @@ class StreamTest:
         logger.info(f"Performing Bilibili test LOCAL_PORT: {port}.")
         try:
             async with aiohttp.ClientSession(
-                    headers=headers,
-                    connector=ProxyConnector(host=host, port=port),
-                    timeout=aiohttp.ClientTimeout(connect=10),
+                headers=headers,
+                connector=ProxyConnector(host=host, port=port),
+                timeout=aiohttp.ClientTimeout(connect=10),
             ) as session:
                 params = {
                     "avid": 50762638,
@@ -261,9 +259,9 @@ class StreamTest:
                     "module": "bangumi",
                 }
                 async with session.get(
-                        url="https://api.bilibili.com/pgc/player/web/playurl",
-                        params=params,
-                        allow_redirects=False,
+                    url="https://api.bilibili.com/pgc/player/web/playurl",
+                    params=params,
+                    allow_redirects=False,
                 ) as response:
                     if response.status == 200:
                         json_data = await response.json()
@@ -284,9 +282,9 @@ class StreamTest:
                             }
                             session.cookie_jar.clear()
                             async with session.get(
-                                    url="https://api.bilibili.com/pgc/player/web/playurl",
-                                    params=params,
-                                    allow_redirects=False,
+                                url="https://api.bilibili.com/pgc/player/web/playurl",
+                                params=params,
+                                allow_redirects=False,
                             ) as response2:
                                 if response2.status == 200:
                                     json_data2 = await response2.json()
@@ -302,7 +300,7 @@ async def start_stream_test(port, stream_cfg, outbound_ip):
     host = "127.0.0.1"
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                      "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36"
+        "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36"
     }
     test_list = []
     inner_dict = {
