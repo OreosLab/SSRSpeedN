@@ -231,10 +231,11 @@ class StreamTest:
                     connector=ProxyConnector(host=host, port=port),
                     timeout=aiohttp.ClientTimeout(connect=10),
             ) as session, session.get(
-                url="https://www.mytvsuper.com/iptest.php", allow_redirects=False
+                url="https://www.mytvsuper.com/api/auth/getSession/self/",
+                allow_redirects=False,
             ) as response:
-                text = await response.text()
-                inner_dict["Ttype"] = text.count("HK") > 0
+                json_data = await response.json()
+                inner_dict["Ttype"] = json_data.get("region") == 1
         except Exception as e:
             logger.error(f"TVB error: {str(e)}")
 
