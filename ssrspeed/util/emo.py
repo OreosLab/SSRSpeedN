@@ -22,7 +22,11 @@ class EmojiPediaSource(pilmoji.source.DiscordEmojiSourceMixin):
             raise TypeError("STYLE class variable unfilled.")
 
         name = unidecode(
-            demojize(emoji).strip(":️").replace("_", "-").replace("-&-", "-")
+            demojize(emoji)
+            .strip(":️")
+            .replace("_", "-")
+            .replace("-&-", "-")
+            .replace(".", "")
         )
         if name[0].isupper():
             name = f"flag-{name.lower()}"
@@ -120,7 +124,7 @@ if __name__ == "__main__":
     from PIL import Image, ImageFont
 
     my_string = """
-    Hello, world! 👋 Here are some flags: 🇧🇦 🇷🇪 🇨🇼
+    Hello, world! 👋 Here are some flags: 🇧🇦 🇷🇪 🇨🇼 🇺🇲
     """
 
     with Image.new("RGB", (550, 80), (255, 255, 255)) as image:
