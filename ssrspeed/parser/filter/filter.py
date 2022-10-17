@@ -14,9 +14,9 @@ class NodeFilter:
             self.__get_first_nodes(self.__node_list)
         if kwl := kwargs.get("fk", []):
             self.__filter_node(kwl)
-        if gkwl := kwargs.get("frk", []):
+        if gkwl := kwargs.get("fgk", []):
             self.__filter_group(gkwl)
-        if rkwl := kwargs.get("fgk", []):
+        if rkwl := kwargs.get("frk", []):
             self.__filter_remark(rkwl)
         if ekwl := kwargs.get("ek", []):
             self.__exclude_nodes(ekwl)
