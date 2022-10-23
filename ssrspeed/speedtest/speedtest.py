@@ -139,12 +139,16 @@ class SpeedTest:
         self.__ans_data = geoip2.database.Reader(f"{DATABASES_DIR}GeoLite2-ASN.mmdb")
 
     def query_geo_local(self, ip):
-        country, city, organization = "N/A", "Unknown City", "N/A"
+        country, city, organization = "N/A", "N/A", "N/A"
         try:
             country_info = self.__city_data.city(ip).country
             country = country_info.names.get("en", "N/A")
-            city = self.__city_data.city(ip).city.names.get("en", "Unknown City")
-            organization = self.__ans_data.asn(ip).autonomous_system_organization
+            city = self.__city_data.city(ip).city.names.get("en", "N/A")
+            organization = (
+                self.__ans_data.asn(ip)
+                .autonomous_system_organization.replace(" Communications Co.,Ltd", "")
+                .replace(" communications corporation", "")
+            )
         except ValueError as e:
             logger.error(e)
         except AddressNotFoundError as e:
@@ -154,9 +158,9 @@ class SpeedTest:
     def __geo_ip_inbound(self, config):
         inbound_ip = domain2ip(config["server"])
         inbound_geo = self.query_geo_local(inbound_ip)
-        inbound_geo_res = f"{inbound_geo.get('city', 'Unknown City')}, {inbound_geo.get('organization', 'N/A')}"
+        inbound_geo_res = f"{inbound_geo.get('city', 'N/A')}, {inbound_geo.get('organization', 'N/A')}"
         inbound_info = (
-            f"{inbound_geo.get('country', 'N/A')} {inbound_geo.get('city', 'Unknown City')}, "
+            f"{inbound_geo.get('country', 'N/A')} {inbound_geo.get('city', 'N/A')}, "
             f"{inbound_geo.get('organization', 'N/A')}"
         )
         return inbound_ip, inbound_geo_res, inbound_info
@@ -166,9 +170,9 @@ class SpeedTest:
         async with semaphore:
             outbound_geo = await ip_loc(port)
         outbound_ip = outbound_geo.get("ip", "N/A")
-        outbound_geo_res = f"{outbound_geo.get('city', 'Unknown City')}, {outbound_geo.get('organization', 'N/A')}"
+        outbound_geo_res = f"{outbound_geo.get('city', 'N/A')}, {outbound_geo.get('organization', 'N/A')}"
         outbound_info = (
-            f"{outbound_geo.get('country', 'N/A')} {outbound_geo.get('city', 'Unknown City')}, "
+            f"{outbound_geo.get('country', 'N/A')} {outbound_geo.get('city', 'N/A')}, "
             f"{outbound_geo.get('organization', 'N/A')}"
         )
         return outbound_ip, outbound_geo_res, outbound_info

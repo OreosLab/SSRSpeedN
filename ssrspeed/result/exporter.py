@@ -229,7 +229,7 @@ class ExportResult:
         bilibili_right_position = image_right_position
 
         if not self.__hide_stream:
-            image_right_position = image_right_position + other_width + 200
+            image_right_position = image_right_position + other_width + 210
         stream_right_position = image_right_position
 
         if not self.__hide_geoip:
