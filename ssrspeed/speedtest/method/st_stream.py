@@ -9,10 +9,10 @@ from loguru import logger
 nf_ip_re = re.compile(r'"requestIpAddress":"(.*)"')
 
 
-def retry(count=3):
+def retry(count=5):
     def wrapper(func):
         async def inner(*args, **kwargs):
-            for _ in range(1, count + 1):
+            for _ in range(count):
                 result = await func(*args, **kwargs)
                 if result is True:
                     break
@@ -74,7 +74,7 @@ class StreamTest:
             return {}
 
     @classmethod
-    @retry(3)
+    @retry(5)
     async def netflix_inner_method_1(cls, outbound_ip, inner_dict):
         async with cls.session.get(
             url="https://www.netflix.com/title/70143836"
@@ -95,7 +95,7 @@ class StreamTest:
             return True
 
     @classmethod
-    @retry(3)
+    @retry(5)
     async def netflix_inner_method_2(cls, inner_dict):
         async with cls.session.get(
             url="https://www.netflix.com/title/70242311"
