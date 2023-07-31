@@ -118,11 +118,9 @@ class LocalSource(pilmoji.source.BaseSource):
 
     def get_emoji(self, emoji: str, /) -> Optional[BytesIO]:
         file_path = self.get_file_path(emoji)
-        try:
+        with contextlib.suppress(FileNotFoundError):
             with open(file_path, "rb") as file:
                 return BytesIO(file.read())
-        except FileNotFoundError:
-            pass
         return None
 
     def get_discord_emoji(self, _id: int, /) -> Optional[BytesIO]:
@@ -198,25 +196,23 @@ class TwemojiLocalSource(LocalSource):
         # 从网络上下载
         async with ClientSession(headers={'user-agent': 'SSRSpeedN'}) as session:
             async with session.get(_url, proxy=proxy, timeout=20) as resp:
-                if resp.status == 200:
-                    with open(savepath, 'wb') as f:
-                        while True:
-                            block = await resp.content.read(1024)
-                            if not block:
-                                break
-                            f.write(block)
-                else:
+                if resp.status != 200:
                     raise Exception(f"NetworkError: {resp.status}==>\t{_url}")
+                with open(savepath, 'wb') as f:
+                    while True:
+                        block = await resp.content.read(1024)
+                        if not block:
+                            break
+                        f.write(block)
 
     def get_discord_emoji(self, _id: int, /) -> Optional[BytesIO]:
         pass
 
     def get_file_path(self, emoji: str) -> str:
         code_points = [f'{ord(c):x}' for c in emoji]
-        if emoji == "4️⃣" or emoji == '6️⃣':
+        if emoji in {"4️⃣", '6️⃣'}:
             del code_points[1]
-        file_path = f"./resources/emoji/twemoji/assets/72x72/{'-'.join(code_points)}.png"
-        return file_path
+        return f"./resources/emoji/twemoji/assets/72x72/{'-'.join(code_points)}.png"
 
 
 __all__ = [

@@ -59,13 +59,13 @@ class StreamTest:
     async def netflix_new(cls, host, headers, inner_dict, port, outbound_ip):
         logger.info(f"Performing netflix(new) test LOCAL_PORT: {port}.")
         try:
-            async with aiohttp.ClientSession(
-                    headers=headers,
-                    connector=ProxyConnector(host=host, port=port),
-                    timeout=aiohttp.ClientTimeout(connect=10),
-            ) as session, session.get(
-                url="https://www.netflix.com/title/70143836"  # "https://www.netflix.com/title/70242311"
-            ) as response1:
+            async with (aiohttp.ClientSession(
+                            headers=headers,
+                            connector=ProxyConnector(host=host, port=port),
+                            timeout=aiohttp.ClientTimeout(connect=10),
+                    ) as session, session.get(
+                        url="https://www.netflix.com/title/70143836"  # "https://www.netflix.com/title/70242311"
+                    ) as response1):
                 if response1.status == 200:
                     text = str(await response1.read())
                     locate = text.find("preferredLocale")
@@ -73,10 +73,7 @@ class StreamTest:
                         ","
                     )[0]
                     logger.info(f"Netflix IP : {netflix_ip}")
-                    if locate > 0:
-                        region = text[locate + 29:locate + 31]
-                    else:
-                        region = "未知"
+                    region = text[locate + 29:locate + 31] if locate > 0 else "未知"
                     if outbound_ip == netflix_ip:
                         logger.info("Netflix test result: Full Native.")
                         inner_dict["Ntype"] = f"Full Native({region})"
