@@ -9,25 +9,7 @@ from loguru import logger
 nf_ip_re = re.compile(r'"requestIpAddress":"(.*)"')
 
 
-def retry(count=5):
-    def wrapper(func):
-        async def inner(*args, **kwargs):
-            for _ in range(count):
-                result = await func(*args, **kwargs)
-                if result is True:
-                    break
-            else:
-                return False
-            return True
-
-        return inner
-
-    return wrapper
-
-
 class StreamTest:
-    session = None
-
     @classmethod
     async def netflix(cls, host, headers, inner_dict, port, outbound_ip):
         logger.info(f"Performing netflix test LOCAL_PORT: {port}.")
@@ -74,52 +56,43 @@ class StreamTest:
             return {}
 
     @classmethod
-    @retry(5)
-    async def netflix_inner_method_1(cls, outbound_ip, inner_dict):
-        async with cls.session.get(
-            url="https://www.netflix.com/title/70143836"
-        ) as response:
-            if response.status != 200:
-                return False
-            text = str(await response.read())
-            locate = text.find("preferredLocale")
-            netflix_ip = nf_ip_re.findall(text)[0].split(",")[0]
-            logger.info(f"Netflix IP : {netflix_ip}")
-            region = text[locate + 29 : locate + 31] if locate > 0 else "Unknown"
-            if outbound_ip == netflix_ip:
-                logger.info("Netflix test result: Full Native.")
-                inner_dict["Ntype"] = f"Full Native({region})"
-            else:
-                logger.info("Netflix test result: Full DNS.")
-                inner_dict["Ntype"] = f"Full DNS({region})"
-            return True
-
-    @classmethod
-    @retry(5)
-    async def netflix_inner_method_2(cls, inner_dict):
-        async with cls.session.get(
-            url="https://www.netflix.com/title/70242311"
-        ) as response:
-            if response.status == 200:
-                logger.info("Netflix test result: Only Original.")
-                inner_dict["Ntype"] = "Only Original"
-                return True
-            logger.info("Netflix test result: None.")
-            inner_dict["Ntype"] = "None"
-            return False
-
-    @classmethod
     async def netflix_new(cls, host, headers, inner_dict, port, outbound_ip):
         logger.info(f"Performing netflix(new) test LOCAL_PORT: {port}.")
         try:
-            async with aiohttp.ClientSession(
-                headers=headers,
-                connector=ProxyConnector(host=host, port=port),
-                timeout=aiohttp.ClientTimeout(connect=10),
-            ) as cls.session:
-                result = await cls.netflix_inner_method_1(outbound_ip, inner_dict)
-                if result is False:
-                    await cls.netflix_inner_method_2(inner_dict)
+            async with (
+                aiohttp.ClientSession(
+                    headers=headers,
+                    connector=ProxyConnector(host=host, port=port),
+                    timeout=aiohttp.ClientTimeout(connect=10),
+                ) as session,
+                session.get(
+                    url="https://www.netflix.com/title/70143836"  # "https://www.netflix.com/title/70242311"
+                ) as response1,
+            ):
+                if response1.status == 200:
+                    text = str(await response1.read())
+                    locate = text.find("preferredLocale")
+                    netflix_ip = nf_ip_re.findall(text)[0].split(",")[0]
+                    logger.info(f"Netflix IP : {netflix_ip}")
+                    region = text[locate + 29 : locate + 31] if locate > 0 else "未知"
+                    if outbound_ip == netflix_ip:
+                        logger.info("Netflix test result: Full Native.")
+                        inner_dict["Ntype"] = f"Full Native({region})"
+                    else:
+                        logger.info("Netflix test result: Full DNS.")
+                        inner_dict["Ntype"] = f"Full DNS({region})"
+                    return
+                async with session.get(
+                    url="https://www.netflix.com/title/70242311"
+                ) as response2:
+                    rg = ""
+                    if response2.status == 200:
+                        logger.info("Netflix test result: Only Original.")
+                        inner_dict["Ntype"] = "Only Original"
+                    else:
+                        logger.info("Netflix test result: None.")
+                        inner_dict["Ntype"] = "None"
+                    # 测试连接状态
         except Exception as e:
             logger.error(f"Netflix error: {str(e)}")
             return {}
@@ -376,7 +349,7 @@ async def start_stream_test(port, stream_cfg, outbound_ip):
     if stream_cfg["NETFLIX_TEST"]:
         test_list.append(
             asyncio.create_task(
-                StreamTest.netflix_new(host, headers, inner_dict, port, outbound_ip)
+                StreamTest.netflix(host, headers, inner_dict, port, outbound_ip)
             )
         )
     await asyncio.wait(test_list)
