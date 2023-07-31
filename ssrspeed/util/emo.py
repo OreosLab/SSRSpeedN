@@ -29,10 +29,10 @@ class EmojiPediaSource(pilmoji.source.DiscordEmojiSourceMixin):
 
         name = unidecode(
             demojize(emoji)
-                .strip(":️")
-                .replace("_", "-")
-                .replace("-&-", "-")
-                .replace(".", "")
+            .strip(":️")
+            .replace("_", "-")
+            .replace("-&-", "-")
+            .replace(".", "")
         )
         if name[0].isupper():
             name = f"flag-{name.lower()}"
@@ -128,7 +128,7 @@ class LocalSource(pilmoji.source.BaseSource):
 
     @abc.abstractmethod
     def get_file_path(self, emoji: str) -> str:
-        return ''
+        return ""
 
     @abc.abstractmethod
     def download_emoji(self, download_url):
@@ -145,7 +145,7 @@ class OpenmojiLocalSource(LocalSource):
         pass
 
     def get_file_path(self, emoji: str) -> str:
-        code_points = [f'{ord(c):04X}' for c in emoji]
+        code_points = [f"{ord(c):04X}" for c in emoji]
         return f"./resources/emoji/openmoji/{'-'.join(code_points)}.png"
 
     def download_emoji(self, download_url):
@@ -162,8 +162,10 @@ class TwemojiLocalSource(LocalSource):
         """
         构造函数中，如果init不为none，则提供下载emoji资源包的url地址
         """
-        self.savepath = './resources/emoji/twemoji.zip'
-        self._download_url = 'https://github.com/twitter/twemoji/archive/refs/tags/v14.0.2.zip'
+        self.savepath = "./resources/emoji/twemoji.zip"
+        self._download_url = (
+            "https://github.com/twitter/twemoji/archive/refs/tags/v14.0.2.zip"
+        )
         if init is None:
             return
         self.download_emoji(init, proxy=proxy)
@@ -176,29 +178,38 @@ class TwemojiLocalSource(LocalSource):
     @staticmethod
     def init_emoji(savepath: str):
         # 解压下载好的文件
-        shutil.unpack_archive(savepath, './resources/emoji/', format='zip')
+        shutil.unpack_archive(savepath, "./resources/emoji/", format="zip")
         # print("解压完成")
         # 重命名
-        dirs = os.listdir('./resources/emoji/')
+        dirs = os.listdir("./resources/emoji/")
         for d in dirs:
-            if d.startswith('twemoji') and not d.endswith('.zip'):
-                os.rename(os.path.join(os.path.abspath('./resources/emoji/'), d),
-                          os.path.join(os.path.abspath('./resources/emoji/'), 'twemoji'))
+            if d.startswith("twemoji") and not d.endswith(".zip"):
+                os.rename(
+                    os.path.join(os.path.abspath("./resources/emoji/"), d),
+                    os.path.join(os.path.abspath("./resources/emoji/"), "twemoji"),
+                )
                 break
-        return os.path.isdir('./resources/emoji/twemoji')
+        return os.path.isdir("./resources/emoji/twemoji")
 
-    async def download_emoji(self, download_url: str = None, savepath='./resources/emoji/twemoji.zip', proxy=None):
+    async def download_emoji(
+        self,
+        download_url: str = None,
+        savepath="./resources/emoji/twemoji.zip",
+        proxy=None,
+    ):
         # 如果本地已存在，便无需重新下载
-        if os.path.isdir('./resources/emoji/twemoji'):
+        if os.path.isdir("./resources/emoji/twemoji"):
             return
-        _url = self.download_url if download_url is None else download_url  # 如果没有提供下载地址则用默认的
+        _url = (
+            self.download_url if download_url is None else download_url
+        )  # 如果没有提供下载地址则用默认的
         print("Download URL:", _url)
         # 从网络上下载
-        async with ClientSession(headers={'user-agent': 'SSRSpeedN'}) as session:
+        async with ClientSession(headers={"user-agent": "SSRSpeedN"}) as session:
             async with session.get(_url, proxy=proxy, timeout=20) as resp:
                 if resp.status != 200:
                     raise Exception(f"NetworkError: {resp.status}==>\t{_url}")
-                with open(savepath, 'wb') as f:
+                with open(savepath, "wb") as f:
                     while True:
                         block = await resp.content.read(1024)
                         if not block:
@@ -209,8 +220,8 @@ class TwemojiLocalSource(LocalSource):
         pass
 
     def get_file_path(self, emoji: str) -> str:
-        code_points = [f'{ord(c):x}' for c in emoji]
-        if emoji in {"4️⃣", '6️⃣'}:
+        code_points = [f"{ord(c):x}" for c in emoji]
+        if emoji in {"4️⃣", "6️⃣"}:
             del code_points[1]
         return f"./resources/emoji/twemoji/assets/72x72/{'-'.join(code_points)}.png"
 
@@ -228,7 +239,7 @@ __all__ = [
     "JoyPixelsPediaSource",
     "TossFacePediaSource",
     "TwemojiLocalSource",
-    "OpenmojiLocalSource"
+    "OpenmojiLocalSource",
 ]
 
 if __name__ == "__main__":
@@ -238,17 +249,17 @@ if __name__ == "__main__":
     Hello, world! 👋 Here are some flags: 🇧🇦 🇷🇪 🇨🇼 🇺🇲
     """
 
-
     def check_init():
-        if not os.path.isdir('./resources/emoji/twemoji'):
+        if not os.path.isdir("./resources/emoji/twemoji"):
             twemoji = TwemojiLocalSource()
             print("检测到未安装emoji资源包，正在初始化本地emoji...")
-            asyncio.get_event_loop().run_until_complete(twemoji.download_emoji(proxy=None))
+            asyncio.get_event_loop().run_until_complete(
+                twemoji.download_emoji(proxy=None)
+            )
             if twemoji.init_emoji(twemoji.savepath):
                 logger.info("初始化emoji成功")
             else:
                 logger.warning("初始化emoji失败")
-
 
     # check_init()
     with Image.new("RGB", (550, 80), (255, 255, 255)) as image:
